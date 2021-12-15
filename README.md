@@ -1,66 +1,157 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# SII vr 3.0
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+*Versión del Sistema Integral de Información (SII) de los Institutos Tecnológicos totalmente
+desarrollado en Laravel*.
 
-## About Laravel
+## Comenzando 🚀
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+_Es necesario migrar primero la base de datos; en particular, se recomienda PostgreSQL.
+Sin embargo, el proyecto al estar totalmente desarrollado como PDO
+le permitiría emplear otro tipo de manejador._
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Dentro del proyecto [BDTEC](https://github.com/rcastrom/bdtec) se encuentra una base
+de datos con la estructura en PostgreSQL (sin valores) así como las definiciones de
+tablas y procedimientos que, hasta el momento, cuenta el sistema.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+Hasta el momento, los módulos que se han migrado son:
+* Servicios Escolares (90%).
+* Estudiantes (90%).
+* División de Estudios Profesionales (80%).
+* Jefaturas Académicas (60%).
+* Planeación (40%).
+* Coordinación de Verano (90%).
+* Desarrollo Académico (1%).
 
-## Learning Laravel
+### Pre-requisitos 📋
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+_Versión mínima de PHP: 7.3 y se recomienda a PostgreSQL como manejador de base de datos, en
+cuyo caso, deberá contar con la extensión php7.3_pgsql_
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+```
+* sudo apt install php7.3-pgsql
+* sudo service apache2 restart
+```
+>
+> En caso de emplear Ningx (*RECOMENDADO*), favor de seguir las indicaciones del
+> siguiente: [Nginx](https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-20-04-es)
+>
+>Posteriormente, deberá habilitar la extensión de pgsql en fpm.
+>
 
-## Laravel Sponsors
+_Adicionalmente, debe contar con composer instalado_
+`https://getcomposer.org/download/`
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+### Instalación 🔧
 
-### Premium Partners
+Desde terminal, dirigirse a un punto donde descargará el proyecto; por ejemplo, suponga
+_/home/<su_usuario>/Escritorio/_; entonces
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[CMS Max](https://www.cmsmax.com/)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
-- **[Romega Software](https://romegasoftware.com)**
+````
+cd /home/<su_usuario>/Escritorio
+````
 
-## Contributing
+Posteriormente, ingresar a dicha carpeta y descargar el proyecto
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```
+git clone https://github.com/rcastrom/sii.git 
+```
 
-## Code of Conduct
+Ingrese a la carpeta _sii_ que el sistema acaba de crear, y realice una actualización de la información
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```
+composer update
+```
 
-## Security Vulnerabilities
+Hecho eso, debe copiarse el archivo ".env.example" como ".env"
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
+sudo cp .env.example .env
+sudo chown www-data:www-data .env
+```
 
-## License
+En el archivo recién creado (_.env_) debe indicar los datos necesarios para
+su proyecto (tales como URL, usuario y contraseña para la base de datos del proyecto);
+por ejemplo
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+````
+
+ APP_ENV=production
+ APP_DEBUG=false
+ APP_URL=<indicar la URL que empleará para SII>
+ DB_CONNECTION=pgsql #Si emplea PostgreSQL como manejador de la BD
+ DB_HOST=127.0.0.1
+ DB_PORT=5432        #Si emplea PostgreSQL como manejador de la BD
+ DB_DATABASE=<su base de datos>
+ DB_USERNAME=<su usuario>
+ DB_PASSWORD=<su contraseña>
+ 
+````
+Por último, mueva la carpeta _sii_ hacia la ruta donde se carga la información web
+(típicamente _/var/www/html/_); por lo que, aún en terminal
+
+````
+cd /var/www/html/
+sudo mv /home/<su_usuario>/Escritorio/sii/ .
+sudo chown -R www-data:www-data sii
+````
+### En caso de emplear Nginx (recomendado)
+
+Laravel emite recomendaciones referentes a la configuración que se recomienda emplear si
+decide emplear este sistema; por favor, verifique dicha información en el siguiente
+[enlace](https://laravel.com/docs/8.x/deployment)
+
+## Despliegue 📦
+
+Esta versión ha sido creada (_por el momento_) para los siguientes tipos de usuarios
+(también conocidos como "roles"):
+* escolares
+* alumno
+* docente
+* verano
+* division
+* acad
+* planeacion
+* desacad
+
+Por lo que, deben crearse los usuarios de acuerdo al tipo de rol que van a emplear; para ello,
+desde _<ruta_proyecto>/database/seeders/_ encontrará el archivo *UserTableSeeder.php*,
+mismo que debe usar para dar de alta a todos los usuarios (incluyendo estudiantes).
+
+En dicho archivo, encontrará un ejemplo del cómo se debe crear al usuario tomando como ejemplo
+un determinado perfil.
+
+Por último, solamente debe migrar la información hacia la base de datos; para
+ello, desde consola (y estando en la raíz del proyecto; por ejemplo,
+/var/www/html/escolares/), teclee
+
+```
+  php artisan db:seed --class=UserTableSeeder
+```
+
+De encontrarse algún error, el sistema le indicará el dato; caso contrario, el sistema
+estará listo para ser empleado. Posteriormente y por seguridad, se le recomienda
+borrar la información de los usuarios creados.
+
+## Construido con 🛠️
+
+Herramientas empleadas:
+
+* [Laravel](https://laravel.com/) - El framework web usado
+* [PostgreSQL](https://www.postgresql.org/) - Manejador de base de datos
+* [Bootstrap](https://getbootstrap.com/) - Usado para el CSS
+* [Laravel Angular Admin](https://github.com/silverbux/laravel-angular-admin) - Template administrativo
+
+## Autores ✒️
+
+* **Ricardo Castro Méndez** - *Trabajo Inicial* - [rcastrom](https://github.com/rcastrom)
+* **Julia Chávez Remigio** - *Colaboradora y revisora* - [jchavez](mailto:jchavez@ite.edu.mx)
+
+## Licencia 📄
+
+Este proyecto está bajo la Licencia (MIT) - mira el archivo [LICENSE.md](LICENSE.md) para
+detalles.
+
+El objetivo del proyecto, es que los institutos tecnológicos que deseen participar con
+observaciones y mejoras, realicen las aportaciones y/o sugerencias necesarias para así
+poder contar con un sistema creado por y para los Tecnológicos.
+---
