@@ -4,7 +4,7 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
-class Aditional extends Component
+class Aviso extends Component
 {
     /**
      * Create a new component instance.
@@ -23,6 +23,6 @@ class Aditional extends Component
      */
     public function render()
     {
-        return view('components.aditional');
+        return view('components.aviso');
     }
 }

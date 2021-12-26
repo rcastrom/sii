@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Inicio')
+@section('title', 'Alumnos')
 
 @section('content_header')
     <h1>Servicios Escolares</h1>
@@ -14,10 +14,10 @@
         <p class="card-text">Período de ingreso {{ $ingreso->identificacion_corta }}</p>
         <p class="card-text">Semestre {{ $alumno->semestre }}</p>
         <p class="card-text">Especialidad: {{ $especialidad}}</p>
-        <p class="card-text">Estatus actual: {{ $estatus[0]->descripcion }}</p>
+        <p class="card-text">Estatus actual: {{ $estatus->descripcion }}</p>
         <p class="card-text">NIP: {{ $alumno->nip }}</p>
     </x-information>
-    <x-aditional>
+    <x-additional>
         @slot('header','Datos Generales')
         <div class="row">
             <div class="col-sm-12 col-md-6">Domicilio</div>
@@ -41,10 +41,10 @@
             <div class="col-sm-12 col-md-6">CURP</div>
             <div class="col-sm-12 col-md-6">{{ $alumno->curp_alumno }} </div>
         </div>
-    </x-aditional>
-    <x-aditional>
+    </x-additional>
+    <x-additional>
         @slot('header','Datos Adicionales')
-        <form method="post" action="" class="form-inline" role="form">
+        <form method="post" action="{{route('escolares.accion')}}" class="form-inline" role="form">
             @csrf
             <legend>Seleccione una opción</legend>
             <div class="row">
@@ -91,5 +91,5 @@
             </div>
             <input type="hidden" name="control" id="control" value="{{ $control}}">
         </form>
-    </x-aditional>
+    </x-additional>
 @stop
