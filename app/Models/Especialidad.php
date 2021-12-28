@@ -9,4 +9,5 @@ class Especialidad extends Model
 {
     use HasFactory;
     protected $table='especialidades';
+    protected $primaryKey="carrera";
 }

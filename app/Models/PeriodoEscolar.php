@@ -9,4 +9,5 @@ class PeriodoEscolar extends Model
 {
     use HasFactory;
     protected $table='periodos_escolares';
+    protected $primaryKey="periodo";
 }

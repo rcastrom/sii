@@ -1,0 +1,42 @@
+.medium_negrita_center{
+    font-size: 10px;
+    font-weight: bold;
+    text-align: center;
+}
+.medium_center{
+    font-size: 11px;
+    font-weight: normal;
+    text-align: center;
+}
+.small_center{
+    font-size: 9px;
+    font-weight: normal;
+    text-align: center;
+}
+.verde{
+    background-color: #71C973;
+    color: #000000;
+}
+.naranja{
+    background-color: #FF9900;
+    color: #000000;
+}
+.rojo {
+    background:#D01C1F;
+    color:#FFFFFF;
+}
+.amarillo {
+    background-color: #F7EA48;
+}
+.azul{
+    background-color: #56B7E6;
+    color: white !important;
+}
+.azul a:link{
+    color: white !important;
+}
+.lila{
+    background-color: #603060;
+    color: #FFFFFF;
+}
+

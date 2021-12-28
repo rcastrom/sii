@@ -17,17 +17,18 @@
             font-size: 8pt;
             background: url({{asset('img/tecnm.jpg')}}) no-repeat center center fixed;
             background-size: cover;
-            opacity: 0.3;
+            opacity: 0.13;
         }
         @page { margin: 100px 50px;}
-        .header { position: fixed; left: 0; top: -100px; right: 0; height: 100px; text-align: center; padding-bottom: 10px; }
-        .footer { position: fixed; left: 0; bottom: -50px; right: 0; height: 50px;text-align: center;}
+        .header { position: fixed; left: 0; top: -100px; right: 0; height: 100px; text-align: center; margin-bottom: 10px; }
+        .footer { position: fixed; left: 0; bottom: -2.5cm; right: 0; height: 50px;text-align: center;}
         .footer .pagenum:before { content: counter(page); }
 
         .tabla{
             font-family: Helvetica, sans-serif;
             font-size: 7px;
             padding: 10px 0;
+            margin-top: 0.20cm !important;
         }
         .tabla table{
             width: min-content;

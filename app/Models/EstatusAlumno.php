@@ -9,4 +9,5 @@ class EstatusAlumno extends Model
 {
     use HasFactory;
     protected $table='estatus_alumno';
+    protected $primaryKey='estatus';
 }

@@ -9,4 +9,5 @@ class TipoEvaluacion extends Model
 {
     use HasFactory;
     protected $table='tipos_evaluacion';
+    protected $primaryKey="plan_de_estudios";
 }
