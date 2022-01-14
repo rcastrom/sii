@@ -132,7 +132,7 @@ class MenuEscolaresController extends Controller
                 'submenu' => [
                     [
                         'text' => 'Población',
-                        'url'  => 'escolares/estadistica/prepoblacion',
+                        'url'  => 'escolares/estadistica/consulta',
                         'icon' => 'far fa-circle',
                     ]
                 ]
@@ -144,6 +144,11 @@ class MenuEscolaresController extends Controller
                     [
                         'text' => 'BD',
                         'url'  => 'escolares/mantenimiento/base',
+                        'icon' => 'far fa-circle',
+                    ],
+                    [
+                        'text' => 'Contraseña',
+                        'url'  => 'escolares/mantenimiento/contrasena',
                         'icon' => 'far fa-circle',
                     ]
                 ]

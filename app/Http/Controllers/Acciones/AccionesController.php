@@ -154,4 +154,92 @@ class AccionesController extends Controller
         }
         return $semestre;
     }
+    /*
+     * Devuelve la información para el certificado de estudios
+     *
+     * @param string $control
+     * @return mixed
+     */
+    public function historial($control){
+        $data=DB::select("select * from pac_certificado_cal('$control')");
+        return $data;
+    }
+    /*
+     *Devuelve las materias que no han sido evaluadas
+     *
+     * @param string $periodo
+     * @return mixed
+     */
+    public function sin_evaluar($periodo){
+        $data = DB::select("select * from pac_materias_faltan('$periodo')");
+        return $data;
+    }
+    /*
+     *Devuelve las materias que ya fueron evaluadas
+     *
+     * @param string $periodo
+     * @return mixed
+     */
+    public function evaluadas($periodo){
+        $data = DB::select("select * from pac_materias_calificadas('$periodo')");
+        return $data;
+    }
+    /*
+     *Devuelve las actas que no han sido entregadas en Escolares
+     *
+     * @param string $periodo
+     * @return mixed
+     */
+    public function actas_faltantes($periodo){
+        $data = DB::select("select * from pac_actas_faltan('$periodo')");
+        return $data;
+    }
+    /*
+     * Devuelve los grupos que se ofertaron en Idioma Extranjero
+     *
+     * @param string $periodo
+     * @param string $idioma
+     * @return mixed
+     */
+    public function consulta_idiomas($periodo,$idioma){
+        $data = DB::select("select * from pac_idiomas_consulta('$periodo',$idioma)");
+        return $data;
+    }
+    /*
+     * Devuelve la población escolar
+     *
+     * @param string $periodo
+     * @return mixed
+     */
+    public function inscritos($periodo){
+        $data = DB::select("select * from pac_poblacion('$periodo')");
+        return $data;
+    }
+    /*
+     * Cambia el estatus del alumno (no inscritos a baja temporal)
+     *
+     * @param string $periodo
+     * @return void
+     */
+    public function modificar_estatus($periodo){
+        DB::select("select * from pap_estatus_alumno('$periodo')");
+    }
+    /*
+     * Actualiza el semestre del estudiante
+     *
+     * @param string $periodo
+     * @return void
+     */
+    public function actualizar_semestre($periodo){
+        DB::select("select * from pap_semestre_alumno('$periodo')");
+    }
+    /*
+     * Actualiza la cantidad de estudiantes inscritos en el grupo de acuerdo al período
+     *
+     * @param string $periodo
+     * @return void
+     */
+    public function actualizar_inscritos_grupo($periodo){
+        DB::select("select * from pac_act_ins_gpoxmat('$periodo')");
+    }
 }

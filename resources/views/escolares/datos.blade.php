@@ -9,7 +9,7 @@
 @section('content')
     <x-information :encabezado="$encabezado">
         <h4 class="card-title">{{ $alumno->apellido_paterno.' '.$alumno->apellido_materno.' '.$alumno->nombre_alumno }}</h4>
-        <p class="card-text">Número de control: {{ $control }}</p>
+        <p class="card-text">Número de control: {{ $alumno->no_de_control }}</p>
         <p class="card-text">{{ $ncarrera->nombre_carrera }} Ret {{ $alumno->reticula }}</p>
         <p class="card-text">Período de ingreso {{ $ingreso->identificacion_corta }}</p>
         <p class="card-text">Semestre {{ $alumno->semestre }}</p>
@@ -44,7 +44,7 @@
     </x-additional>
     <x-additional>
         @slot('header','Datos Adicionales')
-        <form method="post" action="{{route('escolares.accion')}}" class="form-inline" role="form">
+        <form method="post" action="{{ route('escolares.acciones') }}" class="form-inline" role="form">
             @csrf
             <legend>Seleccione una opción</legend>
             <div class="row">
@@ -89,7 +89,7 @@
                     El período puede no ser necesario dependiendo de la acción a realizar
                 </div>
             </div>
-            <input type="hidden" name="control" id="control" value="{{ $control}}">
+            <input type="hidden" name="control" id="control" value="{{ $alumno->no_de_control}}">
         </form>
     </x-additional>
 @stop
