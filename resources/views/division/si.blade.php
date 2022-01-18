@@ -3,12 +3,12 @@
 @section('title', 'Proceso terminado')
 
 @section('content_header')
-    <h1>Servicios Escolares</h1>
+    <h1>División de Estudios Profesionales</h1>
 @stop
 
 @section('content')
     <x-information :encabezado="$encabezado">
-        <h1>Proceso terminado</h1>
+        <h3>Proceso terminado</h3>
         <p class="card-text">{{ $mensaje }}</p>
     </x-information>
 @stop

@@ -9,10 +9,11 @@ class LoginResponse implements LoginResponseContract{
     {
         if(Auth::user()->hasRole('escolares')){
             return redirect('/escolares');
+        }elseif(Auth::user()->hasRole('division')) {
+            return redirect('/division');
         }else{
             return redirect('/');
         }
-
         /*return $request->wantsJson()
             ? response()->json(['two_factor' => false])
             : redirect()->intended(config('fortify.home'));
