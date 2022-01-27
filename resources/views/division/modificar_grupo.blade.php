@@ -20,7 +20,7 @@
                 </ul>
             </div>
         @endif
-        <form action="" method="post" role="form">
+        <form action="{{route('dep_grupo_modifica')}}" method="post" role="form">
             @csrf
             <div class="form-group row">
                 <label for="capacidad" class="col-sm-3 col-md-8 col-form-label">Capacidad</label>

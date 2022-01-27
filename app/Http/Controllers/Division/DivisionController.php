@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Division;
 use App\Http\Controllers\Acciones\AccionesController;
 use App\Http\Controllers\Controller;
 use App\Models\Alumno;
+use App\Models\AlumnosGeneral;
 use App\Models\Aula;
 use App\Models\AvisoReinscripcion;
 use App\Models\Carrera;
+use App\Models\Especialidad;
+use App\Models\EstatusAlumno;
 use App\Models\Grupo;
 use App\Models\HistoriaAlumno;
 use App\Models\Horario;
@@ -17,7 +20,9 @@ use App\Models\PeriodoEscolar;
 use App\Models\PermisosCarrera;
 use App\Models\Personal;
 use App\Models\SeleccionMateria;
+use App\Models\User;
 use Carbon\Carbon;
+use FontLib\TrueType\Collection;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -458,7 +463,6 @@ class DivisionController extends Controller
         return view('division.si')->with(compact('mensaje','encabezado'));
     }
     public function existentes(){
-        $data=Auth::user()->email;
         $carreras=Carrera::orderBy('nombre_carrera','asc')
             ->orderBy('reticula','asc')->get();
         $periodos=PeriodoEscolar::orderBy('periodo','desc')->get();
@@ -586,28 +590,44 @@ class DivisionController extends Controller
                     'miercoles','jueves','viernes','sabado','periodo','encabezado'));
             }
         }elseif ($accion==4) {
-            $cap=DB::table('grupos')->where('periodo',$periodo)->where('materia',$materia)
+            $cap=Grupo::where('periodo',$periodo)->where('materia',$materia)
                 ->where('grupo',$grupo)->select('capacidad_grupo')->first();
-            return view('dep.capgrupo')->with(compact('materia','grupo','nmateria','periodo','cap'));
+            $encabezado="Actualización de capacidad de grupo";
+            return view('division.capgrupo')->with(compact('materia',
+                'grupo','nmateria','periodo','cap','encabezado'));
         }elseif ($accion==5){
             //Si tiene estudiantes, no puedo borrar
-            if(DB::table('seleccion_materias')->where('periodo',$periodo)
-                    ->where('materia',$materia)->where('grupo',$grupo)->count()>0){
-                $mensaje="La materia cuenta con estudiantes inscritos, por lo que no es posible borrar el grupo";
-                return view('dep.no')->with(compact('mensaje'));
+            if(SeleccionMateria::where('periodo',$periodo)->where('materia',$materia)
+                    ->where('grupo',$grupo)->count()>0){
+                $encabezado="Error de baja de materia";
+                $mensaje="La materia cuenta con estudiantes inscritos, por lo que no es posible
+                borrar el grupo";
+                return view('division.no')->with(compact('mensaje','encabezado'));
             }else{
                 //Si tiene grupos paralelas en la misma, no se puede
                 $pos_paralela=$materia.$grupo;
-                if(DB::table('grupos')->where('periodo',$periodo)->where('paralelo_de',$pos_paralela)->count()>0){
-                    $mensaje="La materia tiene grupos paralelos, debe eliminar los dependientes primero para poder eliminar al grupo";
-                    return view('dep.no')->with(compact('mensaje'));
-                }else{
-                    DB::table('grupos')->where('periodo',$periodo)
-                        ->where('materia',$materia)->where('grupo',$grupo)->delete();
-                    DB::table('horarios')->where('periodo',$periodo)
-                        ->where('materia',$materia)->where('grupo',$grupo)->delete();
-                    return view('dep.si');
+                if(Grupo::where('periodo',$periodo)->where('paralelo_de',$pos_paralela)->count()>0){
+                    if(SeleccionMateria::where('periodo',$periodo)->where('materia',$pos_paralela)
+                            ->where('grupo',$grupo)->count()>0){
+                        $encabezado="Error de baja de materia";
+                        $mensaje="La materia tiene grupos paralelos, debe eliminar los
+                        dependientes primero para poder eliminar al grupo";
+                        return view('division.no')->with(compact('mensaje','encabezado'));
+                    }
                 }
+                Grupo::where([
+                    'periodo'=>$periodo,
+                    'materia'=>$materia,
+                    'grupo'=>$grupo
+                ])->delete();
+                Horario::where([
+                    'periodo'=>$periodo,
+                    'materia'=>$materia,
+                    'grupo'=>$grupo
+                ])->delete();
+                $encabezado="Baja de materia";
+                $mensaje="Se eliminó la materia ".$materia." grupo ".$grupo;
+                return view('division.si')->with(compact('encabezado','mensaje'));
             }
         }
     }
@@ -774,5 +794,527 @@ class DivisionController extends Controller
             'encabezado'=>$encabezado
             ]);
     }
-
+    public function updatehorario(Request $request){
+        request()->validate([
+            'grupo'=>'required',
+            'capacidad'=>'required',
+            'slunes'=>'required_with:elunes',
+            'smartes'=>'required_with:emartes',
+            'smiercoles'=>'required_with:emiercoles',
+            'sjueves'=>'required_with:ejueves',
+            'sviernes'=>'required_with:eviernes',
+            'ssabado'=>'required_with:esabado',
+        ],[
+            'grupo.required'=>'Debe indicar la clave del grupo',
+            'capacidad.required'=>'Debe indicar la capacidad del grupo',
+            'slunes.required_with'=>'Debe indicar la hora de salida para el lunes',
+            'smartes.required_with'=>'Debe indicar la hora de salida para el martes',
+            'smiercoles.required_with'=>'Debe indicar la hora de salida para el miércoles',
+            'sjueves.required_with'=>'Debe indicar la hora de salida para el jueves',
+            'sviernes.required_with'=>'Debe indicar la hora de salida para el viernes',
+            'ssabado.required_with'=>'Debe indicar la hora de salida para el sabado',
+        ]);
+        $periodo=$request->get('periodo');
+        $materia=$request->get('materia');
+        $grupo=$request->get('grupo');
+        $creditos=$request->get('creditos');
+        $capacidad=$request->get('capacidad');
+        $elunes=$request->get('elunes'); if(!empty($elunes)){$elunes=Carbon::parse($elunes);}
+        $emartes=$request->get('emartes'); if(!empty($emartes)){$emartes=Carbon::parse($emartes);}
+        $emiercoles=$request->get('emiercoles'); if(!empty($emiercoles)){$emiercoles=Carbon::parse($emiercoles);}
+        $ejueves=$request->get('ejueves'); if(!empty($ejueves)){$ejueves=Carbon::parse($ejueves);}
+        $eviernes=$request->get('eviernes'); if(!empty($eviernes)){$eviernes=Carbon::parse($eviernes);}
+        $esabado=$request->get('esabado'); if(!empty($esabado)){$esabado=Carbon::parse($esabado);}
+        $slunes=$request->get('slunes'); if(!empty($slunes)){$slunes=Carbon::parse($slunes);}
+        $smartes=$request->get('smartes'); if(!empty($smartes)){$smartes=Carbon::parse($smartes);}
+        $smiercoles=$request->get('smiercoles'); if(!empty($smiercoles)){$smiercoles=Carbon::parse($smiercoles);}
+        $sjueves=$request->get('sjueves'); if(!empty($sjueves)){$sjueves=Carbon::parse($sjueves);}
+        $sviernes=$request->get('sviernes'); if(!empty($sviernes)){$sviernes=Carbon::parse($sviernes);}
+        $ssabado=$request->get('ssabado'); if(!empty($ssabado)){$ssabado=Carbon::parse($ssabado);}
+        $aula_l=$request->get('aula_l');
+        $aula_m=$request->get('aula_m');
+        $aula_mm=$request->get('aula_mm');
+        $aula_j=$request->get('aula_j');
+        $aula_v=$request->get('aula_v');
+        $aula_s=$request->get('aula_s');
+        if(!empty($elunes)){$hl=$elunes->diff($slunes)->format('%h');}else{$hl=0;}
+        if(!empty($emartes)){$hm=$emartes->diff($smartes)->format('%h');}else{$hm=0;}
+        if(!empty($emiercoles)){$hmm=$emiercoles->diff($smiercoles)->format('%h');}else{$hmm=0;}
+        if(!empty($ejueves)){$hj=$ejueves->diff($sjueves)->format('%h');}else{$hj=0;}
+        if(!empty($eviernes)){$hv=$eviernes->diff($sviernes)->format('%h');}else{$hv=0;}
+        if(!empty($esabado)){$hs=$esabado->diff($ssabado)->format('%h');}else{$hs=0;}
+        //Primero, necesito verificar si al momento de mover la materia, no exista un empalme de horas con el docente
+        $docente=Grupo::where([
+            'periodo'=>$periodo,
+            'materia'=>$materia,
+            'grupo'=>$grupo
+        ])->select('rfc')->first();
+        if(!empty($docente->rfc)){
+            $bandera=1;
+        }else {
+            $bandera = 0;
+        }
+        //Después, que el salón esté libre (eso lo hace el trigger)
+        $total_horas=$hl+$hm+$hmm+$hj+$hv+$hs;
+        if($total_horas==$creditos){
+            //Que no sea un grupo repetido
+            if(!empty($elunes)){
+                try{
+                    Horario::where([
+                        'periodo'=>$periodo,
+                        'materia'=>$materia,
+                        'grupo'=>$grupo,
+                        'dia_semana'=>2
+                    ])->update([
+                            'hora_inicial'=>$elunes,
+                            'hora_final'=>$slunes,
+                            'aula'=>$aula_l,
+                            'updated_at'=>Carbon::now()
+                        ]);
+                }catch (QueryException $e){
+                    $encabezado="Error de actualización de grupo";
+                    $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día lunes";
+                    return view('division.no')->with(compact('mensaje','encabezado'));
+                }
+                //Si tiene paralela, también se actualiza
+            }
+            if(!empty($emartes)){
+                try{
+                    Horario::where([
+                        'periodo'=>$periodo,
+                        'materia'=>$materia,
+                        'grupo'=>$grupo,
+                        'dia_semana'=>3
+                    ])->update([
+                            'hora_inicial'=>$emartes,
+                            'hora_final'=>$smartes,
+                            'aula'=>$aula_m,
+                            'updated_at'=>Carbon::now()
+                        ]);
+                }catch (QueryException $e){
+                    $encabezado="Error de actualización de grupo";
+                    $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día martes";
+                    return view('division.no')->with(compact('mensaje','encabezado'));
+                }
+                //Si tiene paralela, también se actualiza
+            }
+            if(!empty($emiercoles)){
+                try{
+                    Horario::where([
+                        'periodo'=>$periodo,
+                        'materia'=>$materia,
+                        'grupo'=>$grupo,
+                        'dia_semana'=>4
+                    ])->update([
+                            'hora_inicial'=>$emiercoles,
+                            'hora_final'=>$smiercoles,
+                            'aula'=>$aula_mm,
+                            'updated_at'=>Carbon::now()
+                        ]);
+                }catch (QueryException $e){
+                    $encabezado="Error de actualización de grupo";
+                    $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día miercoles";
+                    return view('division.no')->with(compact('mensaje','encabezado'));
+                }
+                //Si tiene paralela, también se actualiza
+            }
+            if(!empty($ejueves)){
+                try{
+                    Horario::where([
+                        'periodo'=>$periodo,
+                        'materia'=>$materia,
+                        'grupo'=>$grupo,
+                        'dia_semana'=>5
+                    ])->update([
+                            'hora_inicial'=>$ejueves,
+                            'hora_final'=>$sjueves,
+                            'aula'=>$aula_j,
+                            'updated_at'=>Carbon::now()
+                        ]);
+                }catch (QueryException $e){
+                    $encabezado="Error de actualización de grupo";
+                    $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día jueves";
+                    return view('division.no')->with(compact('mensaje','encabezado'));
+                }
+                //Si tiene paralela, también se actualiza
+            }
+            if(!empty($eviernes)){
+                try{
+                    Horario::where([
+                        'periodo'=>$periodo,
+                        'materia'=>$materia,
+                        'grupo'=>$grupo,
+                        'dia_semana'=>6
+                    ])->update([
+                            'hora_inicial'=>$eviernes,
+                            'hora_final'=>$sviernes,
+                            'aula'=>$aula_v,
+                            'updated_at'=>Carbon::now()
+                        ]);
+                }catch (QueryException $e){
+                    $encabezado="Error de actualización de grupo";
+                    $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día viernes";
+                    return view('division.no')->with(compact('mensaje','encabezado'));
+                }
+                //Si tiene paralela, también se actualiza
+            }
+            if(!empty($esabado)){
+                try{
+                    Horario::where([
+                        'periodo'=>$periodo,
+                        'materia'=>$materia,
+                        'grupo'=>$grupo,
+                        'dia_semana'=>7
+                    ])->update([
+                            'hora_inicial'=>$esabado,
+                            'hora_final'=>$ssabado,
+                            'aula'=>$aula_s,
+                            'updated_at'=>Carbon::now()
+                        ]);
+                }catch (QueryException $e){
+                    $encabezado="Error de actualización de grupo";
+                    $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día sabado";
+                    return view('division.no')->with(compact('mensaje','encabezado'));
+                }
+                //Si tiene paralela, también se actualiza
+            }
+            Grupo::where([
+                'periodo'=>$periodo,
+                'materia'=>$materia,
+                'grupo'=>$grupo
+            ])->update([
+                'capacidad_grupo'=>$capacidad,
+                'created_at'=>Carbon::now()
+            ]);
+            $mensaje="Se llevó a cabo la actualización correspondiente de la materia";
+            $encabezado="Actualización de grupos";
+            return view('division.si')->with(compact('encabezado','mensaje'));
+        }else{
+            $encabezado="Error de actualización de grupo";
+            $mensaje="No se pudo realizar la acción porque no concuerda el número de horas a impartir contra las que debe tener la materia";
+            return view('division.no')->with(compact('mensaje','encabezado'));
+        }
+    }
+    public function capgrupo(Request $request){
+        request()->validate([
+            'capacidad'=>'required',
+        ],[
+            'capacidad.required'=>'Debe indicar la capacidad para la materia'
+        ]);
+        $periodo=$request->get('periodo');
+        $materia=$request->get('materia');
+        $grupo=$request->get('grupo');
+        $cap=$request->get('capacidad');
+        $previa_cap=$request->get('cap_old');
+        if($cap<=0){
+            $encabezado="Error de actualización de grupo";
+            $mensaje="La materia no puede tener cantidades negativas";
+            return view('division.no')->with(compact('mensaje','encabezado'));
+        }elseif ($cap<=$previa_cap){
+            $encabezado="Error de actualización de grupo";
+            $mensaje="No se llevó a cabo la actualización debido a que la capacidad solicitada es
+            menor a la actual";
+            return view('division.no')->with(compact('mensaje','encabezado'));
+        }else{
+            Grupo::where([
+                'periodo'=>$periodo,
+                'materia'=>$materia,
+                'grupo'=>$grupo
+            ])->update([
+                'capacidad_grupo'=>$cap
+            ]);
+            $encabezado="Actualización de capacidad de grupo";
+            $mensaje="Se modificó la capacidad actual para la materia ".$materia." grupo ".$grupo;
+            return view('division.si')->with(compact('encabezado','mensaje'));
+        }
+    }
+    public function buscar(){
+        $encabezado="Consulta de alumnos";
+        return view('division.busqueda_alumno')->with(compact('encabezado'));
+    }
+    public function busqueda(Request $request){
+        request()->validate([
+            'control'=>'required',
+        ],[
+            'control.required'=>'Debe indicar un dato para ser buscado'
+        ]);
+        $control=$request->get('control');
+        $tbusqueda=$request->get('tbusqueda');
+        if($tbusqueda=="1"){
+            $alumno=Alumno::findOrfail($control);
+            $datos = AlumnosGeneral::where('no_de_control',$control)->first();
+            if(empty($datos)){
+                $info=collect(['domicilio_calle','domicilio_colonia','codigo_postal','telefono']);
+                $datos=$info->combine(['','','','']);
+                $bandera=0;
+            }else{
+                $bandera=1;
+            }
+            $ncarrera=Carrera::where('carrera',$alumno->carrera)->where('reticula',$alumno->reticula)
+                ->select('nombre_carrera')->first();
+            $periodos=PeriodoEscolar::orderBy('periodo','desc')->get();
+            $periodo_actual = (new AccionesController)->periodo();
+            $periodo=$periodo_actual[0]->periodo;
+            $espe=Especialidad::where('especialidad',$alumno->especialidad)
+                ->where('carrera',$alumno->carrera)->where('reticula',$alumno->reticula)->first();
+            if(empty($espe)){
+                $especialidad="POR ASIGNAR";
+            }else{
+                $especialidad=$espe->nombre_especialidad;
+            }
+            $estatus=EstatusAlumno::where('estatus',$alumno->estatus_alumno)->first();
+            $encabezado="Datos de estudiante";
+            return view('division.datos_alumno')->
+            with(compact('alumno','ncarrera','datos','periodo',
+                'periodos','estatus','especialidad','bandera','encabezado'));
+        }elseif ($tbusqueda=='2'){
+            $arroja=Alumno::where('apellido_paterno',strtoupper($control))
+                ->orWhere('apellido_materno',strtoupper($control))
+                ->orWhere('nombre_alumno',strtoupper($control))
+                ->orderBY('apellido_paterno')
+                ->orderBy('apellido_materno')
+                ->orderBy('nombre_alumno')
+                ->select('no_de_control','apellido_paterno','apellido_materno','nombre_alumno')
+                ->get();
+            if(empty($arroja)){
+                $encabezado="Consulta de alumnos";
+                $mensaje="No se encontraron alumnos con el apellido de búsqueda solicitado";
+                return view('division.no')->with(compact('encabezado','mensaje'));
+            }else{
+                $encabezado="Consulta de alumnos";
+                return view('division.datos2_alumno')->with(compact('arroja',
+                    'encabezado'));
+            }
+        }
+    }
+    public function accion2(Request $request){
+        $periodo_actual=(new AccionesController)->periodo();
+        $periodo=$periodo_actual[0]->periodo;
+        $control=$request->control;
+        $accion=$request->accion;
+        $alumno=Alumno::findOrfail($control);
+        $estatus=EstatusAlumno::where('estatus',$alumno->estatus_alumno)->first();
+        if($accion==1) {
+            $informacion = (new AccionesController)->kardex($control);
+            $calificaciones=$informacion[0];
+            $nombre_periodo=$informacion[1];
+            $ncarrera = (new AccionesController)->ncarrera($alumno->carrera,$alumno->reticula);
+            $espe=Especialidad::where('especialidad',$alumno->especialidad)->where('carrera',$alumno->carrera)
+                ->where('reticula',$alumno->reticula)->first();
+            if(empty($espe)){
+                $especialidad="POR ASIGNAR";
+            }else{
+                $especialidad=$espe->nombre_especialidad;
+            }
+            $encabezado="Kárdex del alumno";
+            return view('division.kardex')
+                ->with(compact('alumno', 'calificaciones', 'estatus', 'ncarrera',
+                    'especialidad','nombre_periodo','encabezado'));
+        }elseif($accion==2){
+            $historial = (new AccionesController)->reticula($control);
+            return view('division.reticula')->with(compact('alumno', 'historial'));
+        }elseif ($accion==3){
+            if(SeleccionMateria::where('no_de_control',$control)
+                    ->where('periodo',$periodo)
+                    ->count()>0){
+                $datos_horario =(new AccionesController)->horario($control,$periodo);
+                $nombre_periodo = PeriodoEscolar::where('periodo', $periodo)->first();
+                $encabezado="Horario del estudiante";
+                return view('division.horario')->with(compact('alumno','datos_horario',
+                    'nombre_periodo','periodo_actual','encabezado'));
+            }else{
+                $encabezado="Error de período para horario";
+                $mensaje="NO CUENTA CON CARGA ACADÉMICA ASIGNADA";
+                return view('division.no')->with(compact('mensaje','encabezado'));
+            }
+        }elseif ($accion==4){
+            if(DB::table('avisos_reinscripcion')->where('periodo',$periodo)->where('no_de_control',$control)->count()>0){
+                DB::table('avisos_reinscripcion')->where('periodo',$periodo)
+                    ->where('no_de_control',$control)->update([
+                        'autoriza_escolar'=>'S',
+                        'recibo_pago'=>'1',
+                        'fecha_hora_seleccion'=>Carbon::now(),
+                        'encuesto'=>'S',
+                        'updated_at'=>Carbon::now()
+                    ]);
+            }else{
+                DB::table('avisos_reinscripcion')->insert([
+                    'periodo'=>$periodo,
+                    'no_de_control'=>$control,
+                    'autoriza_escolar'=>'S',
+                    'recibo_pago'=>'1',
+                    'fecha_recibo'=>null,
+                    'cuenta_pago'=>null,
+                    'fecha_hora_seleccion'=>Carbon::now(),
+                    'lugar_seleccion'=>null,
+                    'fecha_hora_pago'=>null,
+                    'lugar_pago'=>null,
+                    'adeuda_escolar'=>null,
+                    'adeuda_biblioteca'=>null,
+                    'adeuda_financieros'=>null,
+                    'otro_mensaje'=>null,
+                    'baja'=>null,
+                    'motivo_aviso_baja'=>null,
+                    'egresa'=>null,
+                    'encuesto'=>'S',
+                    'vobo_adelanta_sel'=>null,
+                    'regular'=>null,
+                    'indice_reprobacion'=>0,
+                    'creditos_autorizados'=>0,
+                    'estatus_reinscripcion'=>null,
+                    'semestre'=>0,
+                    'promedio'=>0,
+                    'adeudo_especial'=>'N',
+                    'promedio_acumulado'=>null,
+                    'proareas'=>null,
+                    'created_at'=>Carbon::now()
+                ]);
+            }
+            return view('dep.inicio');
+        }
+    }
+    public function prepoblacion(){
+        $periodos=PeriodoEscolar::orderBy('periodo','desc')->get();
+        $periodo_actual=(new AccionesController)->periodo();
+        $periodo=$periodo_actual[0]->periodo;
+        $encabezado="Población Escolar";
+        return view('division.prepoblacion')->with(compact('periodos',
+            'periodo','encabezado'));
+    }
+    public function poblacion(Request $request){
+        $periodo=$request->get('periodo');
+        $inscritos=(new AccionesController)->inscritos($periodo);
+        $nperiodo=PeriodoEscolar::where('periodo',$periodo)->first();
+        $encabezado="Población Escolar";
+        return view('division.poblacion')->with(compact('inscritos',
+            'periodo','nperiodo','encabezado'));
+    }
+    public function pobxcarrera($periodo,$carrera,$reticula){
+        $nperiodo=PeriodoEscolar::where('periodo',$periodo)->first();
+        $ncarrera=Carrera::where('carrera',$carrera)->where('reticula',15)->first();
+        $cantidad=SeleccionMateria::where('periodo',$periodo)
+            ->join('alumnos','alumnos.no_de_control','=','seleccion_materias.no_de_control')
+            ->where('carrera',$carrera)
+            ->where('reticula',$reticula)
+            ->selectRaw('COUNT(DISTINCT(seleccion_materias.no_de_control)) AS inscritos, semestre')
+            ->groupByRaw('semestre')
+            ->get();
+        $poblacion=new Collection();
+        $data=array();
+        $i=0;
+        foreach ($cantidad as $cant){
+            $pob_masc=SeleccionMateria::where('periodo',$periodo)
+                ->join('alumnos','alumnos.no_de_control','=','seleccion_materias.no_de_control')
+                ->where('carrera',$carrera)
+                ->where('reticula',$reticula)
+                ->where('sexo','M')
+                ->where('semestre',$cant->semestre)
+                ->selectRaw('COUNT(DISTINCT(seleccion_materias.no_de_control)) AS inscritos')
+                ->first();
+            $pob_fem=SeleccionMateria::where('periodo',$periodo)
+                ->join('alumnos','alumnos.no_de_control','=','seleccion_materias.no_de_control')
+                ->where('carrera',$carrera)
+                ->where('reticula',$reticula)
+                ->where('sexo','F')
+                ->where('semestre',$cant->semestre)
+                ->selectRaw('COUNT(DISTINCT(seleccion_materias.no_de_control)) AS inscritos')
+                ->first();
+            $data[$i]["semestre"]=$cant->semestre;
+            $data[$i]["hombres"]=$pob_masc->inscritos;
+            $data[$i]["mujeres"]=$pob_fem->inscritos;
+            $data[$i]["total"]=$pob_masc->inscritos+$pob_fem->inscritos;
+            $i++;
+        }
+        $poblacion=collect($data);
+        $encabezado="Población Escolar";
+        return view('division.poblacion2')->with(compact('poblacion', 'ncarrera',
+            'reticula','nperiodo','encabezado'));
+    }
+    public function pobxaulas(){
+        $periodos=PeriodoEscolar::orderBy('periodo','desc')->get();
+        $periodo_actual=(new AccionesController)->periodo();
+        $periodo=$periodo_actual[0]->periodo;
+        $aulas=Aula::where('estatus','A')->get();
+        $encabezado="Uso de aulas";
+        return view('division.aulas')->with(compact('aulas',
+            'periodos','periodo','encabezado'));
+    }
+    public function pobxaulas2(Request $request){
+        $aula=$request->get('salon');
+        $periodo=$request->get('periodo');
+        $nperiodo=PeriodoEscolar::where('periodo',$periodo)->first();
+        $lunes=Horario::where('periodo',$periodo)->where('dia_semana',2)
+            ->where('aula',$aula)
+            ->join('materias','materias.materia','=','horarios.materia')
+            ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
+            ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
+            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','rfc')
+            ->distinct()
+            ->get();
+        $martes=Horario::where('periodo',$periodo)->where('dia_semana',3)
+            ->where('aula',$aula)
+            ->join('materias','materias.materia','=','horarios.materia')
+            ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
+            ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
+            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','rfc')
+            ->distinct()
+            ->get();
+        $miercoles=Horario::where('periodo',$periodo)->where('dia_semana',4)
+            ->where('aula',$aula)
+            ->join('materias','materias.materia','=','horarios.materia')
+            ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
+            ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
+            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','rfc')
+            ->distinct()
+            ->get();
+        $jueves=Horario::where('periodo',$periodo)->where('dia_semana',5)
+            ->where('aula',$aula)
+            ->join('materias','materias.materia','=','horarios.materia')
+            ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
+            ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
+            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','rfc')
+            ->distinct()
+            ->get();
+        $viernes=Horario::where('periodo',$periodo)->where('dia_semana',6)
+            ->where('aula',$aula)
+            ->join('materias','materias.materia','=','horarios.materia')
+            ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
+            ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
+            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','rfc')
+            ->distinct()
+            ->get();
+        $sabado=Horario::where('periodo',$periodo)->where('dia_semana',7)
+            ->where('aula',$aula)
+            ->join('materias','materias.materia','=','horarios.materia')
+            ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
+            ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
+            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','rfc')
+            ->distinct()
+            ->get();
+        $encabezado="Uso de aulas";
+        return view('division.aulas2')->with(compact('nperiodo','aula',
+            'lunes','martes','miercoles','jueves','viernes','sabado','periodo','encabezado'));
+    }
+    public function contrasenia(){
+        $encabezado="Cambio de contraseña";
+        return view('division.contrasenia',['encabezado'=>$encabezado]);
+    }
+    public function ccontrasenia(Request $request){
+        request()->validate([
+            'contra'=>'required|required_with:verifica|same:verifica',
+            'verifica'=>'required'
+        ],[
+            'contra.required'=>'Debe escribir la nueva contraseña',
+            'contra.required_with'=>'Debe confirmar la contraseña',
+            'contra.same'=>'No concuerda con la verificacion',
+            'verifica.required'=>'Debe confirmar la nueva contraseña'
+        ]);
+        $ncontra=bcrypt($request->get('contra'));
+        $data=Auth::user()->email;
+        User::where('email',$data)->update([
+            'password'=>$ncontra,
+            'updated_at'=>Carbon::now()
+        ]);
+        return view('inicio_division');
+    }
 }

@@ -10,4 +10,7 @@ class AlumnosGeneral extends Model
     use HasFactory;
     protected $table="alumnos_generales";
     protected $primaryKey='no_de_control';
+    protected $casts=[
+        'no_de_control'=>'string',
+    ];
 }

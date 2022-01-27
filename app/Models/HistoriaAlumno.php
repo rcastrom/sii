@@ -10,4 +10,7 @@ class HistoriaAlumno extends Model
     use HasFactory;
     protected $table='historia_alumno';
     protected $primaryKey="no_de_control";
+    protected $casts=[
+        'no_de_control'=>'string',
+    ];
 }

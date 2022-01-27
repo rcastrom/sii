@@ -26,6 +26,30 @@ Route::group(['prefix'=>'division','middleware'=>['auth','role:division']],funct
             ->name('dep_altaa');
         Route::delete('/bajaa/',[DivisionController::class, 'bajacontrol'])
             ->name('dep_bajaa');
-
+        Route::post('/modificar_horario',[DivisionController::class, 'updatehorario'])
+            ->name('dep_grupo_modifica');
+        Route::post('/capacidad',[DivisionController::class, 'capgrupo'])
+            ->name('dep_cap_grupo');
+    });
+    Route::group(['prefix'=>'alumnos'],function (){
+        Route::get('/consulta',[DivisionController::class, 'buscar']);
+        Route::post('/buscar',[DivisionController::class, 'busqueda'])
+            ->name('dep.buscar');
+        Route::post('/datos',[DivisionController::class, 'accion2'])
+            ->name('dep.accion2');
+    });
+    Route::group(['prefix'=>'estadistica'],function (){
+        Route::get('/prepoblacion',[DivisionController::class,'prepoblacion']);
+        Route::post('/poblacion',[DivisionController::class, 'poblacion'])
+            ->name('dep_poblacion');
+        Route::get('/desglose/{periodo}/{carrera}/{reticula}',[DivisionController::class, 'pobxcarrera']);
+        Route::get('/aulas',[DivisionController::class,'pobxaulas']);
+        Route::post('/aula2',[DivisionController::class, 'pobxaulas2'])
+            ->name('dep_aula');
+    });
+    Route::group(['prefix'=>'mantenimiento'],function (){
+        Route::get('/contrasena',[DivisionController::class,'contrasenia']);
+        Route::post('/ccontrasena',[DivisionController::class, 'ccontrasenia'])
+            ->name('division_contra');
     });
 });

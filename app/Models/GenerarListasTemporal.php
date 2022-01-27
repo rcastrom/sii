@@ -10,4 +10,7 @@ class GenerarListasTemporal extends Model
     use HasFactory;
     protected $table="generar_listas_temporales";
     protected $primaryKey="no_de_control";
+    protected $casts=[
+        'no_de_control'=>'string',
+    ];
 }
