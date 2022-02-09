@@ -10,4 +10,7 @@ class Personal extends Model
     use HasFactory;
     protected $table="personal";
     protected $primaryKey="rfc";
+    protected $casts=[
+        'rfc'=>'string',
+    ];
 }

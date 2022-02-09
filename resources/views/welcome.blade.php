@@ -63,10 +63,6 @@
                 <a class="btn btn-primary btn-xl js-scroll-trigger" href="/">Regresar</a>
             @else
                 <a class="btn btn-primary btn-xl js-scroll-trigger" href="{{ route('login') }}">Ingresar</a>
-
-                @if (Route::has('register'))
-                    <a class="btn btn-primary btn-xl js-scroll-trigger" href="{{ route('register') }}">Ingresar</a>
-                @endif
             @endauth
         @endif
     </div>

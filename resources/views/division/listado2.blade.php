@@ -2,6 +2,12 @@
 
 @section('title', 'Grupos')
 
+@section('css')
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.11.4/css/dataTables.jqueryui.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.2.9/css/responsive.jqueryui.min.css">
+@stop
+
 @section('content_header')
     <h1>División de Estudios Profesionales</h1>
 @stop
@@ -11,7 +17,7 @@
         <h5>Carrera {{$ncarrera->nombre_reducido}} Reticula {{$ncarrera->reticula}}</h5>
         <div class="card-body">
             Del listado siguiente, seleccione el grupo para obtener mayor información.
-            <table class="table table-responsive">
+            <table id="materias" class="display responsive nowrap">
                 <thead class="thead-light">
                 <tr>
                     <th>Semestre</th>
@@ -39,4 +45,14 @@
             </table>
         </div>
     </x-information>
+@stop
+@section('js')
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.11.4/js/dataTables.jqueryui.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/responsive/2.2.9/js/responsive.jqueryui.min.js"></script>
+    <script>
+        $('#materias').DataTable({});
+    </script>
 @stop

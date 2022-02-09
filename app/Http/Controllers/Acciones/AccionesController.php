@@ -242,4 +242,39 @@ class AccionesController extends Controller
     public function actualizar_inscritos_grupo($periodo){
         DB::select("select * from pac_act_ins_gpoxmat('$periodo')");
     }
+    /*
+     * Indica si está el docente en fechas de evaluar
+     *
+     * @param string $periodo
+     * @return string $data
+     */
+    public function calificar($periodo){
+        $data=DB::select('SELECT 1 AS si FROM periodos_escolares WHERE periodo = :periodo
+        AND CURRENT_DATE BETWEEN inicio_cal_docentes AND fin_cal_docentes',['periodo'=>$periodo]);
+        return $data;
+    }
+    /*
+     * Indica si el docente tiene residencias en el período señalado
+     *
+     * @param string $periodo
+     * @param string $rfc
+     * @return array $data
+     */
+    public function residencias($periodo,$rfc)
+    {
+        $data=DB::select("select * from pac_cresidencias('$periodo','$rfc')");
+        return $data;
+    }
+    /*
+     * Devuelve a los estudiantes asignados del docente para residencias en el periodo señalado
+     *
+     * @param string $periodo
+     * @param string $rfc
+     * @return array $data
+     */
+    public function inforesidencias($periodo,$rfc){
+        $data=DB::select("select * from pac_dataresidencias('$periodo','$rfc')");
+        return $data;
+    }
+
 }

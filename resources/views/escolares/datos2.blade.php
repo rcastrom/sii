@@ -9,7 +9,7 @@
 @section('content')
     <x-information :encabezado="$encabezado">
         <div class="row">
-            <form method="post" action="{{route('escolares.accion')}}" class="form-inline" role="form">
+            <form method="post" action="{{route('escolares.acciones')}}" class="form-inline" role="form">
                 @csrf
                 <legend>Acción a realizar</legend>
                 <div class="row">

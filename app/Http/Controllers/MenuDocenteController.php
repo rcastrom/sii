@@ -15,6 +15,54 @@ class MenuDocenteController extends Controller
                 'icon'=>'fa fa-home',
                 'url'=>'personal'
             ]);
+            $event->menu->add([
+                'text'=>'Período',
+                'icon'=>'fas fa-user-friends',
+                'submenu'=>[
+                    [
+                        'text'=>'Grupos',
+                        'url'=>'personal/periodo/grupos',
+                        'icon' => 'far fa-circle',
+                    ],
+                    [
+                        'text'=>'Parciales',
+                        'url'=>'personal/periodo/parciales',
+                        'icon'=>'far fa-circle',
+                    ],
+                    [
+                        'text'=>'Residencias',
+                        'url'=>'personal/periodo/residencias',
+                        'icon'=>'far fa-circle',
+                    ],
+                    [
+                        'text'=>'Población Escolar',
+                        'url'=>'personal/periodo/poblacion',
+                        'icon'=>'far fa-circle',
+                    ]
+                ]
+            ]);
+            $event->menu->add([
+                'text'=>'Evaluación al Docente',
+                'icon'=>'fa fa-list-alt',
+                'submenu'=>[
+                    [
+                        'text'=>'Consulta',
+                        'url'=>'personal/eval/consulta',
+                        'icon'=>'far fa-circle',
+                    ]
+                ]
+            ]);
+            $event->menu->add([
+                'text'=>'Utilería',
+                'icon'=>'fas fa-chalkboard-teacher',
+                'submenu'=>[
+                    [
+                        'text'=>'Cambio de contraseña',
+                        'url'=>'personal/utileria/contra',
+                        'icon'=>'far fa-circle'
+                    ]
+                ]
+            ]);
         });
     }
 }

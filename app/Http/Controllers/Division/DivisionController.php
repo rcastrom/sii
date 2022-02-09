@@ -76,7 +76,7 @@ class DivisionController extends Controller
             ->where('materias_carreras.materia',$materia)
             ->join('materias','materias_carreras.materia','=','materias.materia')
             ->select('nombre_abreviado_materia','creditos_materia')->first();
-        $aulas=DB::table('aulas')->where('estatus','A')->get();
+        $aulas=Aula::where('estatus','A')->get();
         $encabezado="Creación de grupo";
         return view('division.crear_grupo')->with(compact('materia',
             'carrera','ncarrera','ret','nmateria','aulas','periodo','encabezado'));
@@ -651,41 +651,28 @@ class DivisionController extends Controller
             $mensaje="El período de reinscripciones o no ha iniciado o ha concluido";
             return view('division.no')->with(compact('mensaje','encabezado'));
         }else{
-            //Ahora, si la materia es de su plan de estudios
-            if(Alumno::where('no_de_control',$control)
-                    ->join('materias_carreras as a1','a1.carrera','=','alumnos.carrera')
-                    ->join('materias_carreras as a2','a2.reticula','=','alumnos.reticula')
-                    ->where('a1.materia',$materia)
-                    ->count()>0
-            ){
-                //Ver si cuenta con pago registrado
-                if(AvisoReinscripcion::where('periodo',$periodo)
-                        ->where('no_de_control',$control)
-                        ->where('autoriza_escolar','S')
-                        ->count()>0){
-                    //No repetir al estudiante en la misma materia
-                    if(SeleccionMateria::where('periodo',$periodo)
+            $periodo_actual=(new AccionesController)->periodo();
+            $periodo_activo=$periodo_actual[0]->periodo;
+            if($periodo_activo==$periodo){
+                //Ahora, si la materia es de su plan de estudios
+                if(Alumno::where('no_de_control',$control)
+                        ->join('materias_carreras as a1','a1.carrera','=','alumnos.carrera')
+                        ->join('materias_carreras as a2','a2.reticula','=','alumnos.reticula')
+                        ->where('a1.materia',$materia)
+                        ->count()>0
+                ){
+                    //Ver si cuenta con pago registrado
+                    if(AvisoReinscripcion::where('periodo',$periodo)
                             ->where('no_de_control',$control)
-                            ->where('materia',$materia)
+                            ->where('autoriza_escolar','S')
                             ->count()>0){
-                        $encabezado="Error de asignación a grupo";
-                        $mensaje="El estudiante ya está inscrito previamente en la materia";
-                        return view('division.no')->with(compact('mensaje','encabezado'));
-                    }else{
-                        //No darlo de alta en una materia que ya acreditó.
-                        if(HistoriaAlumno::where('no_de_control',$control)
-                                ->where('materia',$materia)->where('calificacion','>=',70)
-                                ->count()>0){
-                            $encabezado="Error de asignación a grupo";
-                            $mensaje="El estudiante ya tiene acreditada la materia";
-                            return view('division.no')->with(compact('mensaje','encabezado'));
+                        //Inscribo
+                        if(HistoriaAlumno::where('no_de_control',$control)->where('materia',$materia)->count()>0){
+                            $rep="S";
                         }else{
-                            //Inscribo
-                            if(HistoriaAlumno::where('no_de_control',$control)->where('materia',$materia)->count()>0){
-                                $rep="S";
-                            }else{
-                                $rep="N";
-                            }
+                            $rep="N";
+                        }
+                        try{
                             $alta_materia=new SeleccionMateria();
                             $alta_materia->periodo=$periodo;
                             $alta_materia->no_de_control=$control;
@@ -699,50 +686,58 @@ class DivisionController extends Controller
                             $alta_materia->fecha_hora_seleccion=Carbon::now();
                             $alta_materia->global=$global;
                             $alta_materia->save();
-                            $quien=Auth::user()->email;
-                            DB::table('seleccion_materias_log')->insert([
-                                'periodo'=>$periodo,
-                                'no_de_control'=>$control,
-                                'materia'=>$materia,
-                                'grupo'=>$grupo,
-                                'movimiento'=>'A',
-                                'cuando'=>Carbon::now(),
-                                'responsable'=>$quien
-                            ]);
-                            //Cantidad de inscritos
-                            $cant=Grupo::where([
-                                'periodo'=>$periodo,
-                                'materia'=>$materia,
-                                'grupo'=>$grupo
-                            ])->select('alumnos_inscritos','capacidad_grupo')->first();
-                            $inscritos=$cant->alumnos_inscritos+1;
-                            $capacidad=$cant->capacidad_grupo-1;
-                            Grupo::where([
-                                'periodo'=>$periodo,
-                                'materia'=>$materia,
-                                'grupo'=>$grupo
-                            ])->update([
-                                'alumnos_inscritos'=>$inscritos,
-                                'capacidad_grupo'=>$capacidad
-                            ]);
-                            $encabezado="Información sobre grupos existentes";
-                            return redirect()->route('dep_info',
-                                [
-                                    'periodo'=>$periodo,
-                                    'materia'=>$materia,
-                                    'gpo'=>$grupo,
-                                    'encabezado'=>$encabezado
-                                ]);
+                        }catch(QueryException $e){
+                            $encabezado="Error de alta en materia";
+                            $mensaje="No se llevó a cabo el alta: ".$e->getMessage();
+                            return view('division.no')->with(compact('mensaje','encabezado'));
                         }
+                        $quien=Auth::id();
+                        DB::table('seleccion_materias_log')->insert([
+                            'periodo'=>$periodo,
+                            'no_de_control'=>$control,
+                            'materia'=>$materia,
+                            'grupo'=>$grupo,
+                            'movimiento'=>'A',
+                            'cuando'=>Carbon::now(),
+                            'responsable'=>$quien
+                        ]);
+                        //Cantidad de inscritos
+                        $cant=Grupo::where([
+                            'periodo'=>$periodo,
+                            'materia'=>$materia,
+                            'grupo'=>$grupo
+                        ])->select('alumnos_inscritos','capacidad_grupo')->first();
+                        $inscritos=$cant->alumnos_inscritos+1;
+                        $capacidad=$cant->capacidad_grupo-1;
+                        Grupo::where([
+                            'periodo'=>$periodo,
+                            'materia'=>$materia,
+                            'grupo'=>$grupo
+                        ])->update([
+                            'alumnos_inscritos'=>$inscritos,
+                            'capacidad_grupo'=>$capacidad
+                        ]);
+                        $encabezado="Información sobre grupos existentes";
+                        return redirect()->route('dep_info',
+                            [
+                                'periodo'=>$periodo,
+                                'materia'=>$materia,
+                                'gpo'=>$grupo,
+                                'encabezado'=>$encabezado
+                            ]);
+                    }else{
+                        $encabezado="Error de asignación a grupo";
+                        $mensaje="No existe pago registrado";
+                        return view('division.no')->with(compact('mensaje','encabezado'));
                     }
                 }else{
                     $encabezado="Error de asignación a grupo";
-                    $mensaje="No existe pago registrado";
+                    $mensaje="La materia no pertenece al plan de estudios del estudiante";
                     return view('division.no')->with(compact('mensaje','encabezado'));
                 }
             }else{
                 $encabezado="Error de asignación a grupo";
-                $mensaje="La materia no pertenece al plan de estudios del estudiante";
+                $mensaje="No puede dar de alta en un período que ya ha concluido";
                 return view('division.no')->with(compact('mensaje','encabezado'));
             }
         }
