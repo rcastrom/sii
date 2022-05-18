@@ -74,7 +74,7 @@ return [
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,
-            'schema' => 'ITE',
+            'search_path' => 'ITE',
             'sslmode' => 'prefer',
         ],
 

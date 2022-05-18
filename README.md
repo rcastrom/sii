@@ -21,14 +21,15 @@ Hasta el momento, los módulos que se han migrado son:
 * Planeación (40%).
 * Coordinación de Verano (90%).
 * Desarrollo Académico (1%).
+* Personal docente (90%)
 
 ### Pre-requisitos 📋
 
-_Versión mínima de PHP: 7.3 y se recomienda a PostgreSQL como manejador de base de datos, en
-cuyo caso, deberá contar con la extensión php7.3_pgsql_
+_Versión mínima de PHP: 8.0 y se recomienda a PostgreSQL como manejador de base de datos, en
+cuyo caso, deberá contar con la extensión _pgsql_
 
 ```
-* sudo apt install php7.3-pgsql
+* sudo apt install php8.0-pgsql
 * sudo service apache2 restart
 ```
 >
@@ -112,6 +113,7 @@ Esta versión ha sido creada (_por el momento_) para los siguientes tipos de usu
 * acad
 * planeacion
 * desacad
+* personal
 
 Por lo que, deben crearse los usuarios de acuerdo al tipo de rol que van a emplear; para ello,
 desde _<ruta_proyecto>/database/seeders/_ encontrará el archivo *UserTableSeeder.php*,
@@ -138,8 +140,7 @@ Herramientas empleadas:
 
 * [Laravel](https://laravel.com/) - El framework web usado
 * [PostgreSQL](https://www.postgresql.org/) - Manejador de base de datos
-* [Bootstrap](https://getbootstrap.com/) - Usado para el CSS
-* [Laravel Angular Admin](https://github.com/silverbux/laravel-angular-admin) - Template administrativo
+* [AdminLTE](https://github.com/ColorlibHQ/AdminLTE) - Template administrativo
 
 ## Autores ✒️
 
