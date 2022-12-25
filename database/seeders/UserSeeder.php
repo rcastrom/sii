@@ -15,22 +15,41 @@ class UserSeeder extends Seeder
      */
     public function run()
     {
-        $role_admin = Role::where('name', 'admin')->first();
+        //$role_admin = Role::where('name', 'admin')->first();
         $role_escolares = Role::where('name', 'escolares')->first();
+        $role_division = Role::where('name', 'division')->first();
+        $role_personal = Role::where('name', 'personal')->first();
+        $role_humanos = Role::where('name', 'rechumanos')->first();
 
         $user = new User();
         $user->name = 'Ricardo Castro';
-        $user->email = 'uno@hotmail.com';
-        $user->password =bcrypt('12345');
+        $user->email = 'rcastro@ite.edu.mx';
+        $user->password =bcrypt('Tecnologic0');
         $user->save();
-        $user->roles()->attach($role_admin);
+        $user->roles()->attach($role_personal);
 
         $user = new User();
         $user->name = 'Ricardo Castro M';
-        $user->email = 'dos@hotmail.com';
-        $user->password =bcrypt('12345');
+        $user->email = 'computo@ite.edu.mx';
+        $user->password =bcrypt('Gatha6e9');
         $user->save();
         $user->roles()->attach($role_escolares);
+
+        $user = new User();
+        $user->name = 'Ricardo Castro M';
+        $user->email = 'computo_d@ite.edu.mx';
+        $user->password =bcrypt('Gatha6e9');
+        $user->save();
+        $user->roles()->attach($role_division);
+
+        $user = new User();
+        $user->name = 'Ricardo Castro M';
+        $user->email = 'computo_rh@ite.edu.mx';
+        $user->password =bcrypt('Gatha6e9');
+        $user->save();
+        $user->roles()->attach($role_humanos);
+
+
 
     }
 }

@@ -23,5 +23,22 @@ class RoleSeeder extends Seeder
         $role->name='escolares';
         $role->description='Escolares';
         $role->save();
+
+        $role=new Role();
+        $role->name='division';
+        $role->description='División';
+        $role->save();
+
+        $role=new Role();
+        $role->name='personal';
+        $role->description='Personal';
+        $role->save();
+
+        $role=new Role();
+        $role->name='rechumanos';
+        $role->description='Recursos Humanos';
+        $role->save();
+
+
     }
 }
