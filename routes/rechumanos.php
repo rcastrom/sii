@@ -11,5 +11,6 @@ Route::group(['prefix'=>'rechumanos','middleware'=>['auth','role:rechumanos']],f
         Route::get('/listado','listado');
         Route::get('/editar/{personal}','listado2');
         Route::get('/edicion/{campo}/{personal}','edicion');
+        Route::put('/actualizar','actualizar')->name('rechumanos.datos_personal');
     });
 });

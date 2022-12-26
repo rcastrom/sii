@@ -11,7 +11,7 @@
         <div class="row">
             <div class="col-sm-12 col-md-10">
                 <h5>Modificación de {{$titulo}}</h5>
-                <form action="" method="post">
+                <form action="{{route('rechumanos.datos_personal')}}" method="post">
                     @method('PUT')
                     @csrf
                     <div class="row mb-3">

@@ -159,4 +159,31 @@ class HumanosController extends Controller
         return view('rechumanos.edicion')->with(compact('id_temp', 'valor',
             'campo_editar','personal_info','titulo','areas','encabezado'));
     }
+    public function actualizar(Request $request){
+        $id=($request->personal)/161918;
+        $campo=$request->campo;
+        $dato_por_editar=PersonalDato::where('id',$campo)->first();
+        $personal=Personal::where('id',$id)->first();
+        $temp=$dato_por_editar->campo;
+        $personal->$temp=$request->new;
+        $personal->save();
+        $personal_info= $this->datos_personal($id);
+        $depto=$this->area_personal($personal_info->clave_area);
+        $campos=PersonalDato::select('id','campo','lectura')->get();
+        $datos=array();
+        $i=0;
+        foreach ($campos as $campo){
+            if($campo["id"]!=7){
+                $temp=$campo["campo"];
+                $valor=$personal_info->$temp;
+            }else{
+                $valor=$depto->descripcion_area;
+            }
+            $datos[$i]=array($campo["id"],$valor,$campo["lectura"]);
+            $i++;
+        }
+        $encabezado="Consulta o modificación de datos del personal";
+        return view('rechumanos.informacion')->with(compact('id',
+            'datos','personal_info','encabezado'));
+    }
 }
