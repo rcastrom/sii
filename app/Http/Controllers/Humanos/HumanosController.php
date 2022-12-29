@@ -6,8 +6,11 @@ namespace App\Http\Controllers\Humanos;
 use App\Models\Organigrama;
 use App\Models\Personal;
 use App\Models\PersonalDato;
+use App\Models\PersonalEstudio;
+use App\Models\PersonalNombramiento;
 use Illuminate\Contracts\Events\Dispatcher;
 use App\Http\Controllers\MenuHumanosController;
+use App\Http\Controllers\Acciones\AccionesController;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
@@ -21,7 +24,8 @@ class HumanosController extends Controller
     }
     public function alta1(){
         $encabezado="Alta de personal";
-        return view('rechumanos.alta1')->with(compact('encabezado'));
+        $contrataciones=PersonalNombramiento::all();
+        return view('rechumanos.alta1')->with(compact('encabezado','contrataciones'));
     }
     public function datos_personal($id){
         return Personal::where('id',$id)->first();
@@ -120,7 +124,6 @@ class HumanosController extends Controller
     }
     public function listado2(Request $request){
         $id=base64_decode($request->personal);
-        //Datos personales
         $personal_info= $this->datos_personal($id);
         $depto=$this->area_personal($personal_info->clave_area);
         $campos=PersonalDato::select('id','campo','lectura')->get();
@@ -128,10 +131,16 @@ class HumanosController extends Controller
         $i=0;
         foreach ($campos as $campo){
             if($campo["id"]!=7){
-                $temp=$campo["campo"];
-                $valor=$personal_info->$temp;
+                if($campo["id"]==9){
+                       $tipo_contratacion=PersonalNombramiento::where('letra',$personal_info->nombramiento)
+                           ->first();
+                       $valor=$tipo_contratacion->descripcion;
+                }else {
+                    $temp=$campo["campo"];
+                    $valor = $personal_info->$temp;
+                }
             }else{
-                $valor=$depto->descripcion_area;
+                $valor= $depto->descripcion_area ?? "SIN ÁREA ESPECIFICADA";
             }
             $datos[$i]=array($campo["id"],$valor,$campo["lectura"]);
             $i++;
@@ -146,18 +155,25 @@ class HumanosController extends Controller
         $personal_info= $this->datos_personal($id);
         $dato_por_editar=PersonalDato::where('id',$campo_editar)->first();
         if($campo_editar!=7){
-            $temp=$dato_por_editar->campo;
-            $valor=$personal_info->$temp;
+            if($campo_editar==9){
+                $tipo_contratacion=PersonalNombramiento::where('letra',$personal_info->nombramiento)
+                    ->first();
+                $valor=$tipo_contratacion->descripcion;
+            }else {
+                $temp = $dato_por_editar->campo;
+                $valor = $personal_info->$temp;
+            }
         }else{
             $depto=$this->area_personal($personal_info->clave_area);
-            $valor=$depto->descripcion_area;
+            $valor=$depto->descripcion_area ?? "SIN ÁREA ESPECIFICADA";
         }
         $titulo=$dato_por_editar->lectura;
         $areas=Organigrama::orderBy('descripcion_area')->get();
+        $nombramientos=PersonalNombramiento::all();
         $encabezado="Actualización de datos del personal";
         $id_temp=$id * 161918;
         return view('rechumanos.edicion')->with(compact('id_temp', 'valor',
-            'campo_editar','personal_info','titulo','areas','encabezado'));
+            'campo_editar','personal_info','titulo','nombramientos','areas','encabezado'));
     }
     public function actualizar(Request $request){
         $id=($request->personal)/161918;
@@ -185,5 +201,20 @@ class HumanosController extends Controller
         $encabezado="Consulta o modificación de datos del personal";
         return view('rechumanos.informacion')->with(compact('id',
             'datos','personal_info','encabezado'));
+    }
+    public function estudios_personal(Request $request){
+        $id=base64_decode($request->personal);
+        $encabezado="Estudios del personal";
+        $personal_info= $this->datos_personal($id);
+        $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
+        if(PersonalEstudio::where('id_docente',$id)->count()>0){
+            $bandera=1;
+            $estudios=(new AccionesController)->personal_estudios($id);
+        }else{
+            $bandera=0;
+            $estudios=array();
+        }
+        return view('rechumanos.estudios_listado')
+            ->with(compact('encabezado','personal_info','id','nombre','estudios','bandera'));
     }
 }

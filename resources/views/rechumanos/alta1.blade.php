@@ -85,12 +85,12 @@
             </div>
             <div class="row">
                 <div class="col-sm-12 col-md-6">
-                    <label for="nombramiento">Tipo de nombramiento</label>
+                    <label for="nombramiento">Tipo de contratación</label>
                     <select name="nombramiento" id="nombramiento"  required class="form-control">
                         <option value="" selected>--Seleccione--</option>
-                        <option value="D">Docente</option>
-                        <option value="A">Administrativo</option>
-                        <option value="Z">Personal de apoyo y de servicios</option>
+                        @foreach($contrataciones as $contratacion)
+                            <option value="{{$contratacion->letra}}">{{$contratacion->descripcion}}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="col-sm-12 col-md-6">

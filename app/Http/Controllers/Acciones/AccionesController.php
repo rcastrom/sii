@@ -277,4 +277,15 @@ class AccionesController extends Controller
         return $data;
     }
 
+    /*
+     * Devuelve los estudios que el personal tenga registrados en la BD
+     *
+     * @param integer $personal
+     * @return array $data
+     */
+    public function personal_estudios($personal){
+        $data=DB::select("select * from pap_estudios_personal($personal)");
+        return $data;
+    }
+
 }

@@ -24,13 +24,25 @@
                         <label for="new" class="col-sm-4 col-form-label">Nuevo valor</label>
                         <div class="col-sm-8">
                             @if($campo_editar!=7)
-                                <input type="text" name="new" id="new" class="form-control">
+                                @if($campo_editar==9)
+                                    <select name="new" id="new" class="form-control" required>
+                                        @foreach($nombramientos as $nombramiento)
+                                            @php
+                                                $txt=$nombramiento->letra==$personal_info->nombramiento?" selected":"";
+                                            @endphp
+                                            <option value="{{$nombramiento->letra}}"{{$txt}}>{{$nombramiento->descripcion}}</option>
+                                        @endforeach
+                                    </select>
+                                @else
+                                    <input type="text" name="new" id="new" class="form-control">
+                                @endif
                             @else
                                 <select name="new" id="new" class="form-control" required>
                                     <option value="" selected>--Seleccione--</option>
                                     @foreach($areas as $area)
                                         @php
-                                        $txt=$area->clave_area==$personal_info->clave_area?" selected":"";
+                                        $clave = $personal_info->clave_area??"999999";
+                                        $txt=$area->clave_area==$clave?" selected":"";
                                         @endphp
                                         <option value="{{$area->clave_area}}"{{$txt}}>{{$area->descripcion_area}}</option>
                                     @endforeach
