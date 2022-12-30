@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Humanos;
 
 use App\Models\Organigrama;
 use App\Models\Personal;
+use App\Models\PersonalCarrera;
 use App\Models\PersonalDato;
 use App\Models\PersonalEstudio;
+use App\Models\PersonalInstitEstudio;
 use App\Models\PersonalNombramiento;
 use Illuminate\Contracts\Events\Dispatcher;
 use App\Http\Controllers\MenuHumanosController;
@@ -216,5 +218,67 @@ class HumanosController extends Controller
         }
         return view('rechumanos.estudios_listado')
             ->with(compact('encabezado','personal_info','id','nombre','estudios','bandera'));
+    }
+
+    public function estudios_editar(Request $request){
+        $id=$request->estudio;
+        $informacion=PersonalEstudio::where('id',$id)->first();
+        $carreras=PersonalCarrera::all()->sortBy('carrera');
+        $escuelas=PersonalInstitEstudio::all()->sortBy('nombre');
+        $encabezado="Actualización de datos de estudio";
+        $personal_info=$this->datos_personal($informacion->id_docente);
+        $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
+        return view('rechumanos.estudios_actualizar')->with(compact('id',
+            'informacion','carreras','escuelas','encabezado','nombre'));
+    }
+    public function estudios_actualizar(Request $request){
+        $id=$request->id;
+        $estudios_actualizar=PersonalEstudio::where('id',$id)->first();
+        $estudios_actualizar->id_carrera=$request->carrera;
+        $estudios_actualizar->id_escuela=$request->escuela;
+        $estudios_actualizar->cedula=$request->cedula;
+        $estudios_actualizar->fecha_inicio=$request->fecha_inicio;
+        $estudios_actualizar->fecha_final=$request->fecha_final;
+        $estudios_actualizar->save();
+        $personal=Personal::select('id','apellido_paterno',
+            'apellido_materno','nombre_empleado','no_tarjeta')
+            ->orderBy('apellido_paterno')
+            ->orderBy('apellido_materno')
+            ->orderBy('nombre_empleado')
+            ->get();
+        $encabezado="Listado del personal actualizado";
+        return view('rechumanos.listado')->with(compact('personal','encabezado'));
+    }
+    public function alta_carrera(Request $request){
+        $estudio=$request->estudio;
+        $encabezado="Alta de estudio de personal";
+        return view('rechumanos.alta_carrera')->with(compact('estudio','encabezado'));
+    }
+    public function alta_carrera2(Request $request){
+        $request->validate([
+            'carrera'=>'required',
+            'nombre_corto'=>'required',
+            'siglas'=>'required'
+        ],[
+            'carrera.required'=>'Debe escribir el nombre de la carrera ha ser dada de alta',
+            'nombre_corto.required'=>'Debe indicar el nombre abreviado de la carrera',
+            'siglas.required'=>'Indica las siglas correspondiente a la carrera'
+        ]);
+        $carrera = new PersonalCarrera();
+        $carrera->carrera=$request->carrera;
+        $carrera->nombre_corto=$request->nombre_corto;
+        $carrera->siglas=$request->siglas;
+        $carrera->nivel=$request->nivel;
+        $carrera->save();
+        $id=$request->estudios;
+        $informacion=PersonalEstudio::where('id',$id)->first();
+        $carreras=PersonalCarrera::all()->sortBy('carrera');
+        $escuelas=PersonalInstitEstudio::all()->sortBy('nombre');
+        $encabezado="Actualización de datos de estudio";
+        $personal_info=$this->datos_personal($informacion->id_docente);
+        $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
+        return view('rechumanos.estudios_actualizar')->with(compact('id',
+            'informacion','carreras','escuelas','encabezado','nombre'));
+
     }
 }

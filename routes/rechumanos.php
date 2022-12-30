@@ -13,5 +13,9 @@ Route::group(['prefix'=>'rechumanos','middleware'=>['auth','role:rechumanos']],f
         Route::get('/edicion/{campo}/{personal}','edicion');
         Route::put('/actualizar','actualizar')->name('rechumanos.datos_personal');
         Route::get('/estudios/{personal}','estudios_personal');
+        Route::get('/estudios_editar/{estudio}','estudios_editar');
+        Route::put('/estudios/actualizar','estudios_actualizar')->name('rechumanos.actualizar_estudios');
+        Route::get('/alta_carrera/{estudio}','alta_carrera');
+        Route::post('/alta_carrera/nueva','alta_carrera2')->name('rechumanos.alta_carrera');
     });
 });
