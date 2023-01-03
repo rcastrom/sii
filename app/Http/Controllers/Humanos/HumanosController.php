@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Humanos;
 
 
+use App\Models\EntidadesFederativa;
+use App\Models\Municipio;
 use App\Models\Organigrama;
 use App\Models\Personal;
 use App\Models\PersonalCarrera;
@@ -280,5 +282,76 @@ class HumanosController extends Controller
         return view('rechumanos.estudios_actualizar')->with(compact('id',
             'informacion','carreras','escuelas','encabezado','nombre'));
 
+    }
+    public function alta_escuela(Request $request){
+        $estudio=$request->estudio;
+        $encabezado="Alta de institución educativa de personal";
+        $estados=EntidadesFederativa::all()->sortBy('nombre_entidad');
+        return view('rechumanos.alta_escuela')->with(compact('estudio',
+            'estados','encabezado'));
+    }
+    public function municipios(Request $request){
+        $estado = $request->id;
+        $municipios['data'] =Municipio::where('id_estado',$estado)
+            ->select('id','municipio')
+            ->orderBy('municipio')
+            ->get();
+        return response()->json($municipios);
+    }
+    public function alta_escuela2(Request $request){
+        $request->validate([
+            'nombre'=>'required'
+        ],[
+            'nombre.required'=>'Por favor, indique el nombre de la institución'
+        ]);
+        $escuela = new PersonalInstitEstudio();
+        $escuela->id_escuela=666;
+        $escuela->id_estado=$request->estado;
+        $escuela->id_municipio=$request->municipio;
+        $escuela->nombre=$request->nombre;
+        $escuela->save();
+        $id=$request->estudios;
+        $informacion=PersonalEstudio::where('id',$id)->first();
+        $carreras=PersonalCarrera::all()->sortBy('carrera');
+        $escuelas=PersonalInstitEstudio::all()->sortBy('nombre');
+        $encabezado="Actualización de datos de estudio";
+        $personal_info=$this->datos_personal($informacion->id_docente);
+        $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
+        return view('rechumanos.estudios_actualizar')->with(compact('id',
+            'informacion','carreras','escuelas','encabezado','nombre'));
+    }
+    public function alta_municipio(Request $request){
+        $estudio=$request->estudio;
+        $encabezado="Alta de institución educativa de personal";
+        $estados=EntidadesFederativa::all()->sortBy('nombre_entidad');
+        return view('rechumanos.alta_municipio')->with(compact('estudio',
+            'estados','encabezado'));
+    }
+    public function alta_municipio2(Request $request){
+        $request->validate([
+            'municipio'=>'required'
+        ],[
+            'municipio.required'=>'Por favor, indique el nombre del municipio a ser dado de alta'
+        ]);
+        $municipio = new Municipio();
+        $municipio->id_estado=$request->estado;
+        $municipio->id_municipio=666;
+        $municipio->municipio=$request->municipio;
+        $municipio->save();
+        $estudio=$request->estudio;
+        $encabezado="Alta de institución educativa de personal";
+        $estados=EntidadesFederativa::all()->sortBy('nombre_entidad');
+        return view('rechumanos.alta_escuela')->with(compact('estudio',
+            'estados','encabezado'));
+    }
+    public function nuevo_estudio(Request $request){
+        $id=base64_decode($request->personal);
+        $carreras=PersonalCarrera::all()->sortBy('carrera');
+        $escuelas=PersonalInstitEstudio::all()->sortBy('nombre');
+        $encabezado="Alta de estudio para el personal";
+        $personal_info=$this->datos_personal($id);
+        $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
+        return view('rechumanos.nuevo_estudio')->with(compact('id',
+            'carreras','escuelas','encabezado','nombre'));
     }
 }

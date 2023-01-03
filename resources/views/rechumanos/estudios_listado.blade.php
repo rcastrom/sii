@@ -51,7 +51,7 @@
         @slot('header','Información adicional')
         <div class="row">
             <ul>
-                <li>Registrar un nuevo estudio</li>
+                <li><a href="/rechumanos/personal/nuevo_estudio/{{base64_encode($id)}}">Registrar un nuevo estudio</a></li>
             </ul>
         </div>
     </x-additional>
