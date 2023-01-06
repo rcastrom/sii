@@ -12,8 +12,18 @@
             <div class="col-sm-12 col-md-10">
                 <h4>Ingreso de nuevo estudio cursado por personal</h4>
                 <h5>{{$nombre}}</h5>
-                <form action="" method="post" class="row">
+                <form action="{{route('rechumanos.alta_estudio')}}" method="post" class="row">
                     @csrf
+                    <div class="col-12">
+                        <label for="nivel" class="form-label">Nivel de estudios</label>
+                        <select name="nivel" id="nivel" class="form-control">
+                            <option value="" selected>--Seleccione--</option>
+                            <option value="11">Licenciatura</option>
+                            <option value="12">Especialidad</option>
+                            <option value="13">Maestría</option>
+                            <option value="14">Doctorado</option>
+                        </select>
+                    </div>
                     <div class="col-12">
                         <label for="carrera" class="form-label">Carrera</label>
                         <select name="carrera" id="carrera" class="form-control">
@@ -44,7 +54,7 @@
                         <label for="fecha_final">Fecha final estudios</label>
                         <input type="date" name="fecha_final" id="fecha_final" class="form-control">
                     </div>
-                    <input type="hidden" name="id" value="{{$id}}">
+                    <input type="hidden" name="id" value="{{base64_encode($id)}}">
                     <div class="col-12">
                         <button type="submit" class="btn btn-primary">Continuar</button>
                     </div>
@@ -56,8 +66,8 @@
         @slot('header','Acciones adicionales')
         <div class="row">
             <ul>
-                <li><a href="/rechumanos/personal/alta_carrera/{{ $id }}">Dar de alta una nueva carrera</a></li>
-                <li><a href="/rechumanos/personal/alta_escuela/{{ $id }}">Dar de alta una nueva institución educativa</a></li>
+                <li><a href="/rechumanos/personal/alta_carrera/{{ base64_encode($id) }}/1">Dar de alta una nueva carrera</a></li>
+                <li><a href="/rechumanos/personal/alta_escuela/{{ base64_encode($id) }}/1">Dar de alta una nueva institución educativa</a></li>
             </ul>
         </div>
     </x-additional>

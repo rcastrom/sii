@@ -37,6 +37,39 @@ class HumanosController extends Controller
     public function area_personal($area){
         return Organigrama::where('clave_area',$area)->first();
     }
+    public function regresar_contenido_estudios($id){
+        $informacion=PersonalEstudio::where('id',$id)->first();
+        $carreras=PersonalCarrera::all()->sortBy('carrera');
+        $escuelas=PersonalInstitEstudio::all()->sortBy('nombre');
+        $encabezado="Actualización de datos de estudio";
+        $personal_info=$this->datos_personal($informacion->id_docente);
+        $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
+        return view('rechumanos.estudios_actualizar')->with(compact('id',
+            'informacion','carreras','escuelas','encabezado','nombre'));
+    }
+    public function regresar_listado_estudios($id){
+        $encabezado="Estudios del personal";
+        $personal_info= $this->datos_personal($id);
+        $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
+        if(PersonalEstudio::where('id_docente',$id)->count()>0){
+            $bandera=1;
+            $estudios=(new AccionesController)->personal_estudios($id);
+        }else{
+            $bandera=0;
+            $estudios=array();
+        }
+        return view('rechumanos.estudios_listado')
+            ->with(compact('encabezado','personal_info','id','nombre','estudios','bandera'));
+    }
+    public function regresar_nuevo_estudio($id){
+        $carreras=PersonalCarrera::all()->sortBy('carrera');
+        $escuelas=PersonalInstitEstudio::all()->sortBy('nombre');
+        $encabezado="Alta de estudio para el personal";
+        $personal_info=$this->datos_personal($id);
+        $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
+        return view('rechumanos.nuevo_estudio')->with(compact('id',
+            'carreras','escuelas','encabezado','nombre'));
+    }
     public function alta_personal1(Request $request){
         request()->validate([
             'apellido_materno'=>'required',
@@ -208,30 +241,12 @@ class HumanosController extends Controller
     }
     public function estudios_personal(Request $request){
         $id=base64_decode($request->personal);
-        $encabezado="Estudios del personal";
-        $personal_info= $this->datos_personal($id);
-        $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
-        if(PersonalEstudio::where('id_docente',$id)->count()>0){
-            $bandera=1;
-            $estudios=(new AccionesController)->personal_estudios($id);
-        }else{
-            $bandera=0;
-            $estudios=array();
-        }
-        return view('rechumanos.estudios_listado')
-            ->with(compact('encabezado','personal_info','id','nombre','estudios','bandera'));
+        return $this->regresar_listado_estudios($id);
     }
 
     public function estudios_editar(Request $request){
         $id=$request->estudio;
-        $informacion=PersonalEstudio::where('id',$id)->first();
-        $carreras=PersonalCarrera::all()->sortBy('carrera');
-        $escuelas=PersonalInstitEstudio::all()->sortBy('nombre');
-        $encabezado="Actualización de datos de estudio";
-        $personal_info=$this->datos_personal($informacion->id_docente);
-        $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
-        return view('rechumanos.estudios_actualizar')->with(compact('id',
-            'informacion','carreras','escuelas','encabezado','nombre'));
+        return $this->regresar_contenido_estudios($id);
     }
     public function estudios_actualizar(Request $request){
         $id=$request->id;
@@ -253,8 +268,9 @@ class HumanosController extends Controller
     }
     public function alta_carrera(Request $request){
         $estudio=$request->estudio;
+        $bandera=$request->bandera;
         $encabezado="Alta de estudio de personal";
-        return view('rechumanos.alta_carrera')->with(compact('estudio','encabezado'));
+        return view('rechumanos.alta_carrera')->with(compact('estudio','bandera','encabezado'));
     }
     public function alta_carrera2(Request $request){
         $request->validate([
@@ -273,22 +289,21 @@ class HumanosController extends Controller
         $carrera->nivel=$request->nivel;
         $carrera->save();
         $id=$request->estudios;
-        $informacion=PersonalEstudio::where('id',$id)->first();
-        $carreras=PersonalCarrera::all()->sortBy('carrera');
-        $escuelas=PersonalInstitEstudio::all()->sortBy('nombre');
-        $encabezado="Actualización de datos de estudio";
-        $personal_info=$this->datos_personal($informacion->id_docente);
-        $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
-        return view('rechumanos.estudios_actualizar')->with(compact('id',
-            'informacion','carreras','escuelas','encabezado','nombre'));
-
+        if($request->bandera){
+            $id=base64_decode($id);
+            return $this->regresar_nuevo_estudio($id);
+            //return $this->regresar_listado_estudios($id);
+        }else{
+            return $this->regresar_contenido_estudios($id);
+        }
     }
     public function alta_escuela(Request $request){
         $estudio=$request->estudio;
+        $bandera=$request->bandera;
         $encabezado="Alta de institución educativa de personal";
         $estados=EntidadesFederativa::all()->sortBy('nombre_entidad');
         return view('rechumanos.alta_escuela')->with(compact('estudio',
-            'estados','encabezado'));
+            'estados','bandera','encabezado'));
     }
     public function municipios(Request $request){
         $estado = $request->id;
@@ -311,14 +326,13 @@ class HumanosController extends Controller
         $escuela->nombre=$request->nombre;
         $escuela->save();
         $id=$request->estudios;
-        $informacion=PersonalEstudio::where('id',$id)->first();
-        $carreras=PersonalCarrera::all()->sortBy('carrera');
-        $escuelas=PersonalInstitEstudio::all()->sortBy('nombre');
-        $encabezado="Actualización de datos de estudio";
-        $personal_info=$this->datos_personal($informacion->id_docente);
-        $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
-        return view('rechumanos.estudios_actualizar')->with(compact('id',
-            'informacion','carreras','escuelas','encabezado','nombre'));
+        if($request->bandera){
+            $id=base64_decode($id);
+            return $this->regresar_nuevo_estudio($id);
+            //return $this->regresar_listado_estudios($id);
+        }else{
+            return $this->regresar_contenido_estudios($id);
+        }
     }
     public function alta_municipio(Request $request){
         $estudio=$request->estudio;
@@ -346,12 +360,45 @@ class HumanosController extends Controller
     }
     public function nuevo_estudio(Request $request){
         $id=base64_decode($request->personal);
-        $carreras=PersonalCarrera::all()->sortBy('carrera');
-        $escuelas=PersonalInstitEstudio::all()->sortBy('nombre');
-        $encabezado="Alta de estudio para el personal";
-        $personal_info=$this->datos_personal($id);
+        return $this->regresar_nuevo_estudio($id);
+    }
+    public function nuevo_estudio2(Request $request){
+        $id=base64_decode($request->id);
+        $estudio_nuevo=new PersonalEstudio();
+        $estudio_nuevo->id_docente=$id;
+        $estudio_nuevo->fecha_inicio=$request->fecha_inicio??NULL;
+        $estudio_nuevo->fecha_final=$request->fecha_final??NULL;
+        $estudio_nuevo->id_carrera=$request->carrera;
+        $estudio_nuevo->id_escuela=$request->escuela;
+        $estudio_nuevo->cedula=$request->cedula??NULL;
+        $estudio_nuevo->save();
+        return $this->regresar_listado_estudios($id);
+    }
+    public function eliminar_estudio(Request $request){
+        $id=$request->estudio;
+        $informacion=PersonalEstudio::where('id',$id)->first();
+        $carrera=PersonalCarrera::select('carrera')->where('id',$informacion->id_carrera)->first();
+        $escuela=PersonalInstitEstudio::select('nombre')->where('id',$informacion->id_escuela)->first();
+        $encabezado="Eliminar estudio del personal";
+        $personal_info=$this->datos_personal($informacion->id_docente);
+        $estudios=(new AccionesController)->personal_estudios($informacion->id_docente);
+        $nivel="";
+        foreach ($estudios as $estudio) {
+            if ($estudio->id == $id) {
+                $nivel = $estudio->nivel;
+            }
+        }
         $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
-        return view('rechumanos.nuevo_estudio')->with(compact('id',
-            'carreras','escuelas','encabezado','nombre'));
+        return view('rechumanos.estudio_eliminar')->with(compact('id',
+            'nivel','carrera','escuela','encabezado','informacion','nombre'));
+    }
+    public function eliminar_estudio2(Request $request){
+        $id=$request->id;
+        $informacion=PersonalEstudio::where('id',$id)->first();
+        $personal=$informacion->id_docente;
+        if($request->confirmar==1){
+            $informacion->delete();
+        }
+        return $this->regresar_listado_estudios($personal);
     }
 }

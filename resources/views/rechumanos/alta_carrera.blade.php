@@ -50,6 +50,7 @@
                         </select>
                     </div>
                     <input type="hidden" name="estudios" id="estudios" value="{{$estudio}}">
+                    <input type="hidden" name="bandera" id="bandera" value="{{$bandera}}">
                     <div class="col-12">
                         <button type="submit" class="btn btn-primary">Continuar</button>
                     </div>

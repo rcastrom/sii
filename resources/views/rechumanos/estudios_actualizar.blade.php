@@ -63,8 +63,8 @@
         @slot('header','Acciones adicionales')
         <div class="row">
             <ul>
-                <li><a href="/rechumanos/personal/alta_carrera/{{ $id }}">Dar de alta una nueva carrera</a></li>
-                <li><a href="/rechumanos/personal/alta_escuela/{{ $id }}">Dar de alta una nueva institución educativa</a></li>
+                <li><a href="/rechumanos/personal/alta_carrera/{{ $id }}/0">Dar de alta una nueva carrera</a></li>
+                <li><a href="/rechumanos/personal/alta_escuela/{{ $id }}/0">Dar de alta una nueva institución educativa</a></li>
             </ul>
         </div>
     </x-additional>
