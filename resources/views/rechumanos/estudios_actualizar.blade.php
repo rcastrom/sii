@@ -16,6 +16,18 @@
                     @method('PUT')
                     @csrf
                     <div class="col-12">
+                        <label for="nivel">Nivel de estudios</label>
+                        <select name="nivel" id="nivel" class="form-control">
+                            <option value="" selected>--Seleccione--</option>
+                            @foreach($niveles as $nivel)
+                                @php
+                                    $txt=$nivel_estudio->nivel==$nivel->caracter?' selected':'';
+                                @endphp
+                                <option value="{{$nivel->caracter}}" {{$txt}}>{{$nivel->caracter}}.- {{strtoupper($nivel->descripcion)}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-12">
                         <label for="carrera" class="form-label">Carrera</label>
                         <select name="carrera" id="carrera" class="form-control">
                             <option value="" selected>--Seleccione--</option>

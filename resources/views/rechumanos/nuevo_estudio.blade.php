@@ -18,10 +18,9 @@
                         <label for="nivel" class="form-label">Nivel de estudios</label>
                         <select name="nivel" id="nivel" class="form-control">
                             <option value="" selected>--Seleccione--</option>
-                            <option value="11">Licenciatura</option>
-                            <option value="12">Especialidad</option>
-                            <option value="13">Maestría</option>
-                            <option value="14">Doctorado</option>
+                            @foreach($niveles as $nivel)
+                                <option value="{{$nivel->caracter}}">{{$nivel->caracter."- ".$nivel->descripcion}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <div class="col-12">

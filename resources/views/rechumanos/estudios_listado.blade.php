@@ -25,7 +25,7 @@
                         <tbody>
                             @foreach($estudios as $estudio)
                                 <tr>
-                                    <td>{{$estudio->nivel}}</td>
+                                    <td>{{$estudio->descripcion}}</td>
                                     <td>{{$estudio->carrera}}</td>
                                     <td>{{$estudio->nombre}}</td>
                                     <td>{{$estudio->cedula}}</td>

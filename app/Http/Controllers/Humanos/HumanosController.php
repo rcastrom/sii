@@ -11,6 +11,7 @@ use App\Models\PersonalCarrera;
 use App\Models\PersonalDato;
 use App\Models\PersonalEstudio;
 use App\Models\PersonalInstitEstudio;
+use App\Models\PersonalNivelEstudio;
 use App\Models\PersonalNombramiento;
 use Illuminate\Contracts\Events\Dispatcher;
 use App\Http\Controllers\MenuHumanosController;
@@ -41,11 +42,13 @@ class HumanosController extends Controller
         $informacion=PersonalEstudio::where('id',$id)->first();
         $carreras=PersonalCarrera::all()->sortBy('carrera');
         $escuelas=PersonalInstitEstudio::all()->sortBy('nombre');
+        $niveles=PersonalNivelEstudio::all()->sortBy('descripcion');
+        $nivel_estudio=PersonalCarrera::where('id',$informacion->id_carrera)->first();
         $encabezado="Actualización de datos de estudio";
         $personal_info=$this->datos_personal($informacion->id_docente);
         $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
         return view('rechumanos.estudios_actualizar')->with(compact('id',
-            'informacion','carreras','escuelas','encabezado','nombre'));
+            'informacion','niveles','carreras','escuelas','encabezado','nombre','nivel_estudio'));
     }
     public function regresar_listado_estudios($id){
         $encabezado="Estudios del personal";
@@ -64,11 +67,12 @@ class HumanosController extends Controller
     public function regresar_nuevo_estudio($id){
         $carreras=PersonalCarrera::all()->sortBy('carrera');
         $escuelas=PersonalInstitEstudio::all()->sortBy('nombre');
+        $niveles=PersonalNivelEstudio::all()->sortBy('descripcion');
         $encabezado="Alta de estudio para el personal";
         $personal_info=$this->datos_personal($id);
         $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
         return view('rechumanos.nuevo_estudio')->with(compact('id',
-            'carreras','escuelas','encabezado','nombre'));
+            'carreras','escuelas','encabezado','niveles','nombre'));
     }
     public function alta_personal1(Request $request){
         request()->validate([
@@ -257,6 +261,11 @@ class HumanosController extends Controller
         $estudios_actualizar->fecha_inicio=$request->fecha_inicio;
         $estudios_actualizar->fecha_final=$request->fecha_final;
         $estudios_actualizar->save();
+        //Para el nivel de estudios
+        $nivel_estudios=PersonalCarrera::where('id',$request->carrera)->first();
+        $nivel_estudios->nivel=$request->nivel;
+        $nivel_estudios->save();
+        //
         $personal=Personal::select('id','apellido_paterno',
             'apellido_materno','nombre_empleado','no_tarjeta')
             ->orderBy('apellido_paterno')
@@ -269,8 +278,10 @@ class HumanosController extends Controller
     public function alta_carrera(Request $request){
         $estudio=$request->estudio;
         $bandera=$request->bandera;
+        $niveles=PersonalNivelEstudio::all()->sortBy('descripcion');
         $encabezado="Alta de estudio de personal";
-        return view('rechumanos.alta_carrera')->with(compact('estudio','bandera','encabezado'));
+        return view('rechumanos.alta_carrera')->with(compact('estudio',
+            'bandera','niveles','encabezado'));
     }
     public function alta_carrera2(Request $request){
         $request->validate([

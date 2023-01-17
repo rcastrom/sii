@@ -43,16 +43,15 @@
                         <label for="nivel" class="form-label">Nivel educativo</label>
                         <select name="nivel" id="nivel" required class="form-control">
                             <option value="" selected>--Seleccione--</option>
-                            <option value="11">Licenciatura</option>
-                            <option value="12">Especialidad</option>
-                            <option value="13">Maestría</option>
-                            <option value="14">Doctorado</option>
+                            @foreach($niveles as $nivel)
+                                <option value="{{$nivel->caracter}}">{{$nivel->caracter."- ".$nivel->descripcion}}</option>
+                            @endforeach
                         </select>
                     </div>
                     <input type="hidden" name="estudios" id="estudios" value="{{$estudio}}">
                     <input type="hidden" name="bandera" id="bandera" value="{{$bandera}}">
                     <div class="col-12">
-                        <button type="submit" class="btn btn-primary">Continuar</button>
+                        <button type="submit" class="btn btn-primary mb-4">Continuar</button>
                     </div>
                 </form>
             </div>
