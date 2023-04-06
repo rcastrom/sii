@@ -17,25 +17,31 @@
                 </ul>
             </div>
         @endif
-        <form method="post" action="{{route('escolares.buscar')}}" class="form-inline" role="form">
+        <form method="post" action="{{route('escolares.buscar')}}" role="form">
             @csrf
-            <div class="row">
-                <div class="form-group col-sm-12 col-md-6">
-                    <label for="control"> Dato </label>
-                    <input type="text" name="control" id="control" class="form-control"
-                           required maxlength="10" onchange="this.value=this.value.toUpperCase();">
+            <fieldset>
+                <div class="row gap-4">
+                    <div class="col-12">
+                        <input type="text" name="control" id="control" class="form-control"
+                               placeholder="Ingrese la información" aria-label="Ingrese la información"
+                               required maxlength="10" onchange="this.value=this.value.toUpperCase();">
+                    </div>
+                </div>
+                <div class="row gap-4">
+                    <div class="col-12">
+                        <label for="tbusqueda" class="col-form-label"> Buscar por: </label>
+                        <select name="tbusqueda" id="tbusqueda" class="form-control">
+                            <option value="1" selected>Número de control</option>
+                            <option value="2">Apellido</option>
+                        </select>
+                    </div>
+                </div>
+            </fieldset>
+            <div class="row mt-4">
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Continuar</button>
                 </div>
             </div>
-            <div class="row">
-                <div class="form-group col-sm-12 col-md-6">
-                    <label for="tbusqueda"> Buscar por: </label>
-                    <select name="tbusqueda" id="tbusqueda" class="form-control">
-                        <option value="1" selected>Número de control</option>
-                        <option value="2">Apellido</option>
-                    </select>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Continuar</button>
         </form>
     </x-information>
 @stop

@@ -12,4 +12,5 @@ class Alumno extends Model
     protected $casts=[
         'no_de_control'=>'string',
     ];
+    protected $fillable=['estatus_alumno'];
 }

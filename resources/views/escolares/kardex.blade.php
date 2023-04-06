@@ -18,7 +18,7 @@
         @slot('header','Kardex de alumno')
             @php
                 $suma_total=0; $calificaciones_totales=0; $j=1;
-                $tipos_mat=array("O2","R1","R2","RO","RP","2");
+                $tipos_mat=array("R1","R2","RO","RP");
                 $tipos_aprob=array('AC','RC','RU','PG');
             @endphp
         @foreach($calificaciones as $key=>$value)
@@ -108,7 +108,8 @@
             <tr>
                 <td align="center">
                     @php
-                        $avance=$suma_total==0?0:round(($suma_total/$ncarrera->creditos_totales)*100,2);
+                        $avance1=$suma_total==0?0:round(($suma_total/$ncarrera->creditos_totales)*100,2);
+                        $avance = ($avance1>=100)?100:$avance1;
                     @endphp
                         {{$avance."%"}}
                 </td>
@@ -133,12 +134,22 @@
                         <option value="" selected>--Seleccione--</option>
                         <option value="1">Agregar materia</option>
                         <option value="2">Modificar materia</option>
-                        <option value="3">Imprimir</option>
                     </select>
                 </div>
             </div>
             <button type="submit" class="btn btn-primary">Continuar</button>
             <input type="hidden" name="control" id="control" value="{{ $control }}">
+        </form>
+    </x-information>
+    <x-information :encabezado="$encabezado3">
+        <form action="{{route('escolares.imprimirkardex')}}" target="_blank" method="post" class="form-inline" role="form">
+            @csrf
+            <div class="row">
+                <div class="form-group col-sm-12 col-md-6">
+                    <input type="hidden" name="control" id="control" value="{{ $control }}">
+                    <button type="submit" class="btn btn-primary">Imprimir</button>
+                </div>
+            </div>
         </form>
     </x-information>
     <x-aviso>

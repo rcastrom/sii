@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="es-MX">
 <head>
     <meta charset="utf-8">
     <meta charset="UTF-8">
@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
 
-    <style type="text/css">
+    <style>
         @font-face {
             font-family: 'Montserrat';
             src: url({{ storage_path('fonts\Montserrat-Medium.ttf') }}) format("truetype");
@@ -15,12 +15,12 @@
         body{
             font-family: Montserrat, sans-serif;
             font-size: 8pt;
-            background: url({{asset('img/tecnm.jpg')}}) no-repeat center center fixed;
+            background: url({{asset('img/tecnm.jpg')}}) no-repeat center fixed;
             background-size: cover;
-            opacity: 0.13;
+            opacity: 0.12;
         }
         @page { margin: 100px 50px;}
-        .header { position: fixed; left: 0; top: -100px; right: 0; height: 100px; text-align: center; margin-bottom: 10px; }
+        .header { position: fixed; left: 0; top: -100px; right: 0; height: 100px; text-align: center; color: #2b3035; margin-bottom: 10px; }
         .footer { position: fixed; left: 0; bottom: -2.5cm; right: 0; height: 50px;text-align: center;}
         .footer .pagenum:before { content: counter(page); }
 
@@ -58,7 +58,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-12">
-                <span style="alignment: center">HISTORIAL ACADÉMICO</span>
+                <span style="alignment: center; color: #2b3035;" >HISTORIAL ACADÉMICO</span>
             </div>
         </div>
         <div class="row">

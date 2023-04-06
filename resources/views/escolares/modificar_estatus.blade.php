@@ -15,10 +15,10 @@
         <form action="{{route('escolares.accion_actualiza_estatus')}}" method="post" role="form">
             @csrf
             <div class="form-group">
-                <label for="estatus">Cambio de estatus de alumno</label>
-                <select name="estatus" id="estatus" class="form-control">
+                <label for="situacion">Cambio de estatus de alumno</label>
+                <select name="situacion" id="situacion" class="form-control">
                     @foreach($estatus_alumno as $status)
-                        <option value="{{$status->estatus}}"{{$status->estatus==$alumno->estatus_alumno?' selected':''}}>{{$status->descripcion}}</option>
+                        <option value="{{$status->estatus}}"{{$alumno->estatus_alumno==$status->estatus?' selected':''}}>{{trim($status->descripcion)}}</option>
                     @endforeach
                 </select>
             </div>

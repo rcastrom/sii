@@ -17,28 +17,37 @@ use Illuminate\Contracts\Events\Dispatcher;
 use App\Http\Controllers\MenuHumanosController;
 use App\Http\Controllers\Acciones\AccionesController;
 use App\Http\Controllers\Controller;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
+
 
 class HumanosController extends Controller
 {
     public function __construct(Dispatcher $events){
         new MenuHumanosController($events);
     }
-    public function index(){
+    public function index(): Factory|View|Application
+    {
         return view('rechumanos.index');
     }
-    public function alta1(){
+    public function alta1(): Factory|View|Application
+    {
         $encabezado="Alta de personal";
         $contrataciones=PersonalNombramiento::all();
         return view('rechumanos.alta1')->with(compact('encabezado','contrataciones'));
     }
-    public function datos_personal($id){
+    public function datos_personal($id): Personal
+    {
         return Personal::where('id',$id)->first();
     }
-    public function area_personal($area){
+    public function area_personal($area): Organigrama
+    {
         return Organigrama::where('clave_area',$area)->first();
     }
-    public function regresar_contenido_estudios($id){
+    public function regresar_contenido_estudios($id): Factory|View|Application
+    {
         $informacion=PersonalEstudio::where('id',$id)->first();
         $carreras=PersonalCarrera::all()->sortBy('carrera');
         $escuelas=PersonalInstitEstudio::all()->sortBy('nombre');
@@ -50,7 +59,8 @@ class HumanosController extends Controller
         return view('rechumanos.estudios_actualizar')->with(compact('id',
             'informacion','niveles','carreras','escuelas','encabezado','nombre','nivel_estudio'));
     }
-    public function regresar_listado_estudios($id){
+    public function regresar_listado_estudios($id): Factory|View|Application
+    {
         $encabezado="Estudios del personal";
         $personal_info= $this->datos_personal($id);
         $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
@@ -64,7 +74,8 @@ class HumanosController extends Controller
         return view('rechumanos.estudios_listado')
             ->with(compact('encabezado','personal_info','id','nombre','estudios','bandera'));
     }
-    public function regresar_nuevo_estudio($id){
+    public function regresar_nuevo_estudio($id): Factory|View|Application
+    {
         $carreras=PersonalCarrera::all()->sortBy('carrera');
         $escuelas=PersonalInstitEstudio::all()->sortBy('nombre');
         $niveles=PersonalNivelEstudio::all()->sortBy('descripcion');
@@ -74,7 +85,8 @@ class HumanosController extends Controller
         return view('rechumanos.nuevo_estudio')->with(compact('id',
             'carreras','escuelas','encabezado','niveles','nombre'));
     }
-    public function alta_personal1(Request $request){
+    public function alta_personal1(Request $request): Factory|View|Application
+    {
         request()->validate([
             'apellido_materno'=>'required',
             'nombre_empleado'=>'required',
@@ -120,7 +132,8 @@ class HumanosController extends Controller
         return view('rechumanos.alta2')->with(compact('nombre','apellidos',
             'id','encabezado','deptos'));
     }
-    public function alta_personal2(Request $request){
+    public function alta_personal2(Request $request): Factory|View|Application
+    {
         request()->validate([
             'domicilio'=>'required',
             'colonia'=>'required',
@@ -153,7 +166,8 @@ class HumanosController extends Controller
         $mensaje="Se dió de alta al personal, por lo que puede continuar con el proceso";
         return view('rechumanos.si')->with(compact('encabezado','mensaje'));
     }
-    public function listado(){
+    public function listado(): Factory|View|Application
+    {
         $personal=Personal::select('id','apellido_paterno',
             'apellido_materno','nombre_empleado','no_tarjeta')
             ->orderBy('apellido_paterno')
@@ -163,7 +177,8 @@ class HumanosController extends Controller
         $encabezado="Listado del personal";
         return view('rechumanos.listado')->with(compact('personal','encabezado'));
     }
-    public function listado2(Request $request){
+    public function listado2(Request $request): Factory|View|Application
+    {
         $id=base64_decode($request->personal);
         $personal_info= $this->datos_personal($id);
         $depto=$this->area_personal($personal_info->clave_area);
@@ -190,7 +205,8 @@ class HumanosController extends Controller
         return view('rechumanos.informacion')->with(compact('id',
             'datos','personal_info','encabezado'));
     }
-    public function edicion(Request $request){
+    public function edicion(Request $request): Factory|View|Application
+    {
         $campo_editar=$request->campo;
         $id=base64_decode($request->personal);
         $personal_info= $this->datos_personal($id);
@@ -216,7 +232,8 @@ class HumanosController extends Controller
         return view('rechumanos.edicion')->with(compact('id_temp', 'valor',
             'campo_editar','personal_info','titulo','nombramientos','areas','encabezado'));
     }
-    public function actualizar(Request $request){
+    public function actualizar(Request $request): Factory|View|Application
+    {
         $id=($request->personal)/161918;
         $campo=$request->campo;
         $dato_por_editar=PersonalDato::where('id',$campo)->first();
@@ -243,16 +260,19 @@ class HumanosController extends Controller
         return view('rechumanos.informacion')->with(compact('id',
             'datos','personal_info','encabezado'));
     }
-    public function estudios_personal(Request $request){
+    public function estudios_personal(Request $request): Factory|View|Application
+    {
         $id=base64_decode($request->personal);
         return $this->regresar_listado_estudios($id);
     }
 
-    public function estudios_editar(Request $request){
+    public function estudios_editar(Request $request): Factory|View|Application
+    {
         $id=$request->estudio;
         return $this->regresar_contenido_estudios($id);
     }
-    public function estudios_actualizar(Request $request){
+    public function estudios_actualizar(Request $request): Factory|View|Application
+    {
         $id=$request->id;
         $estudios_actualizar=PersonalEstudio::where('id',$id)->first();
         $estudios_actualizar->id_carrera=$request->carrera;
@@ -275,7 +295,8 @@ class HumanosController extends Controller
         $encabezado="Listado del personal actualizado";
         return view('rechumanos.listado')->with(compact('personal','encabezado'));
     }
-    public function alta_carrera(Request $request){
+    public function alta_carrera(Request $request): Factory|View|Application
+    {
         $estudio=$request->estudio;
         $bandera=$request->bandera;
         $niveles=PersonalNivelEstudio::all()->sortBy('descripcion');
@@ -283,7 +304,8 @@ class HumanosController extends Controller
         return view('rechumanos.alta_carrera')->with(compact('estudio',
             'bandera','niveles','encabezado'));
     }
-    public function alta_carrera2(Request $request){
+    public function alta_carrera2(Request $request): View|Factory|Application
+    {
         $request->validate([
             'carrera'=>'required',
             'nombre_corto'=>'required',
@@ -308,7 +330,8 @@ class HumanosController extends Controller
             return $this->regresar_contenido_estudios($id);
         }
     }
-    public function alta_escuela(Request $request){
+    public function alta_escuela(Request $request): Factory|View|Application
+    {
         $estudio=$request->estudio;
         $bandera=$request->bandera;
         $encabezado="Alta de institución educativa de personal";
@@ -316,7 +339,8 @@ class HumanosController extends Controller
         return view('rechumanos.alta_escuela')->with(compact('estudio',
             'estados','bandera','encabezado'));
     }
-    public function municipios(Request $request){
+    public function municipios(Request $request): \Illuminate\Http\JsonResponse
+    {
         $estado = $request->id;
         $municipios['data'] =Municipio::where('id_estado',$estado)
             ->select('id','municipio')
@@ -324,7 +348,8 @@ class HumanosController extends Controller
             ->get();
         return response()->json($municipios);
     }
-    public function alta_escuela2(Request $request){
+    public function alta_escuela2(Request $request): View|Factory|Application
+    {
         $request->validate([
             'nombre'=>'required'
         ],[
@@ -345,14 +370,16 @@ class HumanosController extends Controller
             return $this->regresar_contenido_estudios($id);
         }
     }
-    public function alta_municipio(Request $request){
+    public function alta_municipio(Request $request): Factory|View|Application
+    {
         $estudio=$request->estudio;
         $encabezado="Alta de institución educativa de personal";
         $estados=EntidadesFederativa::all()->sortBy('nombre_entidad');
         return view('rechumanos.alta_municipio')->with(compact('estudio',
             'estados','encabezado'));
     }
-    public function alta_municipio2(Request $request){
+    public function alta_municipio2(Request $request): Factory|View|Application
+    {
         $request->validate([
             'municipio'=>'required'
         ],[
@@ -369,11 +396,13 @@ class HumanosController extends Controller
         return view('rechumanos.alta_escuela')->with(compact('estudio',
             'estados','encabezado'));
     }
-    public function nuevo_estudio(Request $request){
+    public function nuevo_estudio(Request $request): Factory|View|Application
+    {
         $id=base64_decode($request->personal);
         return $this->regresar_nuevo_estudio($id);
     }
-    public function nuevo_estudio2(Request $request){
+    public function nuevo_estudio2(Request $request): Factory|View|Application
+    {
         $id=base64_decode($request->id);
         $estudio_nuevo=new PersonalEstudio();
         $estudio_nuevo->id_docente=$id;
@@ -385,7 +414,8 @@ class HumanosController extends Controller
         $estudio_nuevo->save();
         return $this->regresar_listado_estudios($id);
     }
-    public function eliminar_estudio(Request $request){
+    public function eliminar_estudio(Request $request): Factory|View|Application
+    {
         $id=$request->estudio;
         $informacion=PersonalEstudio::where('id',$id)->first();
         $carrera=PersonalCarrera::select('carrera')->where('id',$informacion->id_carrera)->first();
@@ -403,7 +433,8 @@ class HumanosController extends Controller
         return view('rechumanos.estudio_eliminar')->with(compact('id',
             'nivel','carrera','escuela','encabezado','informacion','nombre'));
     }
-    public function eliminar_estudio2(Request $request){
+    public function eliminar_estudio2(Request $request): Factory|View|Application
+    {
         $id=$request->id;
         $informacion=PersonalEstudio::where('id',$id)->first();
         $personal=$informacion->id_docente;

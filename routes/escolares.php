@@ -5,6 +5,7 @@ use App\Http\Controllers\Escolares\EscolaresController;
 use App\Http\Controllers\PDF\ConstanciaPDFController;
 use App\Http\Controllers\PDF\IdiomasPDFController;
 use App\Http\Controllers\PDF\CertificadoPDFController;
+use App\Http\Controllers\PDF\KardexPDFController;
 
 Route::group(['prefix'=>'escolares','middleware'=>['auth','role:escolares']],function () {
     Route::get('/', [EscolaresController::class, 'index'])->name('inicio_escolares');
@@ -19,6 +20,8 @@ Route::group(['prefix'=>'escolares','middleware'=>['auth','role:escolares']],fun
             ->name('escolares.accion_kardex_alta');
         Route::post('/periodo_k',[EscolaresController::class, 'accionkperiodo'])
             ->name('escolares.accion_kardex_modificar1');
+        Route::post('/impresion/kardex',[KardexPDFController::class,'crearPDF'])
+            ->name('escolares.imprimirkardex');
         Route::get('/modificar/{periodo}/{control}/{materia}',[EscolaresController::class, 'modificarkardex']);
         Route::get('/eliminar/{periodo}/{control}/{materia}',[EscolaresController::class, 'eliminarkardex']);
         Route::post('/actualizar/kardex',[EscolaresController::class, 'kardexupdate'])

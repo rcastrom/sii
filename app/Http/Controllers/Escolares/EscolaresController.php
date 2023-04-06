@@ -107,13 +107,14 @@ class EscolaresController extends Controller
         $estatus = EstatusAlumno::where('estatus', $alumno->estatus_alumno)->first();
         if ($accion == 1) {
             $encabezado="Kardex del estudiante";
-            $encabezado2="Datos adicionales";
+            $encabezado2="Acciones adicionales sobre las materias";
+            $encabezado3="Imprimir kardex";
             $informacion = (new AccionesController)->kardex($control);
             $calificaciones=$informacion[0];
             $nombre_periodo=$informacion[1];
             return view('escolares.kardex')
                 ->with(compact('alumno', 'calificaciones', 'estatus',
-                    'ncarrera','control','encabezado','nombre_periodo','encabezado2'));
+                    'ncarrera','control','encabezado','nombre_periodo','encabezado2','encabezado3'));
         } elseif ($accion == 2) {
             $historial = (new AccionesController)->reticula($control);
             return view('escolares.reticula')->with(compact('alumno', 'historial'));
@@ -504,8 +505,8 @@ class EscolaresController extends Controller
     public function estatusupdate(Request $request)
     {
         $control = $request->get('control');
-        $estatus = $request->get('estatus');
-        Alumno::where('no_de_control', $control)->update([
+        $estatus = $request->get('situacion');
+        Alumno::find($control)->update([
             'estatus_alumno' => $estatus
         ]);
         $encabezado="Estatus de alumno modificado";
