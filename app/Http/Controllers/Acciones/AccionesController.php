@@ -288,4 +288,14 @@ class AccionesController extends Controller
         return $data;
     }
 
+    /*
+     * Actualiza la información de egresado cuando se modifica el estatus
+     *
+     * @param string $control
+     * @return void
+     */
+    public function actualizar_egresado($control){
+        $data=DB::select("SELECT * FROM actualizar_egreso_ind('$control')");
+        return $data;
+    }
 }

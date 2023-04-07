@@ -18,8 +18,8 @@
         @slot('header','Kardex de alumno')
             @php
                 $suma_total=0; $calificaciones_totales=0; $j=1;
-                $tipos_mat=array("R1","R2","RO","RP");
-                $tipos_aprob=array('AC','RC','RU','PG');
+                $tipos_mat=array("E2","3","4","5","R1","R2","RO","RP");
+                $tipos_aprob=array('AC','RC','93','92','91','RU','PG');
             @endphp
         @foreach($calificaciones as $key=>$value)
             @if(!empty($value))

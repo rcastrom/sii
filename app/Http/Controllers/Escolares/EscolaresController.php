@@ -316,20 +316,6 @@ class EscolaresController extends Controller
             $encabezado="Modificar materia en kardex";
             return view('escolares.m1kardex')->with(compact('alumno', 'periodos',
                 'control','encabezado'));
-        } elseif ($accion == 3) {
-            $informacion = (new AccionesController)->kardex($control);
-            $calificaciones=$informacion[0];
-            $nombre_periodo=$informacion[1];
-            $ncarrera = (new AccionesController)->ncarrera($alumno->carrera,$alumno->reticula);
-            $data = [
-                'alumno' => $alumno,
-                'control' => $control,
-                'carrera' => $ncarrera,
-                'nperiodos' => $nombre_periodo,
-                'calificaciones' => $calificaciones
-            ];
-            $pdf = PDF::loadView('escolares.pdf_kardex', $data)->setPaper('Letter');
-            return $pdf->download('kardex.pdf');
         }
     }
     public function accionkalta(Request $request)
@@ -509,6 +495,16 @@ class EscolaresController extends Controller
         Alumno::find($control)->update([
             'estatus_alumno' => $estatus
         ]);
+        if($estatus=="EGR"){
+            //Modificar información en la tabla de alumnos
+            (new AccionesController)->actualizar_egresado($control);
+            $inicio = Alumno::find($control)->periodo_ingreso_it;
+            $fin = Alumno::find($control)->ultimo_periodo_inscrito;
+            $semestres = (new AccionesController)->semreal($inicio,$fin);
+            Alumno::where('no_de_control',$control)->update([
+                'semestre' => $semestres,
+            ]);
+        }
         $encabezado="Estatus de alumno modificado";
         $mensaje="Se cambió el estatus del alumno";
         return view('escolares.si')->with(compact('encabezado','mensaje'));

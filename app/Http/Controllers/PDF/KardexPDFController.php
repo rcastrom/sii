@@ -4,6 +4,7 @@ namespace App\Http\Controllers\PDF;
 
 use App\Http\Controllers\Controller;
 use App\Models\Alumno;
+use App\Models\Parametro;
 use App\Http\Controllers\Acciones\AccionesController;
 use Illuminate\Http\Request;
 use Codedge\Fpdf\Fpdf\Fpdf;
@@ -28,7 +29,8 @@ class KardexPDFController extends Controller
         $this->fpdf->Image('/var/www/html/sii/public/img/escudo.jpg',$x+470,$y+10,55,50);
         $this->fpdf->SetXY($x+$ancho_imagen + 40,$y+$altura_imagen*0.48);
         $this->fpdf->SetFont('Times', 'B', 8);
-        $this->fpdf->Cell(250,4,utf8_decode("INSTITUTO TECNOLÓGICO DE ENSENADA"), 0,1,"C");
+        $generales = Parametro::first();
+        $this->fpdf->Cell(250,4,utf8_decode($generales->tec), 0,1,"C");
         $this->fpdf->SetXY($x+$ancho_imagen + 40,$y+$altura_imagen*0.71);
         $this->fpdf->Cell(250,4,utf8_decode("HISTORIAL ACADÉMICO"), 0,1,"C");
         $y = $this->fpdf->GetY()+30;
@@ -70,10 +72,8 @@ class KardexPDFController extends Controller
         $calificaciones=$informacion[0];
         $nombre_periodo=$informacion[1];
         $suma_total=0; $calificaciones_totales=0; $j=1;
-        $tipos_mat=array("R1","R2","RO","RP"); $tipos_aprob=array('AC','RC','RU','PG');
+        $tipos_mat=array("E2","3","4","5","R1","R2","RO","RP"); $tipos_aprob=array('AC','RC','93','92','91','RU','PG');
         foreach ($calificaciones as $key=>$value){
-            $x = 40;
-            $y = $this->fpdf->GetY()+40;
             $this->fpdf->SetFillColor(199,21,133); //gris: 189,189,189
             $this->fpdf->Cell(150,10,"Periodo ".$nombre_periodo[$key]->identificacion_larga,0,1,'L',1);
             $this->fpdf->SetFillColor(6,6,6);
@@ -87,7 +87,6 @@ class KardexPDFController extends Controller
             $this->fpdf->SetTextColor(0,0,0);
             $i=1;
             $suma_creditos=0;
-            $promedio_semestre=0;
             $suma_semestre=0;
             $cal_sem=0;
             $materias=1;
@@ -168,7 +167,8 @@ class KardexPDFController extends Controller
             \IntlDateFormatter::GREGORIAN,
             "YYYY"
         );
-        $fecha="Ensenada B.C. a ".$fmt1->format(time())." de ".$fmt2->format(time()).' del '.$fmt3->format(time());
+        $generales = Parametro::first();
+        $fecha=$generales->ciudad." a ".$fmt1->format(time())." de ".$fmt2->format(time()).' del '.$fmt3->format(time());
         $this->fpdf->Cell(0,10,$fecha,0,0,'R');
         $this->fpdf->Output();
         exit();
