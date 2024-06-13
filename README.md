@@ -1,7 +1,7 @@
 # SII vr 3.0
 
 *Versión del Sistema Integral de Información (SII) de los Institutos Tecnológicos totalmente
-desarrollado en Laravel*.
+desarrollado en [Laravel](https://laravel.com/)*.
 
 ## Comenzando 🚀
 
@@ -25,22 +25,35 @@ Hasta el momento, los módulos que se han migrado son:
 
 ### Pre-requisitos 📋
 
-_Versión mínima de PHP: 8.0 y se recomienda a PostgreSQL como manejador de base de datos, en
+#### PHP
+Versión mínima de PHP: 8.2 y se recomienda a PostgreSQL como manejador de base de datos, en
 cuyo caso, deberá contar con la extensión _pgsql_
 
 ```
-* sudo apt install php8.0-pgsql
-* sudo service apache2 restart
+sudo apt install php8.2-pgsql
+sudo service apache2 restart
 ```
 >
 > En caso de emplear Ningx (*RECOMENDADO*), favor de seguir las indicaciones del
-> siguiente: [Nginx](https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-20-04-es)
+> siguiente enlace: [Nginx](https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-20-04-es)
 >
 >Posteriormente, deberá habilitar la extensión de pgsql en fpm.
 >
 
-_Adicionalmente, debe contar con composer instalado_
+#### Composer
+Deberá contar con composer instalado_
 `https://getcomposer.org/download/`
+
+#### Node
+El enlace mostrado [NPM](https://www.freecodecamp.org/espanol/news/como-instalar-nodejs-en-ubuntu-y-actualizar-npm-a-la-ultima-version/),
+es especialmente si su sistema operativo es en Ubuntu; de no ser así, favor de consultar de 
+acuerdo a su distro.
+
+#### Curl
+La versión mínima requerida es la 7.34.0
+```
+sudo apt install curl
+```
 
 ### Instalación 🔧
 
@@ -103,8 +116,8 @@ decide emplear este sistema; por favor, verifique dicha información en el sigui
 
 ## Despliegue 📦
 
-Esta versión ha sido creada (_por el momento_) para los siguientes tipos de usuarios
-(también conocidos como "roles"):
+Esta versión ha sido creada hasta el momento para los siguientes perfiles de usuarios
+(también conocidos como _roles_):
 * escolares
 * alumno
 * docente
@@ -124,7 +137,7 @@ un determinado perfil.
 
 Por último, solamente debe migrar la información hacia la base de datos; para
 ello, desde consola (y estando en la raíz del proyecto; por ejemplo,
-/var/www/html/escolares/), teclee
+/var/www/html/sii/), teclee
 
 ```
   php artisan db:seed --class=UserTableSeeder
