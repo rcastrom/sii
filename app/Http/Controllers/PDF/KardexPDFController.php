@@ -36,11 +36,13 @@ class KardexPDFController extends Controller
         $y = $this->fpdf->GetY()+30;
         $this->fpdf->SetXY($x,$y);
         $this->fpdf->SetFont('Times', 'B', 10);
-        $this->fpdf->Cell(140,6,utf8_decode("Número de control: ".$control),0,0,'L');
+         $this->fpdf->Cell(100,6,utf8_decode("Número de control: "),0,0,'L');
+        $this->fpdf->Cell(80,6,$control,"B",0,'C');
         $this->fpdf->SetXY($x+240,$y);
         $alumno = Alumno::find($control);
         $nombre_alumno=$alumno->apellido_paterno." ".$alumno->apellido_materno." ".$alumno->nombre_alumno;
-        $this->fpdf->Cell(300,6,utf8_decode("Nombre: ".$nombre_alumno),'B',1,'L');
+         $this->fpdf->Cell(50,6,"Nombre: ",0,0,'L');
+        $this->fpdf->Cell(270,6,utf8_decode($nombre_alumno),'B',1,'L');
         $y = $this->fpdf->GetY()+10;
         $this->fpdf->SetXY($x,$y);
         $ncarrera = (new AccionesController)->ncarrera($alumno->carrera,$alumno->reticula);

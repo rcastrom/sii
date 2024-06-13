@@ -692,8 +692,6 @@ class EscolaresController extends Controller
                 'periodo_ingreso_it' => $ingreso,
                 'correo_electronico' => $correo,
                 'periodos_revalidacion' => $rev,
-                'usuario' => $quien,
-                'fecha_actualizacion' => null,
                 'nss' => $nss
             ]);
         AlumnosGeneral::where('no_de_control',$control)
