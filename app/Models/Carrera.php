@@ -9,4 +9,7 @@ class Carrera extends Model
 {
     use HasFactory;
     protected $primaryKey="carrera";
+    protected $casts=[
+        'carrera'=>'string'
+    ];
 }

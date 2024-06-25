@@ -39,6 +39,11 @@ class RoleSeeder extends Seeder
         $role->description='Recursos Humanos';
         $role->save();
 
+        $role=new Role();
+        $role->name='desacad';
+        $role->description='Desarrollo Académico';
+        $role->save();
+
 
     }
 }

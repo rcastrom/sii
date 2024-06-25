@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Acciones;
 
 use App\Http\Controllers\Controller;
+use App\Models\PeriodoFicha;
 use Illuminate\Support\Facades\DB;
 use App\Models\Carrera;
 use App\Models\HistoriaAlumno;
@@ -19,11 +20,10 @@ class AccionesController extends Controller
      */
     public function ncarrera($carrera,$reticula)
     {
-        $data=Carrera::where([
+        return Carrera::where([
             'carrera'=>$carrera,
             'reticula'=>$reticula
         ])->first();
-        return $data;
     }
     /*
      * Devolver el período actual
@@ -31,8 +31,7 @@ class AccionesController extends Controller
      */
     public function periodo()
     {
-        $periodo_actual = DB::Select('select periodo from pac_periodo_actual()');
-        return $periodo_actual;
+        return DB::Select('select periodo from pac_periodo_actual()');
     }
     /*
      * Devuelve el kardex del estudiante
@@ -55,8 +54,7 @@ class AccionesController extends Controller
             $calificaciones[$cuando->periodo] = $data;
             $nombres[$cuando->periodo]=$data2;
         }
-        $info=array($calificaciones,$nombres);
-        return $info;
+        return array($calificaciones,$nombres);
     }
     /*
      * Devuelve el listado de materias de acuerdo al plan de estudios del estudiante (retícula)
@@ -65,8 +63,7 @@ class AccionesController extends Controller
      * @return mixed
      */
     public function cmaterias($control){
-        $data=DB::select("SELECT * FROM cmaterias('$control')");
-        return $data;
+        return DB::select("SELECT * FROM cmaterias('$control')");
     }
     /*
      * Devuelve la información para la vista retícula
@@ -76,8 +73,7 @@ class AccionesController extends Controller
      */
     public function reticula($control)
     {
-        $data = DB::select("select * from pac_reticulaalumno('$control')");
-        return $data;
+        return DB::select("select * from pac_reticulaalumno('$control')");
     }
     /*
      * Devuelve los datos para la constancia
@@ -86,8 +82,7 @@ class AccionesController extends Controller
      * @return mixed
      */
     public function totales($control){
-        $data=DB::select("select * from pac_calcula_totales_alumno('$control')");
-        return $data;
+        return DB::select("select * from pac_calcula_totales_alumno('$control')");
     }
     /*
      * Devuelve información del kardex para constancias vista completa
@@ -96,8 +91,7 @@ class AccionesController extends Controller
      * @return mixed
      */
     public function constancia_kardex_completo($control){
-        $data=DB::select("select * from pac_constancias_kardex ('$control')");
-        return $data;
+        return DB::select("select * from pac_constancias_kardex ('$control')");
     }
     /*
      * Devuelve información del kardex para constancias vista corta
@@ -106,8 +100,7 @@ class AccionesController extends Controller
      * @return mixed
      */
     public function constancia_kardex($control){
-        $data=DB::select("select * from pac_constancias ('$control')");
-        return $data;
+        return DB::select("select * from pac_constancias ('$control')");
     }
     /*
      * Devuelve la información de la boleta de un periodo dado
@@ -118,8 +111,7 @@ class AccionesController extends Controller
      */
     public function boleta($control, $periodo)
     {
-        $data = DB::select("select * from pac_calificaciones('$control','$periodo')");
-        return $data;
+        return DB::select("select * from pac_calificaciones('$control','$periodo')");
     }
     /*
      * Devuelve la información del horario de un periodo dado
@@ -130,8 +122,7 @@ class AccionesController extends Controller
      */
     public function horario($control, $periodo)
     {
-        $data = DB::select("select * from pac_horario('$control','$periodo')");
-        return $data;
+        return DB::select("select * from pac_horario('$control','$periodo')");
     }
     /*
      * Actualiza el semestre del estudiante, basándose en el período de ingreso
@@ -161,8 +152,7 @@ class AccionesController extends Controller
      * @return mixed
      */
     public function historial($control){
-        $data=DB::select("select * from pac_certificado_cal('$control')");
-        return $data;
+        return DB::select("select * from pac_certificado_cal('$control')");
     }
     /*
      *Devuelve las materias que no han sido evaluadas
@@ -171,8 +161,7 @@ class AccionesController extends Controller
      * @return mixed
      */
     public function sin_evaluar($periodo){
-        $data = DB::select("select * from pac_materias_faltan('$periodo')");
-        return $data;
+        return DB::select("select * from pac_materias_faltan('$periodo')");
     }
     /*
      *Devuelve las materias que ya fueron evaluadas
@@ -181,8 +170,7 @@ class AccionesController extends Controller
      * @return mixed
      */
     public function evaluadas($periodo){
-        $data = DB::select("select * from pac_materias_calificadas('$periodo')");
-        return $data;
+        return DB::select("select * from pac_materias_calificadas('$periodo')");
     }
     /*
      *Devuelve las actas que no han sido entregadas en Escolares
@@ -191,8 +179,7 @@ class AccionesController extends Controller
      * @return mixed
      */
     public function actas_faltantes($periodo){
-        $data = DB::select("select * from pac_actas_faltan('$periodo')");
-        return $data;
+        return DB::select("select * from pac_actas_faltan('$periodo')");
     }
     /*
      * Devuelve los grupos que se ofertaron en Idioma Extranjero
@@ -202,8 +189,7 @@ class AccionesController extends Controller
      * @return mixed
      */
     public function consulta_idiomas($periodo,$idioma){
-        $data = DB::select("select * from pac_idiomas_consulta('$periodo',$idioma)");
-        return $data;
+        return DB::select("select * from pac_idiomas_consulta('$periodo',$idioma)");
     }
     /*
      * Devuelve la población escolar
@@ -212,8 +198,7 @@ class AccionesController extends Controller
      * @return mixed
      */
     public function inscritos($periodo){
-        $data = DB::select("select * from pac_poblacion('$periodo')");
-        return $data;
+        return DB::select("select * from pac_poblacion('$periodo')");
     }
     /*
      * Cambia el estatus del alumno (no inscritos a baja temporal)
@@ -249,9 +234,8 @@ class AccionesController extends Controller
      * @return string $data
      */
     public function calificar($periodo){
-        $data=DB::select('SELECT 1 AS si FROM periodos_escolares WHERE periodo = :periodo
+        return DB::select('SELECT 1 AS si FROM periodos_escolares WHERE periodo = :periodo
         AND CURRENT_DATE BETWEEN inicio_cal_docentes AND fin_cal_docentes',['periodo'=>$periodo]);
-        return $data;
     }
     /*
      * Indica si el docente tiene residencias en el período señalado
@@ -262,8 +246,7 @@ class AccionesController extends Controller
      */
     public function residencias($periodo,$rfc)
     {
-        $data=DB::select("select * from pac_cresidencias('$periodo','$rfc')");
-        return $data;
+        return DB::select("select * from pac_cresidencias('$periodo','$rfc')");
     }
     /*
      * Devuelve a los estudiantes asignados del docente para residencias en el periodo señalado
@@ -273,8 +256,7 @@ class AccionesController extends Controller
      * @return array $data
      */
     public function inforesidencias($periodo,$rfc){
-        $data=DB::select("select * from pac_dataresidencias('$periodo','$rfc')");
-        return $data;
+        return DB::select("select * from pac_dataresidencias('$periodo','$rfc')");
     }
 
     /*
@@ -284,8 +266,7 @@ class AccionesController extends Controller
      * @return array $data
      */
     public function personal_estudios($personal){
-        $data=DB::select("select * from pap_estudios_personal($personal)");
-        return $data;
+        return DB::select("select * from pap_estudios_personal($personal)");
     }
 
     /*
@@ -295,7 +276,16 @@ class AccionesController extends Controller
      * @return void
      */
     public function actualizar_egresado($control){
-        $data=DB::select("SELECT * FROM actualizar_egreso_ind('$control')");
-        return $data;
+        return DB::select("SELECT * FROM actualizar_egreso_ind('$control')");
+    }
+
+    /*
+    * Devuelve la información del período de entrega de fichas para aspirantes a ingresar
+    *
+    * @return void
+    */
+    public function periodo_entrega_fichas(){
+        $periodo_ficha = PeriodoFicha::where('activo',1)->first();
+        return PeriodoEscolar::where('periodo',$periodo_ficha->fichas)->first();
     }
 }

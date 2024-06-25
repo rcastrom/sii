@@ -7,14 +7,16 @@ use Laravel\Fortify\Contracts\LoginResponse as LoginResponseContract;
 class LoginResponse implements LoginResponseContract{
     public function toResponse($request)
     {
-        if(Auth::user()->hasRole('escolares')){
+        if (Auth::user()->hasRole('escolares')) {
             return redirect('/escolares');
-        }elseif(Auth::user()->hasRole('division')) {
+        } elseif (Auth::user()->hasRole('division')) {
             return redirect('/division');
-        }elseif(Auth::user()->hasRole('personal')) {
+        } elseif (Auth::user()->hasRole('personal')) {
             return redirect('/personal');
-        }elseif (Auth::user()->hasRole('rechumanos')){
+        } elseif (Auth::user()->hasRole('rechumanos')) {
             return redirect('/rechumanos');
+        } elseif (Auth::user()->hasRole('desacad')) {
+            return redirect('/desarrollo');
         }else{
             return redirect('/');
         }

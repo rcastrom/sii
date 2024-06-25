@@ -5,8 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Aula extends Model
+class PeriodoFicha extends Model
 {
     use HasFactory;
-    protected $primaryKey="id";
+    protected $table='parametros_fichas';
+    protected $primaryKey="fichas";
 }
