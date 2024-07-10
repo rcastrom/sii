@@ -36,6 +36,22 @@ class MenuDesarrolloController extends Controller
                     ],
                 ]
             ]);
+            $event->menu->add([
+                'text'=>'Evaluación al Docente',
+                'icon'=>'fa fa-comments',
+                'submenu'=>[
+                    [
+                        'text'=>'Apertura',
+                        'url'  => 'desarrollo/eval/inicio',
+                        'icon' => 'far fa-circle',
+                    ],
+                    [
+                        'text'=>'Resultados',
+                        'url' => 'desarrollo/eval/consulta',
+                        'icon' => 'far fa-circle',
+                    ]
+                ],
+            ]);
         });
     }
 }

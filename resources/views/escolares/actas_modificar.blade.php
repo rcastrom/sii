@@ -45,7 +45,7 @@
                 <button type="submit" class="btn btn-primary">Continuar</button>
             </div>
         </form>
-        </div>
+
         <x-aviso>
             Actualizar el acta también actualiza al kárdex de manera automática solamente si la calificación
             de los estudiantes ya estaba registrada

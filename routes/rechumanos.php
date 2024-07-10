@@ -1,9 +1,10 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Humanos\HumanosController;
+use App\Http\Controllers\Humanos\PlazasController;
 
 Route::group(['prefix'=>'rechumanos','middleware'=>['auth','role:rechumanos']],function (){
-    Route::get('/',[HumanosController::class,'index'])->name('inicio_rhumanos');
+    Route::get('/',[HumanosController::class,'index'])->name('inicio_rechumanos');
     Route::controller(HumanosController::class)->prefix('personal')->group(function (){
         Route::get('/alta','alta1');
         Route::post('/alta1','alta_personal1')->name('rechumanos.alta1');
@@ -26,5 +27,7 @@ Route::group(['prefix'=>'rechumanos','middleware'=>['auth','role:rechumanos']],f
         Route::post('/alta_estudio','nuevo_estudio2')->name('rechumanos.alta_estudio');
         Route::get('/estudios_borrar/{estudio}','eliminar_estudio');
         Route::delete('/estudios_eliminar','eliminar_estudio2')->name('rechumanos.borrar_estudio');
+        Route::get('/plazas/{personal}','listado_plazas_personal');
+        Route::resource('/admin/personalPlaza',PlazasController::class);
     });
 });

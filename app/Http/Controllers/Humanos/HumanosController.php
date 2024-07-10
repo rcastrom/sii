@@ -13,6 +13,7 @@ use App\Models\PersonalEstudio;
 use App\Models\PersonalInstitEstudio;
 use App\Models\PersonalNivelEstudio;
 use App\Models\PersonalNombramiento;
+use App\Models\PersonalPlaza;
 use Illuminate\Contracts\Events\Dispatcher;
 use App\Http\Controllers\MenuHumanosController;
 use App\Http\Controllers\Acciones\AccionesController;
@@ -442,5 +443,27 @@ class HumanosController extends Controller
             $informacion->delete();
         }
         return $this->regresar_listado_estudios($personal);
+    }
+
+    public function listado_plazas_personal(Request $request): Factory|View|Application
+    {
+        $id=base64_decode($request->personal);
+        $encabezado="Plazas personal";
+        $personal_info= $this->datos_personal($id);
+        $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
+        if(PersonalPlaza::where('id_personal',$id)->where('estatus_plaza','A')
+                ->count()>0){
+            $plazas=PersonalPlaza::where('id_personal',$id)
+                ->leftjoin('categorias','personal_plazas.id_categoria','=','categorias.id')
+                ->leftjoin('motivos','personal_plazas.id_motivo','=','motivos.id')
+                ->select('personal_plazas.*','categorias.categoria','motivos.motivo')
+                ->get();
+            $bandera=1;
+        }else{
+            $bandera=0;
+            $plazas='';
+        }
+        return view('rechumanos.plazas_listado')
+            ->with(compact('id','encabezado','bandera','nombre','plazas'));
     }
 }

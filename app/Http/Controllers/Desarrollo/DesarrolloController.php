@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Desarrollo;
 
 use App\Models\Aula;
 use App\Models\Carrera;
+use App\Models\EvaluacionAlumno;
+use App\Models\FechaEvaluacion;
 use App\Models\PeriodoEscolar;
 use App\Models\PeriodoFicha;
 use App\Models\AulaAspirante;
@@ -179,4 +181,61 @@ class DesarrolloController extends Controller
         return view('desarrollo.si')->with(compact('encabezado','mensaje'));
     }
 
+    public function evaluacion_inicio()
+    {
+        $datos_periodo=(new AccionesController())->periodo_entrega_fichas();
+        $periodo_actual=$datos_periodo->periodo;
+        $periodos=PeriodoEscolar::orderBy('periodo','ASC')->get();
+        $encabezado="Evaluación al Docente";
+        return view('desarrollo.evaluacion_periodo')->with(compact('periodo_actual',
+        'periodos','encabezado'));
+    }
+    public function evaluacion_periodo(Request $request)
+    {
+        $periodo=$request->get('periodo');
+        $encuesta=$request->get('encuesta');
+        $datos_periodo=PeriodoEscolar::where('periodo',$periodo)->first();
+        if(FechaEvaluacion::where('periodo',$periodo)->where('encuesta',$encuesta)->count()>0){
+            $datos=FechaEvaluacion::where('periodo',$periodo)->where('encuesta',$encuesta)->first();
+            $encabezado='Modificación de evaluación al docente';
+            return view('desarrollo.evaluacion_periodo_modifica')->with(compact('periodo',
+                'datos_periodo','encabezado','datos'));
+        }else{
+            $encabezado='Alta de evaluación al docente';
+            return view('desarrollo.evaluacion_periodo_alta')->with(compact('periodo',
+            'datos_periodo','encabezado'));
+        }
+    }
+
+    public function resultados_evaluacion1(){
+        $periodo_actual_consulta=(new AccionesController())->periodo();
+        $periodo_actual=$periodo_actual_consulta[0]->periodo;
+        $periodos=PeriodoEscolar::orderBy('periodo','DESC')->get();
+        $encabezado="Evaluación al Docente";
+        return view('desarrollo.evaluacion_resultados')->with(compact('periodo_actual',
+            'periodos','encabezado'));
+    }
+
+    public function resultados_evaluacion2(Request $request){
+        $periodo=$request->get('periodo');
+        $encuesta=$request->get('encuesta');
+        $tipo_busqueda=$request->get('busqueda');
+        if(FechaEvaluacion::where('periodo',$periodo)
+            ->where('encuesta',$encuesta)->count()>0){
+            if(EvaluacionAlumno::where('periodo',$periodo)
+            ->where('encuesta',$encuesta)->count()>0){
+                $bandera=1;
+            }else{
+                $encabezado="Evaluación al docente";
+                $mensaje="Los estudiantes no han registrados respuestas, por lo que ".
+                    "lo que no hay información que mostrar";
+                return view('desarrollo.no')->with(compact('encabezado','mensaje'));
+            }
+        }else{
+            $encabezado="Evaluación al docente";
+            $mensaje="No ha indicado parámetros para la evaluación al docente, por ".
+                "lo que no hay información que mostrar";
+            return view('desarrollo.no')->with(compact('encabezado','mensaje'));
+        }
+    }
 }
