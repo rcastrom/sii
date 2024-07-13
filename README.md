@@ -1,7 +1,7 @@
 # SII vr 3.0
 
-*Versión del Sistema Integral de Información (SII) de los Institutos Tecnológicos totalmente
-desarrollado en [Laravel](https://laravel.com/)*.
+*Versión del Sistema Integral de Información (SII) de los Institutos Tecnológicos 
+desarrollado totalmente en [Laravel](https://laravel.com/)*.
 
 ## Comenzando 🚀
 
@@ -16,11 +16,11 @@ tablas y procedimientos que, hasta el momento, cuenta el sistema.
 Los módulos que se han migrado son:
 * Servicios Escolares (90%).
 * Estudiantes (90%).
-* División de Estudios Profesionales (80%).
-* Jefaturas Académicas (60%).
+* División de Estudios Profesionales (90%).
+* Jefaturas Académicas (90%).
 * Planeación (40%).
 * Coordinación de Verano (90%).
-* Desarrollo Académico (1%).
+* Desarrollo Académico (20%).
 * Personal docente (90%).
 * Recursos Humanos (60%)
 
@@ -152,7 +152,7 @@ Su proyecto debería estar listo para ser empleado :)
 
 Laravel emite recomendaciones referentes a la configuración que se recomienda emplear si
 decide emplear este sistema; por favor, verifique dicha información en el siguiente
-[enlace](https://laravel.com/docs/8.x/deployment)
+[enlace](https://laravel.com/docs/11.x/deployment)
 
 ## Despliegue 📦
 
