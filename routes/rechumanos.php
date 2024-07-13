@@ -27,7 +27,10 @@ Route::group(['prefix'=>'rechumanos','middleware'=>['auth','role:rechumanos']],f
         Route::post('/alta_estudio','nuevo_estudio2')->name('rechumanos.alta_estudio');
         Route::get('/estudios_borrar/{estudio}','eliminar_estudio');
         Route::delete('/estudios_eliminar','eliminar_estudio2')->name('rechumanos.borrar_estudio');
-        Route::get('/plazas/{personal}','listado_plazas_personal');
+        Route::get('/plazas/{personal}/{tipo}','listado_plazas_personal');
         Route::resource('/admin/personalPlaza',PlazasController::class);
+    });
+    Route::controller(HumanosController::class)->prefix('plazas')->group(function (){
+        Route::get('/listado','listado_plazas_uno');
     });
 });

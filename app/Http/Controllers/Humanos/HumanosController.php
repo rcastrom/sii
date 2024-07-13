@@ -21,6 +21,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 
@@ -169,8 +170,8 @@ class HumanosController extends Controller
     }
     public function listado(): Factory|View|Application
     {
-        $personal=Personal::select('id','apellido_paterno',
-            'apellido_materno','nombre_empleado','no_tarjeta')
+        $personal=Personal::select(['id','apellido_paterno',
+            'apellido_materno','nombre_empleado','no_tarjeta'])
             ->orderBy('apellido_paterno')
             ->orderBy('apellido_materno')
             ->orderBy('nombre_empleado')
@@ -183,7 +184,7 @@ class HumanosController extends Controller
         $id=base64_decode($request->personal);
         $personal_info= $this->datos_personal($id);
         $depto=$this->area_personal($personal_info->clave_area);
-        $campos=PersonalDato::select('id','campo','lectura')->get();
+        $campos=PersonalDato::select(['id','campo','lectura'])->get();
         $datos=array();
         $i=0;
         foreach ($campos as $campo){
@@ -244,7 +245,7 @@ class HumanosController extends Controller
         $personal->save();
         $personal_info= $this->datos_personal($id);
         $depto=$this->area_personal($personal_info->clave_area);
-        $campos=PersonalDato::select('id','campo','lectura')->get();
+        $campos=PersonalDato::select(['id','campo','lectura'])->get();
         $datos=array();
         $i=0;
         foreach ($campos as $campo){
@@ -287,8 +288,8 @@ class HumanosController extends Controller
         $nivel_estudios->nivel=$request->nivel;
         $nivel_estudios->save();
         //
-        $personal=Personal::select('id','apellido_paterno',
-            'apellido_materno','nombre_empleado','no_tarjeta')
+        $personal=Personal::select(['id','apellido_paterno',
+            'apellido_materno','nombre_empleado','no_tarjeta'])
             ->orderBy('apellido_paterno')
             ->orderBy('apellido_materno')
             ->orderBy('nombre_empleado')
@@ -340,11 +341,11 @@ class HumanosController extends Controller
         return view('rechumanos.alta_escuela')->with(compact('estudio',
             'estados','bandera','encabezado'));
     }
-    public function municipios(Request $request): \Illuminate\Http\JsonResponse
+    public function municipios(Request $request): JsonResponse
     {
         $estado = $request->id;
         $municipios['data'] =Municipio::where('id_estado',$estado)
-            ->select('id','municipio')
+            ->select(['id','municipio'])
             ->orderBy('municipio')
             ->get();
         return response()->json($municipios);
@@ -448,12 +449,15 @@ class HumanosController extends Controller
     public function listado_plazas_personal(Request $request): Factory|View|Application
     {
         $id=base64_decode($request->personal);
+        $tipo=$request->tipo;
         $encabezado="Plazas personal";
         $personal_info= $this->datos_personal($id);
         $nombre=$personal_info->apellido_paterno.' '.$personal_info->apellido_materno.' '.$personal_info->nombre_empleado;
-        if(PersonalPlaza::where('id_personal',$id)->where('estatus_plaza','A')
+        $estatus=$tipo==1?'A':'H';
+        if(PersonalPlaza::where('id_personal',$id)->where('estatus_plaza', $estatus)
                 ->count()>0){
             $plazas=PersonalPlaza::where('id_personal',$id)
+                ->where('estatus_plaza',$estatus)
                 ->leftjoin('categorias','personal_plazas.id_categoria','=','categorias.id')
                 ->leftjoin('motivos','personal_plazas.id_motivo','=','motivos.id')
                 ->select('personal_plazas.*','categorias.categoria','motivos.motivo')
@@ -464,6 +468,12 @@ class HumanosController extends Controller
             $plazas='';
         }
         return view('rechumanos.plazas_listado')
-            ->with(compact('id','encabezado','bandera','nombre','plazas'));
+            ->with(compact('id','encabezado','bandera','nombre','plazas','tipo'));
+
+    }
+    public function listado_plazas_uno(): Factory|View|Application
+    {
+        $encabezado="Listado de plazas del personal";
+        return view('rechumanos.listado_plazas_1')->with(compact('encabezado'));
     }
 }

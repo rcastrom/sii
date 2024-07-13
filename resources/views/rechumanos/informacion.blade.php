@@ -42,7 +42,7 @@
             <ul>
                 <li>Estatus del personal</li>
                 <li><a href="/rechumanos/personal/estudios/{{$id}}">Estudios</a></li>
-                <li><a href="/rechumanos/personal/plazas/{{$id}}">Plazas</li>
+                <li><a href="/rechumanos/personal/plazas/{{$id}}/1">Plazas</a></li>
             </ul>
         </div>
     </x-additional>

@@ -30,6 +30,17 @@ class MenuHumanosController extends Controller
                     ],
                 ]
             ]);
+            $event->menu->add([
+                'text'=>'Plazas',
+                'icon'=>'fa fa-cash-register',
+                'submenu'=>[
+                    [
+                        'text'=>'Listado',
+                        'url'=>'rechumanos/plazas/listado',
+                        'icon'=>'far fa-circle',
+                    ]
+                ]
+            ]);
         });
     }
 }

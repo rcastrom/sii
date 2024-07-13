@@ -39,9 +39,9 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="6">Las plazas que visualiza, tienen el estatus de "activas", por
-                                lo que serán las que se tomen en cuenta para cualquier tipo de cálculo.
-                                    De ser incorrecto, se sugiere la modifique como "enviar a histórico".
+                                <td colspan="6">Las plazas que visualiza y que tengan el estatus de "activas", serán
+                                    las que se tomen en cuenta para cualquier tipo de cálculo.
+                                    De ser incorrecto, se sugiere la modifique como "históricas".
                                 </td>
                             </tr>
                         </tfoot>
@@ -49,17 +49,21 @@
                 @else
                     <h4>Sin información</h4>
                     <p>De acuerdo a la información que se tiene registrada en el sistema, el
-                    personal no cuenta con estudios registrados.</p>
+                    personal no cuenta con plazas registradas bajo estatus de {{$tipo==1?' activas': 'históricas'}}</p>
                 @endif
             </div>
         </div>
     </x-information>
     <x-additional>
         @slot('header','Adicionar plaza')
+        @php
+            $id=base64_encode($id);
+            $cambio=$tipo==1?2:1;
+        @endphp
         <div class="row">
             <ul>
                 <li><a href="{{route('personalPlaza.create')}}">Asignarle una nueva plaza</a></li>
-                <li><a href="/rechumanos/personal/nuevo_estudio/{{base64_encode($id)}}">Ver histórico de plazas</a></li>
+                <li><a href="/rechumanos/personal/plazas/{{$id}}/{{$cambio}}">Ver {{$tipo==1?' histórico de plazas':' plazas activas'}}</a></li>
             </ul>
         </div>
     </x-additional>
