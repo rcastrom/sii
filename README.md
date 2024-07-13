@@ -5,15 +5,15 @@ desarrollado en [Laravel](https://laravel.com/)*.
 
 ## Comenzando 🚀
 
-_Es necesario migrar primero la base de datos; en particular, se recomienda PostgreSQL.
-Sin embargo, el proyecto al estar totalmente desarrollado como PDO
-le permitiría emplear otro tipo de manejador._
+_Es necesario migrar primero la base de datos; en particular, se recomienda PostgreSQL como
+manejador para la base de datos; sin embargo, el proyecto al estar totalmente desarrollado 
+como PDO, le permitiría emplear otro tipo de manejador._
 
 Dentro del proyecto [BDTEC](https://github.com/rcastrom/bdtec) se encuentra una base
 de datos con la estructura en PostgreSQL (sin valores) así como las definiciones de
 tablas y procedimientos que, hasta el momento, cuenta el sistema.
 
-Hasta el momento, los módulos que se han migrado son:
+Los módulos que se han migrado son:
 * Servicios Escolares (90%).
 * Estudiantes (90%).
 * División de Estudios Profesionales (80%).
@@ -21,18 +21,15 @@ Hasta el momento, los módulos que se han migrado son:
 * Planeación (40%).
 * Coordinación de Verano (90%).
 * Desarrollo Académico (1%).
-* Personal docente (90%)
+* Personal docente (90%).
+* Recursos Humanos (60%)
 
 ### Pre-requisitos 📋
 
 #### PHP
 Versión mínima de PHP: 8.2 y se recomienda a PostgreSQL como manejador de base de datos, en
-cuyo caso, deberá contar con la extensión _pgsql_
+cuyo caso, deberá contar con la extensión _pgsql_.
 
-```
-sudo apt install php8.2-pgsql
-sudo service apache2 restart
-```
 >
 > En caso de emplear Ningx (*RECOMENDADO*), favor de seguir las indicaciones del
 > siguiente enlace: [Nginx](https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-20-04-es)
@@ -41,8 +38,7 @@ sudo service apache2 restart
 >
 
 #### Composer
-Deberá contar con composer instalado_
-`https://getcomposer.org/download/`
+Deberá contar con [composer](https://getcomposer.org/download/) instalado
 
 #### Node
 El enlace mostrado [NPM](https://www.freecodecamp.org/espanol/news/como-instalar-nodejs-en-ubuntu-y-actualizar-npm-a-la-ultima-version/),
@@ -50,45 +46,54 @@ es especialmente si su sistema operativo es en Ubuntu; de no ser así, favor de 
 acuerdo a su distro.
 
 #### Curl
-La versión mínima requerida es la 7.34.0
-```
-sudo apt install curl
-```
+La versión mínima requerida es la 7.34.0. Verifique su instalación de acuerdo con la 
+distribución que maneje.
 
-### Instalación 🔧
+#### Git
+Deberá contar con git para descargar el proyecto.
 
-Desde terminal, dirigirse a un punto donde descargará el proyecto; por ejemplo, suponga
-_/home/<su_usuario>/Escritorio/_; entonces
 
-````
-cd /home/<su_usuario>/Escritorio
-````
+### Instalación en Apache 🔧
 
-Posteriormente, ingresar a dicha carpeta y descargar el proyecto
+Desde terminal, cree un subdirectorio llamado _sii_ en la ruta _/var/www/html_
 
 ```
+sudo mkdir /var/www/html/sii
+```
+
+Posteriormente, diríjase hacia dicha carpeta y permita que su usuario pueda descargar el proyecto
+
+```
+cd /var/www/html
+sudo chown -R $USER:USER sii
 git clone https://github.com/rcastrom/sii.git 
 ```
 
-Ingrese a la carpeta _sii_ que el sistema acaba de crear, y realice una actualización de la información
+Ingrese a la carpeta _sii_ que el sistema acaba de crear, e instale los paquetes y dependencias
+que el sistema requiera
 
 ```
-composer update
+composer install
 ```
 
-Hecho eso, debe copiarse el archivo ".env.example" como ".env"
+Posteriormente, algunas dependencias necesarias de node
 
 ```
-sudo cp .env.example .env
-sudo chown www-data:www-data .env
+npm install
+```
+
+Una vez terminadas éstas acciones, debe copiarse al archivo _".env.example"_ como _".env"_
+
+```
+cp .env.example .env
 ```
 
 En el archivo recién creado (_.env_) debe indicar los datos necesarios para
 su proyecto (tales como URL, usuario y contraseña para la base de datos del proyecto);
 por ejemplo
 
-````
-
+```
+ APP_NAME=sii
  APP_ENV=production
  APP_DEBUG=false
  APP_URL=<indicar la URL que empleará para SII>
@@ -99,16 +104,51 @@ por ejemplo
  DB_USERNAME=<su usuario>
  DB_PASSWORD=<su contraseña>
  
-````
-Por último, mueva la carpeta _sii_ hacia la ruta donde se carga la información web
-(típicamente _/var/www/html/_); por lo que, aún en terminal
+```
 
-````
-cd /var/www/html/
-sudo mv /home/<su_usuario>/Escritorio/sii/ .
-sudo chown -R www-data:www-data sii
-````
-### En caso de emplear Nginx (recomendado)
+#### Con respecto a la base de datos
+Debido a que el proyecto fue elaborado en el Instituto Tecnológico de Ensenada (ITE),
+el schema empleado no es el habitual (_public_); sino que se llama ITE.
+** En caso de que quiera cambiar el schema a otro nombre, deberá cambiar los procedimientos
+almacenados, ya que estos buscan a algunas tablas localizadas precisamente en el schema 
+llamado ITE.
+**
+
+Verifique entonces que en el archivo _database.php_ ubicado dentro de la carpeta _config_, 
+se encuentre presente la línea
+
+```
+'search_path' => 'ITE',
+```
+Dentro del array 'pgsql'.
+
+### Por último
+La primera ocasión en que ejecute el proyecto en el navegador, le indicará que la 
+carpeta _storage_ (así como sus subdirectorios), requieren de permiso especial de escritura.
+Permita que el usuario de apache (o nginx), tenga las facultades sobre el mismo
+
+```
+sudo chown -R www-data:www-data storage
+```
+Dependiendo de su distribución, es posible que deba cambiarle las facultades a las carpetas,
+por lo que es posible que le solicite el cambio a 
+
+```
+sudo chmod 775 storage
+```
+Se le recomienda lea el siguiente artículo
+[5 consejos para una mejor revisión del código de Laravel](https://diegooo.com/revision-5-consejos-para-codigos-de-laravel/)
+
+Posteriormente, el sistema le indicará que el proyecto requiere contar con una llave
+de seguridad (para los formularios); por lo que, en terminal
+
+```
+php artisan key:generate
+```
+
+Su proyecto debería estar listo para ser empleado :)
+
+### Instalación en Nginx (recomendado)
 
 Laravel emite recomendaciones referentes a la configuración que se recomienda emplear si
 decide emplear este sistema; por favor, verifique dicha información en el siguiente
@@ -127,6 +167,7 @@ Esta versión ha sido creada hasta el momento para los siguientes perfiles de us
 * planeacion
 * desacad
 * personal
+* rechumanos
 
 Por lo que, deben crearse los usuarios de acuerdo al tipo de rol que van a emplear; para ello,
 desde _<ruta_proyecto>/database/seeders/_ encontrará el archivo *UserTableSeeder.php*,
