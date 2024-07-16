@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Humanos;
 
 
+use App\Models\Categoria;
 use App\Models\EntidadesFederativa;
 use App\Models\Municipio;
 use App\Models\Organigrama;
@@ -87,6 +88,71 @@ class HumanosController extends Controller
         return view('rechumanos.nuevo_estudio')->with(compact('id',
             'carreras','escuelas','encabezado','niveles','nombre'));
     }
+
+    public function buscar_plazas_personal($tipo,$seleccion):Factory|View|Application
+    {
+        if($seleccion==1){
+            $estatus='A';
+            $leyenda="activas";
+        }elseif ($seleccion==2) {
+            $estatus='H';
+            $leyenda="historicas";
+        }else{
+            $estatus='';
+            $leyenda='';
+        }
+        if($seleccion==1 || $seleccion==2){
+            if($tipo==1){
+                $encabezado2="Sin categoría específica, plazas ".$leyenda;
+                $plazas=PersonalPlaza::where('estatus_plaza',$estatus)
+                    ->leftjoin('categorias','personal_plazas.id_categoria','=','categorias.id')
+                    ->leftjoin('motivos','personal_plazas.id_motivo','=','motivos.id')
+                    ->leftjoin('personal','personal_plazas.id_personal','=','personal.id')
+                    ->select('personal_plazas.*','categorias.categoria',
+                        'motivos.motivo','personal.apellidos_empleado','personal.nombre_empleado')
+                    ->get();
+            }
+            else{
+                $nombre_categoria=Categoria::where('id',$tipo)->first();
+                $encabezado2="Categoría ".$nombre_categoria->categoria.", plazas ".$leyenda;
+                $plazas=PersonalPlaza::where('estatus_plaza',$estatus)
+                    ->where('id_categoria',$tipo)
+                    ->leftjoin('categorias','personal_plazas.id_categoria','=','categorias.id')
+                    ->leftjoin('motivos','personal_plazas.id_motivo','=','motivos.id')
+                    ->leftjoin('personal','personal_plazas.id_personal','=','personal.id')
+                    ->select('personal_plazas.*','categorias.categoria',
+                        'motivos.motivo','personal.apellidos_empleado','personal.nombre_empleado')
+                    ->get();
+            }
+        }else{
+            if($tipo==1){
+                $encabezado2="Sin categoría específica, plazas activas e históricas";
+                $plazas=PersonalPlaza::whereIn('estatus_plaza',['A','H'])
+                    ->leftjoin('categorias','personal_plazas.id_categoria','=','categorias.id')
+                    ->leftjoin('motivos','personal_plazas.id_motivo','=','motivos.id')
+                    ->leftjoin('personal','personal_plazas.id_personal','=','personal.id')
+                    ->select('personal_plazas.*','categorias.categoria',
+                        'motivos.motivo','personal.apellidos_empleado','personal.nombre_empleado')
+                    ->get();
+            }
+            else{
+                $nombre_categoria=Categoria::where('id',$tipo)->first();
+                $encabezado2="Categoría ".$nombre_categoria->categoria.", plazas ".$leyenda;
+                $plazas=PersonalPlaza::whereIn('estatus_plaza',['A','H'])
+                    ->where('id_categoria',$tipo)
+                    ->leftjoin('categorias','personal_plazas.id_categoria','=','categorias.id')
+                    ->leftjoin('motivos','personal_plazas.id_motivo','=','motivos.id')
+                    ->leftjoin('personal','personal_plazas.id_personal','=','personal.id')
+                    ->select('personal_plazas.*','categorias.categoria',
+                        'motivos.motivo','personal.apellidos_empleado','personal.nombre_empleado')
+                    ->get();
+            }
+        }
+        $encabezado="Listado de plazas";
+        return view('rechumanos.listado_plazas')
+            ->with(compact('plazas','encabezado','encabezado2'));
+    }
+
     public function alta_personal1(Request $request): Factory|View|Application
     {
         request()->validate([
@@ -475,5 +541,28 @@ class HumanosController extends Controller
     {
         $encabezado="Listado de plazas del personal";
         return view('rechumanos.listado_plazas_1')->with(compact('encabezado'));
+    }
+
+    public function listado_plazas_dos(Request $request)
+    {
+        $estatus=$request->get('estatus');
+        $categoria=$request->get('categoria');
+        return $this->buscar_plazas_personal($categoria,$estatus);
+    }
+
+    public function listado_plazas(Request $request): Factory|View|Application
+    {
+        $estatus=$request->get('estatus');
+        if($request->get('busqueda')==1){
+            $categorias=Categoria::select(['descripcion','id','categoria'])
+                ->distinct('categoria')
+                ->orderBy('categoria','ASC')
+                ->get();
+            $encabezado="Listado de plazas en base a una categoría específica";
+            return view('rechumanos.listado_plazas_2')
+                ->with(compact('encabezado','categorias','estatus'));
+        }else{
+            return $this->buscar_plazas_personal(1,$estatus);
+        }
     }
 }

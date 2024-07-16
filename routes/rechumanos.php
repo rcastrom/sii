@@ -32,5 +32,7 @@ Route::group(['prefix'=>'rechumanos','middleware'=>['auth','role:rechumanos']],f
     });
     Route::controller(HumanosController::class)->prefix('plazas')->group(function (){
         Route::get('/listado','listado_plazas_uno');
+        Route::post('listado','listado_plazas')->name('rechumanos.busqueda_plazas');
+        Route::post('/listado2','listado_plazas_dos')->name('rechumanos.busqueda_plaza_categoria');
     });
 });

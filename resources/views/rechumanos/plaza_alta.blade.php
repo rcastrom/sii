@@ -50,7 +50,7 @@
                         <select name="categoria" id="categoria" required class="form-control">
                             <option value="" selected>--Seleccione--</option>
                             @foreach($categorias as $categoria)
-                                <option value="{{$categoria->id}}">{{$categoria->categoria}} Hrs: {{$categoria->horas}}</option>
+                                <option value="{{$categoria->id}}">{{$categoria->categoria}} </option>
                             @endforeach
                         </select>
                     </div>

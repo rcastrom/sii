@@ -12,7 +12,7 @@
             <div class="col-sm-12 col-md-10">
                 <h4>Plazas de la Institución</h4>
                 <p>Determine la manera en cómo se visualizarán las plazas</p>
-                <form action="" method="post" class="row">
+                <form action="{{route('rechumanos.busqueda_plazas')}}" method="post" class="row">
                     @csrf
                     <div class="col-12">
                         <label for="busqueda" class="form-label">Tipo de búsqueda</label>
@@ -22,7 +22,7 @@
                             <option value="2">Todas las categorías</option>
                         </select>
                     </div>
-                    <div class="col-12">
+                    <div class="mt-3 col-12">
                         <label for="estatus" class="form-label">Estatus de la plaza</label>
                         <select name="estatus" id="estatus" required class="form-control">
                             <option value="" selected>--Seleccione--</option>
@@ -31,7 +31,7 @@
                             <option value="3">Todas</option>
                         </select>
                     </div>
-                    <div class="col-12">
+                    <div class="mt-3 col-12">
                         <button type="submit" class="btn btn-primary mb-4">Continuar</button>
                     </div>
                 </form>

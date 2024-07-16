@@ -28,7 +28,10 @@ class PlazasController extends Controller
             ->orderBy('apellidos_empleado','ASC')
             ->orderBy('nombre_empleado','ASC')
             ->get();
-        $categorias=Categoria::select('id','categoria','horas')->orderBy('categoria','ASC')->get();
+        $categorias=Categoria::select(['descripcion','id','categoria','horas'])
+            ->distinct('categoria')
+            ->orderBy('categoria','ASC')
+            ->get();
         $motivos=Motivo::select('id','descripcion','motivo')->orderBy('motivo','ASC')->get();
         $encabezado="Alta de plaza para personal";
         return view('rechumanos.plaza_alta')
@@ -83,7 +86,10 @@ class PlazasController extends Controller
      */
     public function edit(PersonalPlaza $personalPlaza)
     {
-        $categorias=Categoria::select('id','categoria','horas')->orderBy('categoria','ASC')->get();
+        $categorias=Categoria::select(['descripcion','id','categoria','horas'])
+            ->distinct('categoria')
+            ->orderBy('categoria','ASC')
+            ->get();
         $motivos=Motivo::select('id','descripcion','motivo')->orderBy('motivo','ASC')->get();
         $encabezado="Actualización de plaza";
         return view('rechumanos.plaza_edicion')

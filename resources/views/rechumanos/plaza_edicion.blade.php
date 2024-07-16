@@ -39,7 +39,7 @@
                     <div class="col-sm-10">
                         <select name="categoria" id="categoria" required class="form-control">
                             @foreach($categorias as $categoria)
-                                <option value="{{$categoria->id}}" {{$categoria->id==$personalPlaza->id_categoria?'selected':''}}>{{$categoria->categoria}} Hrs: {{$categoria->horas}}</option>
+                                <option value="{{$categoria->id}}" {{$categoria->id==$personalPlaza->id_categoria?'selected':''}}>({{$categoria->categoria}}) {{$categoria->descripcion}}</option>
                             @endforeach
                         </select>
                     </div>
