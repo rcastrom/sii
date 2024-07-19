@@ -2,6 +2,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Humanos\HumanosController;
 use App\Http\Controllers\Humanos\PlazasController;
+use App\Http\Controllers\Humanos\JefesController;
+
 
 Route::group(['prefix'=>'rechumanos','middleware'=>['auth','role:rechumanos']],function (){
     Route::get('/',[HumanosController::class,'index'])->name('inicio_rechumanos');
@@ -9,10 +11,13 @@ Route::group(['prefix'=>'rechumanos','middleware'=>['auth','role:rechumanos']],f
         Route::get('/alta','alta1');
         Route::post('/alta1','alta_personal1')->name('rechumanos.alta1');
         Route::post('/alta2','alta_personal2')->name('rechumanos.alta2');
-        Route::get('/listado','listado');
+        Route::get('/listado','listado1');
+        Route::post('/listado','listado')->name('rechumanos.listado');
         Route::get('/editar/{personal}','listado2');
         Route::get('/edicion/{campo}/{personal}','edicion');
         Route::put('/actualizar','actualizar')->name('rechumanos.datos_personal');
+        Route::get('/estatus/{personal}','estatus_personal_editar');
+        Route::post('/estatus','estatus_personal_editar2')->name('rechumanos.estatus_personal');
         Route::get('/estudios/{personal}','estudios_personal');
         Route::get('/estudios_editar/{estudio}','estudios_editar');
         Route::put('/estudios/actualizar','estudios_actualizar')->name('rechumanos.actualizar_estudios');
@@ -34,5 +39,8 @@ Route::group(['prefix'=>'rechumanos','middleware'=>['auth','role:rechumanos']],f
         Route::get('/listado','listado_plazas_uno');
         Route::post('listado','listado_plazas')->name('rechumanos.busqueda_plazas');
         Route::post('/listado2','listado_plazas_dos')->name('rechumanos.busqueda_plaza_categoria');
+    });
+    Route::controller(HumanosController::class)->prefix('jefaturas')->group(function (){
+        Route::resource('/listado',JefesController::class);
     });
 });

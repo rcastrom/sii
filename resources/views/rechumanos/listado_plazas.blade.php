@@ -33,7 +33,7 @@
                         <td>{{ $plaza->horas }}</td>
                         <td>{{ $plaza->apellidos_empleado.' '.$plaza->nombre_empleado }}</td>
                         <td>{{ $plaza->efectos_iniciales.'-'.$plaza->efectos_finales }}</td>
-                        <td><i class="fas fa-edit"></i>Editar</td>
+                        <td><a href="{{route('personalPlaza.edit',$plaza->id)}}"><i class="fas fa-edit"></i>Editar</a></td>
                     </tr>
                 @endforeach
             </tbody>

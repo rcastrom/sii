@@ -73,7 +73,7 @@
                     <label for="estatus_plaza" class="col-sm-2 form-label">Estatus de la plaza</label>
                     <div class="col-sm-10">
                         <select name="estatus_plaza" id="estatus_plaza" required class="form-control">
-                            <option value="A" selected>Activa</option>
+                            <option value="A" selected>Actual</option>
                             <option value="H">Enviar a histórico</option>
                         </select>
                     </div>

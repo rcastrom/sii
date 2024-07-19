@@ -10,6 +10,7 @@ use App\Models\Organigrama;
 use App\Models\Personal;
 use App\Models\PersonalCarrera;
 use App\Models\PersonalDato;
+use App\Models\PersonalEstatus;
 use App\Models\PersonalEstudio;
 use App\Models\PersonalInstitEstudio;
 use App\Models\PersonalNivelEstudio;
@@ -93,10 +94,10 @@ class HumanosController extends Controller
     {
         if($seleccion==1){
             $estatus='A';
-            $leyenda="activas";
+            $leyenda="actuales";
         }elseif ($seleccion==2) {
             $estatus='H';
-            $leyenda="historicas";
+            $leyenda="históricas";
         }else{
             $estatus='';
             $leyenda='';
@@ -110,6 +111,9 @@ class HumanosController extends Controller
                     ->leftjoin('personal','personal_plazas.id_personal','=','personal.id')
                     ->select('personal_plazas.*','categorias.categoria',
                         'motivos.motivo','personal.apellidos_empleado','personal.nombre_empleado')
+                    ->orderBy('categorias.categoria','ASC')
+                    ->orderBy('personal.apellidos_empleado','ASC')
+                    ->orderBy('personal.nombre_empleado','ASC')
                     ->get();
             }
             else{
@@ -122,17 +126,23 @@ class HumanosController extends Controller
                     ->leftjoin('personal','personal_plazas.id_personal','=','personal.id')
                     ->select('personal_plazas.*','categorias.categoria',
                         'motivos.motivo','personal.apellidos_empleado','personal.nombre_empleado')
+                    ->orderBy('categorias.categoria','ASC')
+                    ->orderBy('personal.apellidos_empleado','ASC')
+                    ->orderBy('personal.nombre_empleado','ASC')
                     ->get();
             }
         }else{
             if($tipo==1){
-                $encabezado2="Sin categoría específica, plazas activas e históricas";
+                $encabezado2="Sin categoría específica, plazas actuales e históricas";
                 $plazas=PersonalPlaza::whereIn('estatus_plaza',['A','H'])
                     ->leftjoin('categorias','personal_plazas.id_categoria','=','categorias.id')
                     ->leftjoin('motivos','personal_plazas.id_motivo','=','motivos.id')
                     ->leftjoin('personal','personal_plazas.id_personal','=','personal.id')
                     ->select('personal_plazas.*','categorias.categoria',
                         'motivos.motivo','personal.apellidos_empleado','personal.nombre_empleado')
+                    ->orderBy('categorias.categoria','ASC')
+                    ->orderBy('personal.apellidos_empleado','ASC')
+                    ->orderBy('personal.nombre_empleado','ASC')
                     ->get();
             }
             else{
@@ -145,6 +155,9 @@ class HumanosController extends Controller
                     ->leftjoin('personal','personal_plazas.id_personal','=','personal.id')
                     ->select('personal_plazas.*','categorias.categoria',
                         'motivos.motivo','personal.apellidos_empleado','personal.nombre_empleado')
+                    ->orderBy('categorias.categoria','ASC')
+                    ->orderBy('personal.apellidos_empleado','ASC')
+                    ->orderBy('personal.nombre_empleado','ASC')
                     ->get();
             }
         }
@@ -234,14 +247,33 @@ class HumanosController extends Controller
         $mensaje="Se dió de alta al personal, por lo que puede continuar con el proceso";
         return view('rechumanos.si')->with(compact('encabezado','mensaje'));
     }
-    public function listado(): Factory|View|Application
+
+    public function listado1(): Factory|View|Application
     {
-        $personal=Personal::select(['id','apellido_paterno',
-            'apellido_materno','nombre_empleado','no_tarjeta'])
-            ->orderBy('apellido_paterno')
-            ->orderBy('apellido_materno')
-            ->orderBy('nombre_empleado')
-            ->get();
+        $encabezado="Consulta de personal";
+        $situaciones=PersonalEstatus::all();
+        return view('rechumanos.listado_personal')
+            ->with(compact('situaciones','encabezado'));
+    }
+
+    public function listado(Request $request): Factory|View|Application
+    {
+        if($request->estatus!="T"){
+            $personal=Personal::select(['id','apellido_paterno',
+                'apellido_materno','nombre_empleado','no_tarjeta'])
+                ->where('status_empleado',$request->estatus)
+                ->orderBy('apellido_paterno')
+                ->orderBy('apellido_materno')
+                ->orderBy('nombre_empleado')
+                ->get();
+        }else{
+            $personal=Personal::select(['id','apellido_paterno',
+                'apellido_materno','nombre_empleado','no_tarjeta'])
+                ->orderBy('apellido_paterno')
+                ->orderBy('apellido_materno')
+                ->orderBy('nombre_empleado')
+                ->get();
+        }
         $encabezado="Listado del personal";
         return view('rechumanos.listado')->with(compact('personal','encabezado'));
     }
@@ -433,7 +465,6 @@ class HumanosController extends Controller
         if($request->bandera){
             $id=base64_decode($id);
             return $this->regresar_nuevo_estudio($id);
-            //return $this->regresar_listado_estudios($id);
         }else{
             return $this->regresar_contenido_estudios($id);
         }
@@ -510,6 +541,26 @@ class HumanosController extends Controller
             $informacion->delete();
         }
         return $this->regresar_listado_estudios($personal);
+    }
+
+    public function estatus_personal_editar(Request $request): Factory|View|Application
+    {
+        $id=base64_decode($request->personal);
+        $personal_info= $this->datos_personal($id);
+        $estatus=PersonalEstatus::get();
+        $encabezado="Personal: ".$personal_info->apellidos_empleado.' '.$personal_info->nombre_empleado;
+        return view('rechumanos.estatus_actualizar')
+            ->with(compact('id','personal_info','encabezado','estatus'));
+    }
+
+    public function estatus_personal_editar2(Request $request): Factory|View|Application
+    {
+        $id=$request->id;
+        Personal::where('id',$id)->update(['status_empleado'=>$request->estatus]);
+        $encabezado="Datos actualizados ";
+        $mensaje="Se modificó el estatus del personal";
+        return view('rechumanos.si')
+            ->with(compact('encabezado','mensaje'));
     }
 
     public function listado_plazas_personal(Request $request): Factory|View|Application

@@ -26,7 +26,7 @@
                         <label for="estatus" class="form-label">Estatus de la plaza</label>
                         <select name="estatus" id="estatus" required class="form-control">
                             <option value="" selected>--Seleccione--</option>
-                            <option value="1">Activa</option>
+                            <option value="1">Actual</option>
                             <option value="2">Histórico</option>
                             <option value="3">Todas</option>
                         </select>

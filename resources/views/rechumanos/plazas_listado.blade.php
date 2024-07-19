@@ -39,7 +39,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td colspan="6">Las plazas que visualiza y que tengan el estatus de "activas", serán
+                                <td colspan="6">Las plazas que visualiza y que tengan el estatus de "actual", serán
                                     las que se tomen en cuenta para cualquier tipo de cálculo.
                                     De ser incorrecto, se sugiere la modifique como "históricas".
                                 </td>

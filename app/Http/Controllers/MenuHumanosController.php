@@ -41,6 +41,17 @@ class MenuHumanosController extends Controller
                     ]
                 ]
             ]);
+            $event->menu->add([
+                'text'=>'Nombramientos',
+                'icon'=>'fa fa-star',
+                'submenu'=>[
+                    [
+                        'text'=>'Listado',
+                        'url'=>'rechumanos/jefaturas/listado',
+                        'icon'=>'far fa-circle',
+                    ]
+                ]
+            ]);
         });
     }
 }

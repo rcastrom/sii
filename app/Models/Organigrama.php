@@ -10,4 +10,8 @@ class Organigrama extends Model
     use HasFactory;
     protected $table="organigrama";
     protected $primaryKey='clave_area';
+    protected $casts=[
+        'clave_area'=>'string',
+        'area_depende'=>'string'
+    ];
 }

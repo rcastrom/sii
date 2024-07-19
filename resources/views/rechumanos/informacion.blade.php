@@ -40,7 +40,7 @@
         @slot('header','Datos Adicionales')
         <div class="row">
             <ul>
-                <li>Estatus del personal</li>
+                <li><a href="/rechumanos/personal/estatus/{{$id}}">Estatus del personal</a></li>
                 <li><a href="/rechumanos/personal/estudios/{{$id}}">Estudios</a></li>
                 <li><a href="/rechumanos/personal/plazas/{{$id}}/1">Plazas</a></li>
             </ul>

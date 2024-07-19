@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class EvaluacionAlumno extends Model
 {
     use HasFactory;
-    protected $primaryKey=(['no_de_control','periodo','materia']);
+    protected $primaryKey='no_de_control';
     protected $casts=[
         'no_de_control'=>'string',
     ];

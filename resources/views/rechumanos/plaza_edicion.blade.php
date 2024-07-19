@@ -62,7 +62,7 @@
                     <label for="estatus_plaza" class="col-sm-2 form-label">Estatus de la plaza</label>
                     <div class="col-sm-10">
                         <select name="estatus_plaza" id="estatus_plaza" required class="form-control">
-                            <option value="A" {{$personalPlaza->estatus_plaza=='A'?'selected':''}}>Activa</option>
+                            <option value="A" {{$personalPlaza->estatus_plaza=='A'?'selected':''}}>Actual</option>
                             <option value="H" {{$personalPlaza->estatus_plaza=='H'?'selected':''}}>Enviar a histórico</option>
                         </select>
                     </div>
