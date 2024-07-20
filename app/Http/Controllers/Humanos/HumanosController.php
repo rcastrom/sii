@@ -25,6 +25,8 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\PersonalExport;
 
 
 class HumanosController extends Controller
@@ -615,5 +617,19 @@ class HumanosController extends Controller
         }else{
             return $this->buscar_plazas_personal(1,$estatus);
         }
+    }
+
+    public function exportar()
+    {
+        $personal=Personal::select([
+            'apellido_paterno','apellido_materno','nombre_empleado','rfc','curp_empleado',
+            'no_tarjeta','inicio_gobierno','inicio_sep','ingreso_rama','status_empleado',
+            'correo_electronico','correo_institucion'
+        ])
+            ->orderBy('apellido_paterno','ASC')
+            ->orderBy('apellido_materno','ASC')
+            ->orderBy('nombre_empleado','ASC')
+            ->get();
+        return Excel::download(new PersonalExport($personal), 'personal.xlsx');
     }
 }

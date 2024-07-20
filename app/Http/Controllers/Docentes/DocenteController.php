@@ -61,9 +61,9 @@ class DocenteController extends Controller
                 ->where('materia',$materia)
                 ->where('grupo',$grupo)
                 ->join('alumnos','seleccion_materias.no_de_control','=','alumnos.no_de_control')
-                ->orderBy('apellido_paterno','asc')
-                ->orderBy('apellido_materno','asc')
-                ->orderBy('nombre_alumno','asc')
+                ->orderBy('apellido_paterno','ASC')
+                ->orderBy('apellido_materno','ASC')
+                ->orderBy('nombre_alumno','ASC')
                 ->get();
             $nombre_mat=Materia::where('materia',$materia)->first();
             $nperiodo=PeriodoEscolar::where('periodo',$periodo)->first();
@@ -93,9 +93,9 @@ class DocenteController extends Controller
                 ->where('grupo',$grupo)
                 ->join('alumnos','seleccion_materias.no_de_control','=','alumnos.no_de_control')
                 ->select('seleccion_materias.no_de_control','apellido_paterno','apellido_materno','nombre_alumno')
-                ->orderBy('apellido_paterno','asc')
-                ->orderBy('apellido_materno','asc')
-                ->orderBy('nombre_alumno','asc')
+                ->orderBy('apellido_paterno','ASC')
+                ->orderBy('apellido_materno','ASC')
+                ->orderBy('nombre_alumno','ASC')
                 ->get();
             return Excel::download(new ListasExport($inscritos),'lista.xlsx');
         }else{
@@ -120,9 +120,9 @@ class DocenteController extends Controller
                     ->where('grupo', $grupo)
                     ->join('alumnos', 'seleccion_materias.no_de_control', '=', 'alumnos.no_de_control')
                     ->select('seleccion_materias.no_de_control', 'apellido_paterno', 'apellido_materno', 'nombre_alumno')
-                    ->orderBy('apellido_paterno', 'asc')
-                    ->orderBy('apellido_materno', 'asc')
-                    ->orderBy('nombre_alumno', 'asc')
+                    ->orderBy('apellido_paterno', 'ASC')
+                    ->orderBy('apellido_materno', 'ASC')
+                    ->orderBy('nombre_alumno', 'ASC')
                     ->get();
                 $nombre_mat = Materia::where('materia', $materia)->first();
                 $doc=$this->docente();
@@ -158,9 +158,9 @@ class DocenteController extends Controller
                     ->where('grupo',$grupo)
                     ->join('alumnos','seleccion_materias.no_de_control','=','alumnos.no_de_control')
                     ->select('seleccion_materias.no_de_control','apellido_paterno','apellido_materno','nombre_alumno','calificacion')
-                    ->orderBy('apellido_paterno','asc')
-                    ->orderBy('apellido_materno','asc')
-                    ->orderBy('nombre_alumno','asc')
+                    ->orderBy('apellido_paterno','ASC')
+                    ->orderBy('apellido_materno','ASC')
+                    ->orderBy('nombre_alumno','ASC')
                     ->get();
                 $datos=Grupo::where('periodo',$periodo)
                     ->where('materia',$materia)

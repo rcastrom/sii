@@ -34,6 +34,7 @@ Route::group(['prefix'=>'rechumanos','middleware'=>['auth','role:rechumanos']],f
         Route::delete('/estudios_eliminar','eliminar_estudio2')->name('rechumanos.borrar_estudio');
         Route::get('/plazas/{personal}/{tipo}','listado_plazas_personal');
         Route::resource('/admin/personalPlaza',PlazasController::class);
+        Route::get('/exportar','exportar');
     });
     Route::controller(HumanosController::class)->prefix('plazas')->group(function (){
         Route::get('/listado','listado_plazas_uno');

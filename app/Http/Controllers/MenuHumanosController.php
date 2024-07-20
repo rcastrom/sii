@@ -28,6 +28,11 @@ class MenuHumanosController extends Controller
                         'url'=>'rechumanos/personal/listado',
                         'icon' => 'far fa-circle',
                     ],
+                    [
+                        'text'=>'Exportar CSV',
+                        'url'=>'rechumanos/personal/exportar',
+                        'icon' => 'far fa-circle',
+                    ],
                 ]
             ]);
             $event->menu->add([
