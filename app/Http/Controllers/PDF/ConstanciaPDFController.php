@@ -15,33 +15,33 @@ use App\Http\Controllers\Acciones\AccionesController;
 use App\Models\Personal;
 use Carbon\Carbon;
 use Codedge\Fpdf\Fpdf\Fpdf;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class ConstanciaPDFController extends Controller
 {
-    private $fpdf;
     public function __construct(){
 
     }
     public function mes_espanol($mes)
     {
+        $valor='';
         switch ($mes)
         {
-            case '01': return 'Enero'; break;
-            case '02': return 'Febrero'; break;
-            case '03': return 'Marzo'; break;
-            case '04': return 'Abril'; break;
-            case '05': return 'Mayo'; break;
-            case '06': return 'Junio'; break;
-            case '07': return 'Julio'; break;
-            case '08': return 'Agosto'; break;
-            case '09': return 'Septiembre'; break;
-            case '10': return 'Octubre'; break;
-            case '11': return 'Noviembre'; break;
-            case '12': return 'Diciembre'; break;
+            case '01': $valor= 'enero'; break;
+            case '02': $valor= 'febrero'; break;
+            case '03': $valor= 'marzo'; break;
+            case '04': $valor= 'abril'; break;
+            case '05': $valor='mayo'; break;
+            case '06': $valor= 'junio'; break;
+            case '07': $valor= 'julio'; break;
+            case '08': $valor= 'agosto'; break;
+            case '09': $valor= 'septiembre'; break;
+            case '10': $valor= 'octubre'; break;
+            case '11': $valor= 'noviembre'; break;
+            case '12': $valor= 'diciembre'; break;
         }
+        return $valor;
     }/*
     public function dia_espanol($dia)
     {
@@ -97,6 +97,7 @@ class ConstanciaPDFController extends Controller
     }
 
     public function mes($mes){
+        $nmes='';
         switch($mes){
             case '01': $nmes="enero"; break;
             case '02': $nmes="febrero"; break;
@@ -156,23 +157,23 @@ class ConstanciaPDFController extends Controller
         $alto = 3.1;
         foreach($horarios as $materia => $valor)
         {
-            $nmateria 		= $horarios[$materia]['materia'];
-            $cve_oficial 	= $horarios[$materia]['cve_oficial'];
-            $grupo 			= $horarios[$materia]['grupo'];
-            $repeticion 	= $horarios[$materia]['repeticion'];
-            $creditos 		= $horarios[$materia]['creditos'];
-            $profesor 		= $horarios[$materia]['profesor'];
+            $nmateria 		= $valor['materia'];
+            $cve_oficial 	= $valor['cve_oficial'];
+            $grupo 			= $valor['grupo'];
+            $repeticion 	= $valor['repeticion'];
+            $creditos 		= $valor['creditos'];
+            $profesor 		= $valor['profesor'];
 
             $salto = "<br>";
-            $lunes 			= ($horarios[$materia]['lunes'])?str_replace($salto, "\n ", $horarios[$materia]['lunes'])			:" \n ";
-            $martes 		= ($horarios[$materia]['martes'])?str_replace($salto, "\n ", $horarios[$materia]['martes'])		:" \n ";
-            $miercoles 	= ($horarios[$materia]['miercoles'])?str_replace($salto, "\n ", $horarios[$materia]['miercoles'])	:" \n ";
-            $jueves 		= ($horarios[$materia]['jueves'])?str_replace($salto, "\n ", $horarios[$materia]['jueves'])		:" \n ";
-            $viernes 		= ($horarios[$materia]['viernes'])?str_replace($salto, "\n ", $horarios[$materia]['viernes'])		:" \n ";
-            $sabado 		= ($horarios[$materia]['sabado'])?str_replace($salto, "\n ", $horarios[$materia]['sabado'])		:" \n ";
+            $lunes 			= ($valor['lunes'])?str_replace($salto, "\n ", $valor['lunes'])			:" \n ";
+            $martes 		= ($valor['martes'])?str_replace($salto, "\n ", $valor['martes'])		:" \n ";
+            $miercoles 	= ($valor['miercoles'])?str_replace($salto, "\n ", $valor['miercoles'])	:" \n ";
+            $jueves 		= ($valor['jueves'])?str_replace($salto, "\n ", $valor['jueves'])		:" \n ";
+            $viernes 		= ($valor['viernes'])?str_replace($salto, "\n ", $valor['viernes'])		:" \n ";
+            $sabado 		= ($valor['sabado'])?str_replace($salto, "\n ", $valor['sabado'])		:" \n ";
 
             $color = ($non)?225:255;
-            $non = ($non)?false:true;
+            $non = !$non;
 
             $pdf->SetFillColor($color);
             $pdf->SetXY($x_ini, $y);
@@ -266,8 +267,8 @@ class ConstanciaPDFController extends Controller
         return $pdf;
     }
     public function semreal($periodo_ingreso,$periodo_actual){
-        $anio_actual=substr($periodo_actual, 0, 4);
-        $anio_ingresa=substr($periodo_ingreso, 0, 4);
+        $anio_actual=(int) substr($periodo_actual, 0, 4);
+        $anio_ingresa=(int) substr($periodo_ingreso, 0, 4);
 
         if(substr($periodo_ingreso, -1)==1){
             if(substr($periodo_actual,-1)==3){
@@ -286,11 +287,7 @@ class ConstanciaPDFController extends Controller
     }
     public function fecha_completa($fecha = NULL)
     {
-        if(!$fecha) {
-            return "Ensenada, B.C., a ".$this->fecha_espanol($fecha);
-        } else {
-            return "Ensenada, B.C., a ".$this->fecha_espanol($fecha);
-        }
+        return "Ensenada, B.C., a ".$this->fecha_espanol($fecha);
     }
     public function nperiodo($periodo, $largo=false)
     {
@@ -368,13 +365,13 @@ class ConstanciaPDFController extends Controller
         $fra = '';
         for ($c = 0; $c < strlen($num); $c++) {
             $n = $num[$c];
-            if (! (strpos(".,'''", $n) === false)) {
+            if (! (!str_contains(".,'''", $n))) {
                 if ($punt) break;
                 else{
                     $punt = true;
                     //continue;
                 }
-            }elseif (! (strpos('0123456789', $n) === false)) {
+            }elseif (! (!str_contains('0123456789', $n))) {
                 if ($punt) {
                     if ($n != '0') $zeros = false;
                     $fra .= $n;
@@ -527,8 +524,8 @@ class ConstanciaPDFController extends Controller
             $prop_a		="el";
             $interesado = "del";
         }
-        $rfc_jefe=Jefe::where('clave_area','120600')->first();
-        $jefatura=Personal::where('rfc',$rfc_jefe->rfc)->first();
+        $jefe=Jefe::where('clave_area','120600')->first();
+        $jefatura=Personal::where('id',$jefe->id_jefe)->first();
         if($jefatura->sexo_empleado == 'F')
         {
             $genero_j = "JEFA";
@@ -625,7 +622,7 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
                 $decimales=$separa_promedio[1];
             $dif = $promedio - $enteros;
             $decimales = (strlen($decimales)==1)?$decimales."0":$decimales;
-            $promedio_l = ($dif>=0.1)?($this->num_a_letra($enteros, false, false)." punto ".(($decimales<10)?($this->num_a_letra($decimales."0", false, false)):$this->num_a_letra($decimales, false, false))):($this->num_a_letra($promedio, false, true));
+            $promedio_l = ($dif>=0.1)?($this->num_a_letra($enteros, false, false)." punto ".(($decimales<10)?($this->num_a_letra($decimales."0", false, false)):$this->num_a_letra($decimales, false, false))):($this->num_a_letra($promedio, false));
             $cuerpoTT = "habiendo obtenido un promedio general de ".$enteros.".".$decimales." (".$promedio_l.")";
             //$hojas=0;
             $egreso = " ".trim($ultimo_periodo)." ".$cuerpoTT;
@@ -638,7 +635,7 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
             $egreso = "el pasado ".trim($ultimo_periodo);
         }
         $cierre = "\n\nA petición ".$interesado." interesad".$genero_a." ".$otro_cierre.", se extiende la presente en la ciudad de ".$this->fecha_completa($fexpedicion).".".$nota;
-        $jefe=$rfc_jefe->jefe_area."\n".$genero_j." DEL DEPARTAMENTO DE SERVICIOS ESCOLARES";
+        $jefe=$jefatura->nombre_empleado.' '.$jefatura->apellidos_empleado."\n".$genero_j." DEL DEPARTAMENTO DE SERVICIOS ESCOLARES";
         $cuerpo = $comun;
         $periodo_estudios = "durante el periodo comprendido de ".$ide_periodo_inicial." a ".$ide_periodo_final;
         $creditos = $egreso.", cubriendo un total de ".$creditos_aprobados." créditos de ".$ncarrera->creditos_totales;
@@ -661,7 +658,7 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
                     $decimales=$separa_promedio[1];
                 $dif = $promedio - $enteros;
                 $decimales = (strlen($decimales)==1)?$decimales."0":$decimales;
-                $promedio_l = ($dif>=0.1)?($this->num_a_letra($enteros, false, false)." punto ".(($decimales<10)?($this->num_a_letra($decimales."0", false, false)):$this->num_a_letra($decimales, false, false))):($this->num_a_letra($promedio, false, true));
+                $promedio_l = ($dif>=0.1)?($this->num_a_letra($enteros, false, false)." punto ".(($decimales<10)?($this->num_a_letra($decimales."0", false, false)):$this->num_a_letra($decimales, false, false))):($this->num_a_letra($promedio, false));
                 $cuerpo.= $creditos." que comprende el plan de estudio, con un promedio general de ".$enteros.".".$decimales." (".$promedio_l.").";
                 $hojas=0;
                 break;
@@ -806,22 +803,22 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
                 break;
             }
         }
-        $this->fpdf=new Fpdf('P','mm','Letter');
-        $this->fpdf->AddPage();
-        $this->fpdf->SetAutoPageBreak(0);
-        $this->fpdf->AddFont('MM','','Montserrat-Medium.php');
-        $this->fpdf->AddFont('MM','B','Montserrat-Bold.php');
-        $this->fpdf->AddFont("Montserrat2",'','Montserrat-ExtraLight.php');
-        $this->fpdf->AddFont("Montserrat2",'I','Montserrat-ExtraLightItalic.php');
-        $this->fpdf->AddFont("Montserrat2",'B','Montserrat-Light.php');
-        $this->fpdf->AddFont("Montserrat2",'BI','Montserrat-SemiBoldItalic.php');
+        $fpdf =new Fpdf('P','mm','Letter');
+        $fpdf->AddPage();
+        $fpdf->SetAutoPageBreak(0);
+        $fpdf->AddFont('MM','','Montserrat-Medium.php');
+        $fpdf->AddFont('MM','B','Montserrat-Bold.php');
+        $fpdf->AddFont("Montserrat2",'','Montserrat-ExtraLight.php');
+        $fpdf->AddFont("Montserrat2",'I','Montserrat-ExtraLightItalic.php');
+        $fpdf->AddFont("Montserrat2",'B','Montserrat-Light.php');
+        $fpdf->AddFont("Montserrat2",'BI','Montserrat-SemiBoldItalic.php');
         $depto="120600";
         $x = 15;
         $y = 80; //Original 120
         $w = 180;
         $h = 4;
-        $this->encabezado($this->fpdf,$depto,$folio,$dia,$mes,$anio);
-        $this->fpdf->SetXY($x, $y);
+        $this->encabezado($fpdf,$depto,$folio,$dia,$mes,$anio);
+        $fpdf->SetXY($x, $y);
         if($tipo != 'C' && $tipo != 'R'){
             $titulo_persona="A QUIEN CORRESPONDA:";
             $ancho = $h*4;
@@ -836,38 +833,38 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
                 $centra='L';
             }
         }
-        $this->fpdf->SetFont('MM','B',10);
-        $this->fpdf->Cell($w, $ancho, $titulo_persona, 0, 2, $centra);
+        $fpdf->SetFont('MM','B',10);
+        $fpdf->Cell($w, $ancho, $titulo_persona, 0, 2, $centra);
         if($tipo != 'C'){
             //$pdf->SetFont('Helvetica','','10');
-            $this->fpdf->SetFont("MM",'',9);
-            $this->fpdf->MultiCell($w, $h, utf8_decode($apertura), 0, 'L');
-            $this->fpdf->SetXY($x, $this->fpdf->GetY());
-            $this->fpdf->SetFont("MM",'B',9);
+            $fpdf->SetFont("MM",'',9);
+            $fpdf->MultiCell($w, $h, utf8_decode($apertura), 0, 'L');
+            $fpdf->SetXY($x, $fpdf->GetY());
+            $fpdf->SetFont("MM",'B',9);
             //$pdf->SetFont('Helvetica','b','10');
             if($tipo != 'R')
-                $this->fpdf->MultiCell($w, $h*3, utf8_decode($nombre_alumno), 0, 'C');
+                $fpdf->MultiCell($w, $h*3, utf8_decode($nombre_alumno), 0, 'C');
             else
-                $this->fpdf->MultiCell($w, $h*3, "C. ".utf8_decode($nombre_alumno), 0, 'C');
-            $this->fpdf->SetXY($x, $this->fpdf->GetY());
+                $fpdf->MultiCell($w, $h*3, "C. ".utf8_decode($nombre_alumno), 0, 'C');
+            $fpdf->SetXY($x, $fpdf->GetY());
             //$pdf->SetFont('Helvetica','','10');
-            $this->fpdf->SetFont("MM",'',9);
-            $this->fpdf->MultiCell($w, $h, utf8_decode($cuerpo), 0, 'J');
+            $fpdf->SetFont("MM",'',9);
+            $fpdf->MultiCell($w, $h, utf8_decode($cuerpo));
         }
         if($tipo == 'D' || $tipo == 'P' || $tipo == 'G' || $tipo == 'K' || $tipo == 'B' || $tipo == '1S') //con tira de materias
         {
             $xm = $x;
             $wm = $w;
-            $this->fpdf->SetXY($xm, $this->fpdf->GetY() + $h);
-            $this->fpdf->SetFont("MM", 'B', 9);
-            $this->fpdf->Cell(($wm / 5.35) * 2.15, $h * 1.2, "MATERIA", 1, 0, 'C');
-            $this->fpdf->Cell(($wm / 6) / 3.5, $h * 1.2, "CR", 1, 0, 'C');
-            $this->fpdf->Cell(($wm / 9) / 1.3, $h * 1.2, "SEM", 1, 0, 'C');
-            $this->fpdf->Cell(($wm / 6) * 0.9, $h * 1.2, "PERIODO", 1, 0, 'C');
-            $this->fpdf->Cell(($wm / 6) / 1.1, $h * 1.2, utf8_decode("CALIFICACIÓN"), 1, 0, 'C');
-            $this->fpdf->Cell(($wm / 6) / 1.1, $h * 1.2, "OPORTUNIDAD", 1, 1, 'C');
-            $this->fpdf->Cell($w, 0.5, "", 0);
-            $this->fpdf->SetFont("MM", '', 9);
+            $fpdf->SetXY($xm, $fpdf->GetY() + $h);
+            $fpdf->SetFont("MM", 'B', 9);
+            $fpdf->Cell(($wm / 5.35) * 2.15, $h * 1.2, "MATERIA", 1, 0, 'C');
+            $fpdf->Cell(($wm / 6) / 3.5, $h * 1.2, "CR", 1, 0, 'C');
+            $fpdf->Cell(($wm / 9) / 1.3, $h * 1.2, "SEM", 1, 0, 'C');
+            $fpdf->Cell(($wm / 6) * 0.9, $h * 1.2, "PERIODO", 1, 0, 'C');
+            $fpdf->Cell(($wm / 6) / 1.1, $h * 1.2, utf8_decode("CALIFICACIÓN"), 1, 0, 'C');
+            $fpdf->Cell(($wm / 6) / 1.1, $h * 1.2, "OPORTUNIDAD", 1, 1, 'C');
+            $fpdf->Cell($w, 0.5, "", 0);
+            $fpdf->SetFont("MM", '', 9);
             $hojas = 1;
             $suma_calificaciones = 0;
             $total_materias_periodo = 1;
@@ -879,7 +876,7 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
             $bandera_REV = false;
 
             foreach ($calificaciones as $cal) {
-                $this->fpdf->Ln();
+                $fpdf->Ln();
                 //$materia = $cal->materia;
                 $n_materia = $cal->n_materia_r;
                 if ($cal->tipo_evaluacion == 'RU' || $cal->tipo_evaluacion == 'RC') {
@@ -898,64 +895,36 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
                         }
                     }
                 }
-                //$calificacion = ($res_calificaciones->fields('tipo_evaluacion')=='RU')?'AC':$res_calificaciones->fields('calificacion');
                 $tipo_evaluacion = $cal->tipo_evaluacion;
                 $creditos = $cal->creditos;
                 $periodo = $cal->periodo;
-                switch ($tipo_evaluacion) {
-                    case 'O1':
-                        $tipoEval = 'CNO';
-                        break;
-                    case 'R1':
-                        $tipoEval = 'CNR';
-                        break;
-                    case 'E1':
-                        $tipoEval = 'CNE';
-                        break;
-                    case 'O2':
-                        $tipoEval = 'CRO';
-                        break;
-                    case 'R2':
-                        $tipoEval = 'CRR';
-                        break;
-                    case 'EE':
-                        $tipoEval = 'EE';
-                        break;
-                    case 'RC':
-                        $tipoEval = 'CV';
-                        break;
-                    case 'RU':
-                        $tipoEval = 'EQ';
-                        break;
-                    case 'EA':
-                        $tipoEval = 'EG';
-                        break;
-                    case '1':
-                        $tipoEval ='CNO';
-                        break;
-                    case '2':
-                        $tipoEval = 'CNR';
-                        break;
-                    default:
-                        $tipoEval = "";
-                        break;
-                    //case 'AC': $tipoEval='ACA'; break;
-                }
-                $this->fpdf->SetFont("MM", '', 9);
-                $this->fpdf->setx($xm);
-                $this->fpdf->Cell(($wm / 5.35) * 2.15, $h * 1.2, utf8_decode($n_materia), 1, 0, 'L');
-                $this->fpdf->Cell(($wm / 6) / 3.5, $h * 1.2, $creditos, 1, 0, 'C');
+                $tipoEval = match ($tipo_evaluacion) {
+                    'O1', '1' => 'CNO',
+                    'R1', '2' => 'CNR',
+                    'E1' => 'CNE',
+                    'O2' => 'CRO',
+                    'R2' => 'CRR',
+                    'EE' => 'EE',
+                    'RC' => 'CV',
+                    'RU' => 'EQ',
+                    'EA' => 'EG',
+                    default => "",
+                };
+                $fpdf->SetFont("MM", '', 9);
+                $fpdf->setx($xm);
+                $fpdf->Cell(($wm / 5.35) * 2.15, $h * 1.2, utf8_decode($n_materia), 1, 0, 'L');
+                $fpdf->Cell(($wm / 6) / 3.5, $h * 1.2, $creditos, 1, 0, 'C');
                 if ($periodo < $alumno->periodo_ingreso_it) {
                     if (!$bandera_REV) {
                         $periodo_ingreso_it2 = $periodo;
                         $bandera_REV = true;
                     }
-                    $this->fpdf->Cell(($wm / 9) / 1.3, $h * 1.2, $this->calcula_semestre_materia($periodo_ingreso_it2, $periodo, 0), 1, 0, 'C'); // Para cuando son revalidados, convalidados
+                    $fpdf->Cell(($wm / 9) / 1.3, $h * 1.2, $this->calcula_semestre_materia($periodo_ingreso_it2, $periodo, 0), 1, 0, 'C'); // Para cuando son revalidados, convalidados
                 } else
-                    $this->fpdf->Cell(($wm / 9) / 1.3, $h * 1.2, $this->calcula_semestre_materia($alumno->periodo_ingreso_it, $periodo, $alumno->periodos_revalidacion), 1, 0, 'C'); // Para cuando son cursos, normales
-                $this->fpdf->Cell(($wm / 6) * 0.9, $h * 1.2, trim($this->nperiodo($periodo)), 1, 0, 'C');
-                $this->fpdf->Cell(($wm / 6) / 1.1, $h * 1.2, $calificacion, 1, 0, 'C');
-                $this->fpdf->Cell(($wm / 6) / 1.1, $h * 1.2, $tipoEval, 1, 0, 'C');
+                    $fpdf->Cell(($wm / 9) / 1.3, $h * 1.2, $this->calcula_semestre_materia($alumno->periodo_ingreso_it, $periodo, $alumno->periodos_revalidacion), 1, 0, 'C'); // Para cuando son cursos, normales
+                $fpdf->Cell(($wm / 6) * 0.9, $h * 1.2, trim($this->nperiodo($periodo)), 1, 0, 'C');
+                $fpdf->Cell(($wm / 6) / 1.1, $h * 1.2, $calificacion, 1, 0, 'C');
+                $fpdf->Cell(($wm / 6) / 1.1, $h * 1.2, $tipoEval, 1, 0, 'C');
                 if ($tipo == 'K' || $tipo == 'B' || $tipo == '1S')
                     $periodo_leido = $periodo;
                 if ($tipo == 'B') {
@@ -964,14 +933,14 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
                 }
                 if ($tipo == 'K' || $tipo == 'B' || $tipo == '1S') {
                     if ($periodo_leido != $cal->periodo) {
-                        $this->fpdf->Ln();
-                        $this->fpdf->setx($xm);
-                        $this->fpdf->Cell(($wm / 5.35) * 2.15, $h * 1.2, "", 0, 0, 'R');
-                        $this->fpdf->Cell(($wm / 6) / 3.5, $h * 1.2, "", 0, 0, 'C');
-                        $this->fpdf->Cell(($wm / 9) / 1.3, $h * 1.2, "", 0, 0, 'C');
-                        $this->fpdf->Cell(($wm / 6) * 0.9, $h * 1.2, "", 0, 0, 'C');
-                        $this->fpdf->Cell(27.25, $h * 1.2, "Promedio", 1, 0, 'C');
-                        $this->fpdf->Cell(27.25, $h * 1.2, round(($suma_calificaciones / $total_materias_periodo), 2), 1, 0, 'C');
+                        $fpdf->Ln();
+                        $fpdf->setx($xm);
+                        $fpdf->Cell(($wm / 5.35) * 2.15, $h * 1.2, "", 0, 0, 'R');
+                        $fpdf->Cell(($wm / 6) / 3.5, $h * 1.2, "", 0, 0, 'C');
+                        $fpdf->Cell(($wm / 9) / 1.3, $h * 1.2, "", 0, 0, 'C');
+                        $fpdf->Cell(($wm / 6) * 0.9, $h * 1.2, "", 0, 0, 'C');
+                        $fpdf->Cell(27.25, $h * 1.2, "Promedio", 1, 0, 'C');
+                        $fpdf->Cell(27.25, $h * 1.2, round(($suma_calificaciones / $total_materias_periodo), 2), 1, 0, 'C');
                         $total_materias_periodo = 1;
                         $suma_calificaciones = 0;
                     } else {
@@ -980,40 +949,40 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
                         }
                     }
                 }
-                if ($this->fpdf->GetY() >= 220) {
-                    $this->fpdf->Ln();
-                    $this->fpdf->SetFont("MM", '', 9);
-                    $this->fpdf->Cell($w, $h, utf8_decode("Continúa..."), 0, 0, 'C');
+                if ($fpdf->GetY() >= 220) {
+                    $fpdf->Ln();
+                    $fpdf->SetFont("MM", '', 9);
+                    $fpdf->Cell($w, $h, utf8_decode("Continúa..."), 0, 0, 'C');
                     //nvo_pie_oficial($pdf);
-                    $this->fpdf->AddPage();
+                    $fpdf->AddPage();
                     $banderota = true;
                     if ($banderota) {
                         $hojas++;
                     }
-                    $encabezado = $this->encabezado($this->fpdf, $depto, $folio, $dia, $mes, $anio);
-                    $this->fpdf->SetXY($xm, $this->fpdf->GetY() + $h);
-                    $this->fpdf->SetFont("MM", 'B', 9);
-                    $this->fpdf->Cell(($wm / 5.35) * 2.15, $h * 1.2, "MATERIA", 1, 0, 'C');
-                    $this->fpdf->Cell(($wm / 6) / 3.5, $h * 1.2, "CR", 1, 0, 'C');
-                    $this->fpdf->Cell(($wm / 9) / 1.3, $h * 1.2, "SEM", 1, 0, 'C');
-                    $this->fpdf->Cell(($wm / 6) * 0.9, $h * 1.2, "PERIODO", 1, 0, 'C');
-                    $this->fpdf->Cell(($wm / 6) / 1.1, $h * 1.2, utf8_decode("CALIFICACIÓN"), 1, 0, 'C');
-                    $this->fpdf->Cell(($wm / 6) / 1.1, $h * 1.2, "OPORTUNIDAD", 1, 1, 'C');
-                    $this->fpdf->Cell($w, 0.5, "", 0);
-                    $this->fpdf->Ln();
-                    $this->fpdf->SetFont("MM", '', 9);
+                    $encabezado = $this->encabezado($fpdf, $depto, $folio, $dia, $mes, $anio);
+                    $fpdf->SetXY($xm, $fpdf->GetY() + $h);
+                    $fpdf->SetFont("MM", 'B', 9);
+                    $fpdf->Cell(($wm / 5.35) * 2.15, $h * 1.2, "MATERIA", 1, 0, 'C');
+                    $fpdf->Cell(($wm / 6) / 3.5, $h * 1.2, "CR", 1, 0, 'C');
+                    $fpdf->Cell(($wm / 9) / 1.3, $h * 1.2, "SEM", 1, 0, 'C');
+                    $fpdf->Cell(($wm / 6) * 0.9, $h * 1.2, "PERIODO", 1, 0, 'C');
+                    $fpdf->Cell(($wm / 6) / 1.1, $h * 1.2, utf8_decode("CALIFICACIÓN"), 1, 0, 'C');
+                    $fpdf->Cell(($wm / 6) / 1.1, $h * 1.2, "OPORTUNIDAD", 1, 1, 'C');
+                    $fpdf->Cell($w, 0.5);
+                    $fpdf->Ln();
+                    $fpdf->SetFont("MM", '', 9);
                 }
             }
             if ($tipo == 'K') {
-                $this->fpdf->Ln();
-                $this->fpdf->setx($xm);
-                $this->fpdf->Cell(($wm / 6) * 2.15, $h * 1.2, "", 0, 0, 'R');
-                $this->fpdf->Cell(($wm / 6) / 3.5, $h * 1.2, "", 0, 0, 'C');
-                $this->fpdf->Cell(($wm / 6) / 1.3, $h * 1.2, "", 0, 0, 'C');
-                $this->fpdf->Cell(($wm / 6) * 0.9, $h * 1.2, "", 0, 0, 'C');
-                $this->fpdf->Cell(($wm / 6) / 1.1, $h * 1.2, "Promedio Gral", 1, 0, 'C');
+                $fpdf->Ln();
+                $fpdf->setx($xm);
+                $fpdf->Cell(($wm / 6) * 2.15, $h * 1.2, "", 0, 0, 'R');
+                $fpdf->Cell(($wm / 6) / 3.5, $h * 1.2, "", 0, 0, 'C');
+                $fpdf->Cell(($wm / 6) / 1.3, $h * 1.2, "", 0, 0, 'C');
+                $fpdf->Cell(($wm / 6) * 0.9, $h * 1.2, "", 0, 0, 'C');
+                $fpdf->Cell(($wm / 6) / 1.1, $h * 1.2, "Promedio Gral", 1, 0, 'C');
                 $num=$total_materias==0?0:round(($suma_total_calif / $total_materias),2);
-                $this->fpdf->Cell(($wm / 6) / 1.1, $h * 1.2, $num, 1, 0, 'C');
+                $fpdf->Cell(($wm / 6) / 1.1, $h * 1.2, $num, 1, 0, 'C');
             }
             if ($tipo == 'D' || $tipo == 'P' || $tipo == 'G' || $tipo == 'B' || $tipo == 'K') {
                 if ($tipo == 'B') {
@@ -1033,85 +1002,84 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
                     $promedio = $total==0?0:round($suma / $total, 2);
                     $acumulados .= "\nPromedio general: " . $promedio;
                 }
-                $this->fpdf->SetY($this->fpdf->GetY() + $h * 2);
-                $this->fpdf->SetX($x);
-                $this->fpdf->MultiCell($w, $h, $acumulados, 0, 'J');
+                $fpdf->SetY($fpdf->GetY() + $h * 2);
+                $fpdf->SetX($x);
+                $fpdf->MultiCell($w, $h, $acumulados);
             }
         }
         if($tipo == 'M') // Horario
         {
-            $y_hor=$this->fpdf->GetY();
-            $this->horario($this->fpdf, 2, $horarios2,$y_hor);
-            $this->fpdf->Ln(3);
+            $y_hor= $fpdf->GetY();
+            $this->horario($fpdf, 2, $horarios2,$y_hor);
+            $fpdf->Ln(3);
         }
-        if($this->fpdf->GetY() >= 220){
-            $this->fpdf->SetXY($x,260);
+        if($fpdf->GetY() >= 220){
+            $fpdf->SetXY($x,260);
             if($hojas==0){$hojas++;}
             if(($tipo != 'C' && $tipo != 'R')){
-                $this->fpdf->SetXY(60,255);
+                $fpdf->SetXY(60,255);
                 //nvo_pie_oficial($pdf);
-                $this->fpdf->AddPage();
-                $this->encabezado($this->fpdf,$depto,$folio,$dia,$mes,$anio);
+                $fpdf->AddPage();
+                $this->encabezado($fpdf,$depto,$folio,$dia,$mes,$anio);
             }
         }
         if($tipo != 'C' && $tipo != 'R'){
-            $yactual=$this->fpdf->GetY();
-            $this->fpdf->SetXY($x,$yactual-7);
-            $this->fpdf->SetFont("MM",'',9);
-            $this->fpdf->MultiCell($w, $h, utf8_decode($cierre), 0, 'J');
-            $yactual=$this->fpdf->GetY();
-            $this->fpdf->SetXY($x,$yactual-18);
+            $yactual= $fpdf->GetY();
+            $fpdf->SetXY($x,$yactual-7);
+            $fpdf->SetFont("MM",'',9);
+            $fpdf->MultiCell($w, $h, utf8_decode($cierre));
+            $yactual= $fpdf->GetY();
+            $fpdf->SetXY($x,$yactual-18);
         }
-        if(($this->fpdf->GetY()+15 >= 200 && $this->fpdf->GetY()+15 < 270) || $this->fpdf->GetY() < 200){
-            $this->fpdf->Ln();
+        if(($fpdf->GetY()+15 >= 200 && $fpdf->GetY()+15 < 270) || $fpdf->GetY() < 200){
+            $fpdf->Ln();
             if($tipo != 'S' && $tipo != 'A' && $tipo != 'E' && $tipo != 'T' && $tipo != 'N' && $tipo != 'IM' && $tipo != 'C' && $tipo != 'R'){
                 $hojas++;
             }
-            $this->fpdf->SetXY($x, $this->fpdf->GetY()+15);
+            $fpdf->SetXY($x, $fpdf->GetY()+15);
         }else {
             if(($tipo != 'C' && $tipo != 'R')){
                 //nvo_pie_oficial($pdf);
-                $this->fpdf->AddPage();
-                $this->encabezado($this->fpdf,$depto,$folio,$dia,$mes,$anio);
+                $fpdf->AddPage();
+                $this->encabezado($fpdf,$depto,$folio,$dia,$mes,$anio);
             }
         }
-        $this->fpdf->SetX($x);
-        $this->fpdf->Ln(3);
+        $fpdf->SetX($x);
+        $fpdf->Ln(3);
         if($tipo != 'C'){
-            $this->fpdf->SetX($x);
-            $this->fpdf->SetFont("MM",'B',9);
-            $this->fpdf->Cell($w,$h,"A T E N T A M E N T E",0,1,'L');
-            $this->fpdf->SetFont("Montserrat2",'I',8);
+            $fpdf->SetX($x);
+            $fpdf->SetFont("MM",'B',9);
+            $fpdf->Cell($w,$h,"A T E N T A M E N T E",0,1,'L');
+            $fpdf->SetFont("Montserrat2",'I',8);
             //Lema TecNM
-            $this->fpdf->SetX($x);
+            $fpdf->SetX($x);
             $lema2=strtoupper("Excelencia en Educación Tecnológica");
-            $this->fpdf->Cell($w,$h,utf8_decode($lema2),0,1,'L');
+            $fpdf->Cell($w,$h,utf8_decode($lema2),0,1,'L');
             //Lema Tec
-            $this->fpdf->SetFont("Montserrat2",'I',7);
-            $this->fpdf->SetX($x);
+            $fpdf->SetFont("Montserrat2",'I',7);
+            $fpdf->SetX($x);
             $lema=strtoupper("Por la tecnología de hoy y del futuro");
-            $this->fpdf->Cell($w,$h,utf8_decode($lema),0,1,'L');
+            $fpdf->Cell($w,$h,utf8_decode($lema),0,1,'L');
             //$pdf->AddFont("SoberanaSans_Bold",'','soberanasans_bold.php');
-            $this->fpdf->SetFont("MM",'B',9);
-            $jefe2 = $rfc_jefe->jefe_area;
-            $jefe2g=$genero_j." DEL DEPARTAMENTO DE SERVICIOS ESCOLARES";
-            $this->fpdf->SetX($x);
-            $this->fpdf->Cell(80,9," ",0,1,'L');
-            $this->fpdf->SetX($x);
-            $this->fpdf->Cell($w,$h,$jefe2,0,1,'L');
-            $this->fpdf->SetX($x);
-            $this->fpdf->Cell($w,$h,$jefe2g,0,1,'L');
+            $fpdf->SetFont("MM",'B',9);
+            $jefe2g=$jefe->descripcion_area;
+            $fpdf->SetX($x);
+            $fpdf->Cell(80,9," ",0,1,'L');
+            $fpdf->SetX($x);
+            $fpdf->Cell($w,$h,$jefe2g,0,1,'L');
+            $fpdf->SetX($x);
+            $fpdf->Cell($w,$h,$jefe2g,0,1,'L');
             //$pdf->MultiCell($w, $h, "ATENTAMENTE,\n".$CFG->lema."\n\n\n\n".$jefe, 0, 'J');
         }
         if($tipo == 'R'){
-            $this->fpdf->SetFont('Helvetica','','6');
-            $this->fpdf->SetXY($x,$this->fpdf->GetY()+40);
-            $this->fpdf->MultiCell($w, $h, "c.c.p.- División de Estudios Profesionales\nc.c.p.- Archivo", 0, 'J');
+            $fpdf->SetFont('Helvetica','','6');
+            $fpdf->SetXY($x, $fpdf->GetY()+40);
+            $fpdf->MultiCell($w, $h, "c.c.p.- División de Estudios Profesionales\nc.c.p.- Archivo");
         }
         if($tipo == 'D' || $tipo == 'P' || $tipo == 'G'){
-            $this->fpdf->SetFont('Montserrat2','B','6');
-            $this->fpdf->SetXY($x+90,$this->fpdf->GetY()+5);
-            $this->fpdf->MultiCell($w-100,$h,'LAS CALIFICACIONES QUE AMPARA EL PRESENTE DOCUMENTO SERÁN VALIDAS, PREVIO COTEJO DE LAS ACTAS CORRESPONDIENTES',0,'J');
+            $fpdf->SetFont('Montserrat2','B','6');
+            $fpdf->SetXY($x+90, $fpdf->GetY()+5);
+            $fpdf->MultiCell($w-100,$h,'LAS CALIFICACIONES QUE AMPARA EL PRESENTE DOCUMENTO SERÁN VALIDAS, PREVIO COTEJO DE LAS ACTAS CORRESPONDIENTES');
         }
 
         if($tipo == 'C')
@@ -1121,35 +1089,35 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
             $codigo_correcto = "ITM-AC-PO-003-02";
 
         if($tipo == 'C' || $tipo == 'R'){
-            $this->fpdf->SetFont('Helvetica','b','8');
-            $this->fpdf->SetXY($x, 265);
-            $this->fpdf->Cell($w/2,$h, $codigo_correcto, 0, 0, 'L');
+            $fpdf->SetFont('Helvetica','b','8');
+            $fpdf->SetXY($x, 265);
+            $fpdf->Cell($w/2,$h, $codigo_correcto, 0, 0, 'L');
             //$pdf->Cell($w/2,$h, "SNEST-AC--PO-008-01", 0, 0, 'L');
-            $this->fpdf->Cell($w/2,$h, "Rev. 3", 0, 0, 'R');
+            $fpdf->Cell($w/2,$h, "Rev. 3", 0, 0, 'R');
         }
         $ypie = 262;
         $xpie = 10;
-        $this->fpdf->SetLineWidth(0.1);
-        $this->fpdf->SetDrawColor(128,0,0);
-        $this->fpdf->Line($xpie+10,$ypie-6,190,$ypie-6);
+        $fpdf->SetLineWidth(0.1);
+        $fpdf->SetDrawColor(128,0,0);
+        $fpdf->Line($xpie+10,$ypie-6,190,$ypie-6);
 
-        $this->fpdf->Image("/var/www/html/escolares/public/img/escudo.jpg", 20, $ypie, 15);
+        $fpdf->Image("/var/www/html/escolares/public/img/escudo.jpg", 20, $ypie, 15);
         $w = 120;
         $h = 6;
         $xpie+=40+5;
-        $this->fpdf->SetXY($xpie+5, $ypie);
-        $this->fpdf->AddFont("Montserrat2",'','Montserrat-ExtraLight.php');
-        $this->fpdf->AddFont("Montserrat2",'B','Montserrat-Light.php');
-        $this->fpdf->SetFont("Montserrat2","",6);
-        $this->fpdf->Cell($w, $h/3, "", 0, 2, 'C');
-        $this->fpdf->Cell($w-15, $h/2, utf8_decode("Blvd Tecnológico # 150, Col. Ex Ejido Chapultepec, C.P. 22780, Ensenada B.C"), 0, 2, 'C');
-        $this->fpdf->Cell($w-15, $h/2, "Tel(s). (646)177-5680 y 82 ", 0, 2, 'C');
-        $this->fpdf->SetFont("Montserrat2",'B',6);
-        $this->fpdf->Cell($w-15, $h/2, "E-mail: escolares@ite.edu.mx, Sitio Web https://www.ensenada.tecnm.mx", 0, 2, 'C');
-        $this->fpdf->Image("/var/www/html/escolares/public/img/calidad.jpg", 168, 263, 17,15);
-        $this->fpdf->SetLineWidth(0.1);
-        $this->fpdf->SetDrawColor(0);
-        $this->fpdf->Output();
+        $fpdf->SetXY($xpie+5, $ypie);
+        $fpdf->AddFont("Montserrat2",'','Montserrat-ExtraLight.php');
+        $fpdf->AddFont("Montserrat2",'B','Montserrat-Light.php');
+        $fpdf->SetFont("Montserrat2","",6);
+        $fpdf->Cell($w, $h/3, "", 0, 2, 'C');
+        $fpdf->Cell($w-15, $h/2, utf8_decode("Blvd Tecnológico # 150, Col. Ex Ejido Chapultepec, C.P. 22780, Ensenada B.C"), 0, 2, 'C');
+        $fpdf->Cell($w-15, $h/2, "Tel(s). (646)177-5680 y 82 ", 0, 2, 'C');
+        $fpdf->SetFont("Montserrat2",'B',6);
+        $fpdf->Cell($w-15, $h/2, "E-mail: escolares@ite.edu.mx, Sitio Web https://www.ensenada.tecnm.mx", 0, 2, 'C');
+        $fpdf->Image("/var/www/html/escolares/public/img/calidad.jpg", 168, 263, 17,15);
+        $fpdf->SetLineWidth(0.1);
+        $fpdf->SetDrawColor(0);
+        $fpdf->Output();
         exit();
     }
 }

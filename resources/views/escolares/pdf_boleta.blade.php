@@ -149,18 +149,15 @@ switch ($hoy){
         <table>
             <tr>
                 <td>
-                    <img src="{{asset('img/sello.jpg')}}" width="125px" height="105px">
-                </td>
-                <td>
                     <table>
                         <tr>
                             <td>___________________________________</td>
                         </tr>
                         <tr>
-                            <td>Julia E. Chávez Remigio</td>
+                            <td>{{$nombre_jefe}}</td>
                         </tr>
                         <tr>
-                            <td>JEFA DEL DEPARTAMENTO DE SERVICIOS ESCOLARES</td>
+                            <td>{{$cargo}}</td>
                         </tr>
                     </table>
                 </td>

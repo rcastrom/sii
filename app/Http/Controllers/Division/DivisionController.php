@@ -42,8 +42,8 @@ class DivisionController extends Controller
     public function altagrupo(){
         $data=Auth::user()->email;
         $carreras=PermisosCarrera::where('email',$data)
-            ->orderBy('nombre_carrera','asc')
-            ->orderBy('reticula','asc')->get();
+            ->orderBy('nombre_carrera','ASC')
+            ->orderBy('reticula','ASC')->get();
         $periodos=PeriodoEscolar::orderBy('periodo','desc')->get();
         $periodo_actual = (new AccionesController)->periodo();
         $encabezado="Creación de grupo";
@@ -62,8 +62,8 @@ class DivisionController extends Controller
             ->where('nombre_completo_materia','not like','%RESIDENCIA%')
             ->where('nombre_completo_materia','not like','%SERVICIO SOC%')
             ->where('nombre_completo_materia','not like','%COMPLEMENT%')
-            ->orderBy('semestre_reticula','asc')
-            ->orderBy('nombre_completo_materia','asc')
+            ->orderBy('semestre_reticula','ASC')
+            ->orderBy('nombre_completo_materia','ASC')
             ->select('semestre_reticula','materias.materia as mater','nombre_abreviado_materia')
             ->get();
         $encabezado="Creación de grupo";
@@ -166,7 +166,7 @@ class DivisionController extends Controller
                         $alta->tipo_personal=null;
                         $alta->save();
                         $bandera++;
-                    }catch (QueryException $e){
+                    }catch (QueryException){
                         $encabezado="Error de alta de grupo";
                         $mensaje="El aula se encuentra ocupada el día lunes";
                         return view('division.no')->with(compact('mensaje','encabezado'));
@@ -192,7 +192,7 @@ class DivisionController extends Controller
                         $alta->tipo_personal=null;
                         $alta->save();
                         $bandera++;
-                    }catch (QueryException $e){
+                    }catch (QueryException){
                         $encabezado="Error de alta de grupo";
                         $mensaje="El aula se encuentra ocupada el día martes";
                         return view('division.no')->with(compact('mensaje','encabezado'));
@@ -218,7 +218,7 @@ class DivisionController extends Controller
                         $alta->tipo_personal=null;
                         $alta->save();
                         $bandera++;
-                    }catch(QueryException $e){
+                    }catch(QueryException){
                         $encabezado="Error de alta de grupo";
                         $mensaje="El aula se encuentra ocupada el día miércoles";
                         return view('division.no')->with(compact('mensaje','encabezado'));
@@ -244,7 +244,7 @@ class DivisionController extends Controller
                         $alta->tipo_personal=null;
                         $alta->save();
                         $bandera++;
-                    }catch (QueryException $e){
+                    }catch (QueryException){
                         $encabezado="Error de alta de grupo";
                         $mensaje="El aula se encuentra ocupada el día jueves";
                         return view('division.no')->with(compact('mensaje','encabezado'));
@@ -270,7 +270,7 @@ class DivisionController extends Controller
                         $alta->tipo_personal=null;
                         $alta->save();
                         $bandera++;
-                    }catch(QueryException $e){
+                    }catch(QueryException){
                         $encabezado="Error de alta de grupo";
                         $mensaje="El aula se encuentra ocupada el día viernes";
                         return view('division.no')->with(compact('mensaje','encabezado'));
@@ -296,7 +296,7 @@ class DivisionController extends Controller
                         $alta->tipo_personal=null;
                         $alta->save();
                         $bandera++;
-                    }catch (QueryException $e){
+                    }catch (QueryException){
                         $encabezado="Error de alta de grupo";
                         $mensaje="El aula se encuentra ocupada el día sábado";
                         return view('division.no')->with(compact('mensaje','encabezado'));
@@ -344,12 +344,14 @@ class DivisionController extends Controller
     public function paralelo1(){
         $data=Auth::user()->email;
         $carrera_origen=PermisosCarrera::where('email',$data)
-            ->orderBy('nombre_carrera','asc')
-            ->orderBy('reticula','asc')->get();
+            ->orderBy('nombre_carrera','ASC')
+            ->orderBy('reticula','ASC')->get();
         $periodos=PeriodoEscolar::orderBy('periodo','desc')->get();
         $periodo_actual=(new AccionesController)->periodo();
         $periodo=$periodo_actual[0]->periodo;
-        $carreras=Carrera::orderBy('nombre_carrera','asc')->orderBy('reticula','asc')->get();
+        $carreras=Carrera::orderBy('nombre_carrera','ASC')
+            ->orderBy('reticula','ASC')
+            ->get();
         $encabezado="Creación de Grupos Paralelos";
         return view('division.altaparalelo1')->with(compact('carreras',
             'carrera_origen','periodos','periodo','encabezado'));
@@ -369,8 +371,8 @@ class DivisionController extends Controller
             ->whereNull('grupos.paralelo_de')
             ->join('materias','materias_carreras.materia','=','materias.materia')
             ->select('materias_carreras.materia as mater','semestre_reticula','nombre_abreviado_materia','nombre_completo_materia','grupo')
-            ->orderBy('semestre_reticula','asc')
-            ->orderBy('nombre_completo_materia','asc')
+            ->orderBy('semestre_reticula','ASC')
+            ->orderBy('nombre_completo_materia','ASC')
             ->get();
         $listado_p=MateriaCarrera::where('carrera',$carrera_p)
             ->where('reticula',$ret_p)
@@ -379,7 +381,7 @@ class DivisionController extends Controller
             ->where('nombre_completo_materia','not like','%SERVICIO SOC%')
             ->where('nombre_completo_materia','not like','%COMPLEMENT%')
             ->select('materias_carreras.materia as mater','semestre_reticula','nombre_abreviado_materia','nombre_abreviado_materia')
-            ->orderBy('nombre_completo_materia','asc')
+            ->orderBy('nombre_completo_materia','ASC')
             ->get();
         $encabezado="Creación de Grupos Paralelos";
         return view('division.altaparalelo2')->with(compact('listado_o',
@@ -429,7 +431,7 @@ class DivisionController extends Controller
             $alta->exclusivo='no';
             $alta->entrego=0;
             $alta->save();
-        }catch(QueryException $e){
+        }catch(QueryException){
             $encabezado="Error de alta de grupo paralelo";
             $mensaje="El grupo ya existe, por lo que no es posible duplicarlo";
             return view('division.no')->with(compact('mensaje','encabezado'));
@@ -463,9 +465,9 @@ class DivisionController extends Controller
         return view('division.si')->with(compact('mensaje','encabezado'));
     }
     public function existentes(){
-        $carreras=Carrera::orderBy('nombre_carrera','asc')
-            ->orderBy('reticula','asc')->get();
-        $periodos=PeriodoEscolar::orderBy('periodo','desc')->get();
+        $carreras=Carrera::orderBy('nombre_carrera','ASC')
+            ->orderBy('reticula','ASC')->get();
+        $periodos=PeriodoEscolar::orderBy('periodo','DESC')->get();
         $periodo_actual=(new AccionesController)->periodo();
         $periodo=$periodo_actual[0]->periodo;
         $encabezado="Grupos del semestre";
@@ -485,8 +487,8 @@ class DivisionController extends Controller
             ->join('materias','materias_carreras.materia','=','materias.materia')
             ->select('materias_carreras.materia as mater','semestre_reticula',
                 'nombre_abreviado_materia','nombre_completo_materia','grupo','paralelo_de','alumnos_inscritos')
-            ->orderBy('semestre_reticula','asc')
-            ->orderBy('nombre_completo_materia','asc')
+            ->orderBy('semestre_reticula','ASC')
+            ->orderBy('nombre_completo_materia','ASC')
             ->get();
         $encabezado="Grupos del semestre";
         return view('division.listado2')->with(compact('listado','ncarrera','periodo','encabezado'));
@@ -505,9 +507,9 @@ class DivisionController extends Controller
             ->where('materia',$materia)
             ->where('grupo',$grupo)
             ->join('alumnos','seleccion_materias.no_de_control','=','alumnos.no_de_control')
-            ->orderBy('apellido_paterno','asc')
-            ->orderBy('apellido_materno','asc')
-            ->orderBy('nombre_alumno','asc')
+            ->orderBy('apellido_paterno','ASC')
+            ->orderBy('apellido_materno','ASC')
+            ->orderBy('nombre_alumno','ASC')
             ->get();
         $encabezado="Información sobre grupos existentes";
         return view('division.informacion_grupo')->with(compact('docente',
@@ -529,9 +531,9 @@ class DivisionController extends Controller
                 ->where('materia',$materia)
                 ->where('grupo',$grupo)
                 ->join('alumnos','seleccion_materias.no_de_control','=','alumnos.no_de_control')
-                ->orderBy('apellido_paterno','asc')
-                ->orderBy('apellido_materno','asc')
-                ->orderBy('nombre_alumno','asc')
+                ->orderBy('apellido_paterno','ASC')
+                ->orderBy('apellido_materno','ASC')
+                ->orderBy('nombre_alumno','ASC')
                 ->get();
             return view('division.baja_a_grupo')->with(compact('materia',
                 'grupo','nmateria','alumnos','periodo','encabezado'));
@@ -866,7 +868,7 @@ class DivisionController extends Controller
                             'aula'=>$aula_l,
                             'updated_at'=>Carbon::now()
                         ]);
-                }catch (QueryException $e){
+                }catch (QueryException){
                     $encabezado="Error de actualización de grupo";
                     $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día lunes";
                     return view('division.no')->with(compact('mensaje','encabezado'));
@@ -886,7 +888,7 @@ class DivisionController extends Controller
                             'aula'=>$aula_m,
                             'updated_at'=>Carbon::now()
                         ]);
-                }catch (QueryException $e){
+                }catch (QueryException){
                     $encabezado="Error de actualización de grupo";
                     $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día martes";
                     return view('division.no')->with(compact('mensaje','encabezado'));
@@ -906,7 +908,7 @@ class DivisionController extends Controller
                             'aula'=>$aula_mm,
                             'updated_at'=>Carbon::now()
                         ]);
-                }catch (QueryException $e){
+                }catch (QueryException){
                     $encabezado="Error de actualización de grupo";
                     $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día miercoles";
                     return view('division.no')->with(compact('mensaje','encabezado'));
@@ -926,7 +928,7 @@ class DivisionController extends Controller
                             'aula'=>$aula_j,
                             'updated_at'=>Carbon::now()
                         ]);
-                }catch (QueryException $e){
+                }catch (QueryException){
                     $encabezado="Error de actualización de grupo";
                     $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día jueves";
                     return view('division.no')->with(compact('mensaje','encabezado'));
@@ -946,7 +948,7 @@ class DivisionController extends Controller
                             'aula'=>$aula_v,
                             'updated_at'=>Carbon::now()
                         ]);
-                }catch (QueryException $e){
+                }catch (QueryException){
                     $encabezado="Error de actualización de grupo";
                     $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día viernes";
                     return view('division.no')->with(compact('mensaje','encabezado'));
@@ -966,7 +968,7 @@ class DivisionController extends Controller
                             'aula'=>$aula_s,
                             'updated_at'=>Carbon::now()
                         ]);
-                }catch (QueryException $e){
+                }catch (QueryException){
                     $encabezado="Error de actualización de grupo";
                     $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día sabado";
                     return view('division.no')->with(compact('mensaje','encabezado'));
@@ -1165,7 +1167,7 @@ class DivisionController extends Controller
                     'created_at'=>Carbon::now()
                 ]);
             }
-            return view('dep.inicio');
+            return redirect()->route('dep.inicio');
         }
     }
     public function prepoblacion(){
@@ -1194,7 +1196,6 @@ class DivisionController extends Controller
             ->selectRaw('COUNT(DISTINCT(seleccion_materias.no_de_control)) AS inscritos, semestre')
             ->groupByRaw('semestre')
             ->get();
-        $poblacion=new Collection();
         $data=array();
         $i=0;
         foreach ($cantidad as $cant){
@@ -1310,6 +1311,6 @@ class DivisionController extends Controller
             'password'=>$ncontra,
             'updated_at'=>Carbon::now()
         ]);
-        return view('inicio_division');
+        return redirect()->route('inicio_division');
     }
 }

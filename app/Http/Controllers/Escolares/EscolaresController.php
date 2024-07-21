@@ -28,6 +28,7 @@ use App\Models\SeleccionMateria;
 use App\Http\Controllers\Controller;
 use App\Models\TiposIngreso;
 use App\Models\User;
+use App\Models\Jefe;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\MenuEscolaresController;
@@ -478,11 +479,22 @@ class EscolaresController extends Controller
         $alumno = Alumno::findOrfail($control);
         $cal_periodo = (new AccionesController)->boleta($control, $periodo);
         $nombre_periodo = PeriodoEscolar::where('periodo', $periodo)->first();
+        if(Jefe::where('clave_area','120600')->count()>0){
+            $jefatura=Jefe::where('clave_area','120600')->first();
+            $cargo=$jefatura->descripcion_area;
+            $jefe=Personal::where('id',$jefatura->id_jefe)->first();
+            $nombre_jefe=$jefe->siglas.' '.$jefe->nombre_empleado.' '.$jefe->apellido_paterno.' '.$jefe->apellido_materno;
+        }else{
+            $cargo="SERVICIOS ESCOLARES";
+            $nombre_jefe='';
+        }
         $data = [
             'alumno' => $alumno,
             'cal_periodo' => $cal_periodo,
             'nombre_periodo' => $nombre_periodo,
-            'periodo' => $periodo
+            'periodo' => $periodo,
+            'cargo'=>$cargo,
+            'nombre_jefe'=>$nombre_jefe
         ];
         $pdf = PDF::loadView('escolares.pdf_boleta', $data)
             ->setPaper('Letter');
@@ -567,7 +579,9 @@ class EscolaresController extends Controller
             'reticula' => $ret_n,
             'plan_de_estudios' => $plan
         ]);
-        return view('escolares.ccarrera_resultado')->with(compact('i'));
+        $encabezado="Cambio de carrera realizado";
+        $mensaje="Se modificaron ".$i." en el historial del alumno";
+        return view('escolares.si')->with(compact('encabezado','mensaje'));
     }
     public function alumnodelete(Request $request)
     {
@@ -679,7 +693,6 @@ class EscolaresController extends Controller
         $correo = $request->get('correo');
         $rev = $request->get('periodos_revalidacion');
         $tipo = $request->get('tipo');
-        $quien = Auth::user()->email;
         Alumno::where('no_de_control',$control)
             ->update([
                 'apellido_paterno' => $appat,
@@ -883,6 +896,8 @@ class EscolaresController extends Controller
         $anio = $request->get('anio');
         $tper = $request->get('tper');
         $periodo = $anio . $tper;
+        $id_largo='';
+        $id_corto='';
         if (PeriodoEscolar::where('periodo', $periodo)->count() > 0) {
             $encabezado="Error de creación de período";
             $mensaje = "No se puede crear el período porque ya existe en la base de datos";
@@ -1020,7 +1035,7 @@ class EscolaresController extends Controller
         $encabezado="Parámetros para reinscripción";
         $periodo_actual = (new AccionesController)->periodo();
         $periodos = PeriodoEscolar::orderBy('periodo','desc')->get();
-        $carreras = Carrera::distinct('carrera')->orderBy('carrera', 'asc')
+        $carreras = Carrera::distinct('carrera')->orderBy('carrera', 'ASC')
             ->get();
         return view('escolares.prereinscripcion')->with(compact('periodos',
             'periodo_actual', 'carreras','encabezado'));
@@ -1055,7 +1070,7 @@ class EscolaresController extends Controller
                 $intervalo = $valores->intervalo;
                 $personas = $valores->personas;
                 $hora_inicio = substr($hora_inicio, 0, 2);
-                if (substr($hora_inicio, 0, 1) == "0") {
+                if (str_starts_with($hora_inicio, "0")) {
                     $hora_inicio = substr($hora_inicio, 1, 1);
                 }
                 $hora_fin = substr($hora_fin, 0, 2);
@@ -1097,7 +1112,7 @@ class EscolaresController extends Controller
                     ->where('A.estatus_alumno', 'ACT')
                     ->where('carrera', $carrera)
                     ->select('AR.no_de_control', 'A.apellido_paterno', 'A.apellido_materno', 'A.nombre_alumno', 'A.semestre', 'AR.fecha_hora_seleccion')
-                    ->orderBy('A.semestre', 'asc')
+                    ->orderBy('A.semestre', 'ASC')
                     ->get();
                 $cont = 1;
                 foreach ($avisos as $seleccion) {
@@ -1158,10 +1173,10 @@ class EscolaresController extends Controller
                 ->where('carrera', $carrera)
                 ->whereNotNull('AR.fecha_hora_seleccion')
                 ->select('AR.no_de_control', 'A.apellido_paterno', 'A.apellido_materno', 'A.nombre_alumno', 'A.semestre', 'AR.fecha_hora_seleccion')
-                ->orderBy('A.semestre', 'asc')
-                ->orderBy('A.apellido_paterno', 'asc')
-                ->orderBy('A.apellido_materno', 'asc')
-                ->orderBy('A.no_de_control', 'asc')
+                ->orderBy('A.semestre', 'ASC')
+                ->orderBy('A.apellido_paterno', 'ASC')
+                ->orderBy('A.apellido_materno', 'ASC')
+                ->orderBy('A.no_de_control', 'ASC')
                 ->get();
             $nperiodo = PeriodoEscolar::where('periodo', $periodo)->select('identificacion_corta')->first();
             $ncarrera = Carrera::where('carrera', $carrera)->select('nombre_reducido')->first();
@@ -1227,8 +1242,8 @@ class EscolaresController extends Controller
             ->join('personal', 'personal.rfc', '=', 'grupos.rfc')
             ->select('grupos.rfc', 'apellidos_empleado', 'nombre_empleado')
             ->distinct()
-            ->orderBy('apellidos_empleado', 'asc')
-            ->orderBy('nombre_empleado', 'asc')
+            ->orderBy('apellidos_empleado', 'ASC')
+            ->orderBy('nombre_empleado', 'ASC')
             ->get();
         $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
         $encabezado="Entrega de actas del período por el docente a Escolares";
@@ -1243,7 +1258,7 @@ class EscolaresController extends Controller
             ->where('rfc', $docente)
             ->join('materias', 'materias.materia', '=', 'grupos.materia')
             ->select('grupos.materia', 'grupo', 'nombre_abreviado_materia','entrego')
-            ->orderBy('nombre_abreviado_materia', 'asc')
+            ->orderBy('nombre_abreviado_materia', 'ASC')
             ->get();
         $ndocente = Personal::where('rfc', $docente)->first();
         $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
@@ -1266,8 +1281,8 @@ class EscolaresController extends Controller
             ->join('personal', 'personal.rfc', '=', 'grupos.rfc')
             ->select('grupos.rfc', 'apellidos_empleado', 'nombre_empleado')
             ->distinct()
-            ->orderBy('apellidos_empleado', 'asc')
-            ->orderBy('nombre_empleado', 'asc')
+            ->orderBy('apellidos_empleado', 'ASC')
+            ->orderBy('nombre_empleado', 'ASC')
             ->get();
         $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
         $encabezado="Actas del período";
@@ -1282,7 +1297,7 @@ class EscolaresController extends Controller
             ->where('rfc', $docente)
             ->join('materias', 'materias.materia', '=', 'grupos.materia')
             ->select('grupos.materia', 'grupo', 'nombre_abreviado_materia')
-            ->orderBy('nombre_abreviado_materia', 'asc')
+            ->orderBy('nombre_abreviado_materia', 'ASC')
             ->get();
         $ndocente = Personal::where('rfc', $docente)->first();
         $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
@@ -1299,7 +1314,7 @@ class EscolaresController extends Controller
                 $info = explode("_", $key);
                 $materia = $info[0];
                 $gpo = $info[1];
-                $asignar=$value==1?true:false;
+                $asignar= $value==1;
                 Grupo::where([
                     'periodo'=>$periodo,
                     'rfc'=>$docente,
@@ -1324,9 +1339,9 @@ class EscolaresController extends Controller
             ->join('alumnos', 'alumnos.no_de_control', '=', 'seleccion_materias.no_de_control')
             ->distinct()
             ->select('seleccion_materias.no_de_control', 'apellido_paterno', 'apellido_materno', 'nombre_alumno', 'calificacion', 'tipo_evaluacion', 'plan_de_estudios')
-            ->orderBy('apellido_paterno', 'asc')
-            ->orderBy('apellido_materno', 'asc')
-            ->orderBy('nombre_alumno', 'asc')
+            ->orderBy('apellido_paterno', 'ASC')
+            ->orderBy('apellido_materno', 'ASC')
+            ->orderBy('nombre_alumno', 'ASC')
             ->get();
         $ndocente = Personal::where('rfc', $docente)->first();
         $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
@@ -1410,9 +1425,9 @@ class EscolaresController extends Controller
                         $join->on('alumnos.plan_de_estudios', '=', 'tipos_evaluacion.plan_de_estudios')
                             ->on('tipos_evaluacion.tipo_evaluacion', '=', 'seleccion_materias.tipo_evaluacion');
                     })
-                    ->orderBy('apellido_paterno', 'asc')
-                    ->orderBy('apellido_materno', 'asc')
-                    ->orderBy('nombre_alumno', 'asc')
+                    ->orderBy('apellido_paterno', 'ASC')
+                    ->orderBy('apellido_materno', 'ASC')
+                    ->orderBy('nombre_alumno', 'ASC')
                     ->get();
                 $datos = Grupo::where('periodo', $periodo)
                     ->where('materia', $materia)
@@ -1437,9 +1452,9 @@ class EscolaresController extends Controller
                     ->where('materia', $materia)
                     ->where('grupo', $grupo)
                     ->join('alumnos', 'seleccion_materias.no_de_control', '=', 'alumnos.no_de_control')
-                    ->orderBy('apellido_paterno', 'asc')
-                    ->orderBy('apellido_materno', 'asc')
-                    ->orderBy('nombre_alumno', 'asc')
+                    ->orderBy('apellido_paterno', 'ASC')
+                    ->orderBy('apellido_materno', 'ASC')
+                    ->orderBy('nombre_alumno', 'ASC')
                     ->get();
                 $datos = Grupo::where('periodo', $periodo)
                     ->where('materia', $materia)
@@ -1479,6 +1494,8 @@ class EscolaresController extends Controller
     {
         $periodo = $request->get('periodo');
         $accion = $request->get('accion');
+        $resultado=NULL;
+        $encabezado=NULL;
         if ($accion == 1) {
             $resultado = (new AccionesController)->sin_evaluar($periodo);
             $encabezado = "Materias sin ser evaluadas";
@@ -1710,6 +1727,7 @@ class EscolaresController extends Controller
         $carrera = $request->get('carrera');
         $reticula = $request->get('reticula');
         $especialidad = $request->get('espe');
+        $array_reticula=NULL;
         $materias_carrera = MateriaCarrera::where('carrera', $carrera)->where('reticula', $reticula)
             ->join('materias', 'materias_carreras.materia', '=', 'materias.materia')
             ->where(function ($query) use ($especialidad) {
@@ -1941,6 +1959,7 @@ class EscolaresController extends Controller
         $accion=$request->accion;
         $periodo_actual = (new AccionesController)->periodo();
         $periodo=$periodo_actual[0]->periodo;
+        $mensaje='';
         if($accion==1){
             (new AccionesController)->modificar_estatus($periodo);
             $mensaje="Se actualizó el estatus de los estudiantes";
@@ -1967,7 +1986,7 @@ class EscolaresController extends Controller
         ], [
             'contra.required' => 'Debe escribir la nueva contraseña',
             'contra.required_with' => 'Debe confirmar la contraseña',
-            'contra.same' => 'No concuerda con la verificacion',
+            'contra.same' => 'No concuerda con la verificación',
             'verifica.required' => 'Debe confirmar la nueva contraseña'
         ]);
         $ncontra = bcrypt($request->get('contra'));

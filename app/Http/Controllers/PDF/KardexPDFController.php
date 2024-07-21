@@ -8,6 +8,8 @@ use App\Models\Parametro;
 use App\Http\Controllers\Acciones\AccionesController;
 use Illuminate\Http\Request;
 use Codedge\Fpdf\Fpdf\Fpdf;
+use IntlDateFormatter;
+use JetBrains\PhpStorm\NoReturn;
 
 class KardexPDFController extends Controller
 {
@@ -22,11 +24,11 @@ class KardexPDFController extends Controller
         $y = 19;
         $ancho_imagen = 115;
         $altura_imagen = 80;
-        $this->fpdf->Image('/var/www/html/sii/public/img/tecnm.jpg',$x,$y,$ancho_imagen,$altura_imagen);
+        $this->fpdf->Image('tecnm.jpg',$x,$y,$ancho_imagen,$altura_imagen);
         $this->fpdf->SetXY($x+$ancho_imagen + 40,$y+$altura_imagen*0.28);
         $this->fpdf->SetFont('Times', 'B', 9);
         $this->fpdf->Cell(250,4,utf8_decode("TECNOLÓGICO NACIONAL DE MÉXICO"), 0,0,"C");
-        $this->fpdf->Image('/var/www/html/sii/public/img/escudo.jpg',$x+470,$y+10,55,50);
+        $this->fpdf->Image('escudo.jpg',$x+470,$y+10,55,50);
         $this->fpdf->SetXY($x+$ancho_imagen + 40,$y+$altura_imagen*0.48);
         $this->fpdf->SetFont('Times', 'B', 8);
         $generales = Parametro::first();
@@ -60,7 +62,7 @@ class KardexPDFController extends Controller
 
     }
 
-    public function crearPDF(Request $request){
+    #[NoReturn] public function crearPDF(Request $request){
         $control=$request->get('control');
         $alumno = Alumno::find($control);
         $ncarrera = (new AccionesController)->ncarrera($alumno->carrera,$alumno->reticula);
@@ -145,28 +147,19 @@ class KardexPDFController extends Controller
         $this->fpdf->Ln(6);
         $this->fpdf->SetFont('Arial', 'BI', 8);
         $this->fpdf->Cell(170,8,utf8_decode("La información presentada es sujeta a revisión"),0,1,'L');
-        $fmt1=new \IntlDateFormatter(
+        $fmt1=new IntlDateFormatter(
             'es_ES',
-            \IntlDateFormatter::FULL,
-            \IntlDateFormatter::FULL,
             'America/Tijuana',
-            \IntlDateFormatter::GREGORIAN,
             "d"
         );
-        $fmt2=new \IntlDateFormatter(
+        $fmt2=new IntlDateFormatter(
             'es_ES',
-            \IntlDateFormatter::FULL,
-            \IntlDateFormatter::FULL,
             'America/Tijuana',
-            \IntlDateFormatter::GREGORIAN,
             "MMMM"
         );
-        $fmt3=new \IntlDateFormatter(
+        $fmt3=new IntlDateFormatter(
             'es_ES',
-            \IntlDateFormatter::FULL,
-            \IntlDateFormatter::FULL,
             'America/Tijuana',
-            \IntlDateFormatter::GREGORIAN,
             "YYYY"
         );
         $generales = Parametro::first();

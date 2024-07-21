@@ -40,7 +40,7 @@ class DesarrolloController extends Controller
             $ficha->fin_prope = $datos->get('fin_prope');
             $ficha->save();
             return 1;
-        }catch (QueryException $e){
+        }catch (QueryException){
             return 0;
         }
     }
