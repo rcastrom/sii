@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Acciones;
 
 use App\Http\Controllers\Controller;
+use App\Models\AlumnosGeneral;
 use App\Models\PeriodoFicha;
 use Illuminate\Support\Facades\DB;
 use App\Models\Carrera;
@@ -32,6 +33,14 @@ class AccionesController extends Controller
     public function periodo()
     {
         return DB::Select('select periodo from pac_periodo_actual()');
+    }
+    /*
+     * Devolver los datos del alumno
+     * @return mixed
+     */
+    public function datos_generales_alumno($control)
+    {
+        return AlumnosGeneral::where('no_de_control',$control)->first();
     }
     /*
      * Devuelve el kardex del estudiante

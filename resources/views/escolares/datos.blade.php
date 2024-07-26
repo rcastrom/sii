@@ -8,6 +8,7 @@
 
 @section('content')
     <x-information :encabezado="$encabezado">
+
         <h4 class="card-title">{{ $alumno->apellido_paterno.' '.$alumno->apellido_materno.' '.$alumno->nombre_alumno }}</h4>
         <p class="card-text">Número de control: {{ $alumno->no_de_control }}</p>
         <p class="card-text">{{ $ncarrera->nombre_carrera }} Ret {{ $alumno->reticula }}</p>

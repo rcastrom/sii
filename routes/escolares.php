@@ -62,7 +62,7 @@ Route::group(['prefix'=>'escolares','middleware'=>['auth','role:escolares']],fun
         Route::get('/modifica', 'periodomodifica');
         Route::post('/modificar', 'periodomodificar')->name('escolares.periodo_mod1');
         Route::post('/modificado', 'periodoupdate')->name('escolares.periodo_upd');
-        Route::get('/reinscripcion', 'reinscripcion');
+        Route::get('/reinscripcion', 'reinscripcion')->name('escolares.reinscripcion');
         Route::post('/alta_fechas', 'altaf_re')->name('escolares.fechas-reinscripcion');
         Route::get('/cierre', 'cierre');
     });

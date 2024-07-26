@@ -30,6 +30,11 @@ use App\Models\TiposIngreso;
 use App\Models\User;
 use App\Models\Jefe;
 use Carbon\Carbon;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\MenuEscolaresController;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -37,6 +42,7 @@ use App\Http\Controllers\Acciones\AccionesController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use PDF;
+
 
 class EscolaresController extends Controller
 {
@@ -47,6 +53,11 @@ class EscolaresController extends Controller
     public function index(){
         return view('escolares.index');
     }
+    public function datos_alumno($control)
+    {
+        return (new AccionesController)->datos_generales_alumno($control);
+    }
+
     public function buscar(){
         $encabezado="Búsqueda de Estudiante";
         return view('escolares.busqueda')->with(compact('encabezado'));
@@ -59,16 +70,37 @@ class EscolaresController extends Controller
             'control.required' => 'Debe indicar un dato para ser buscado'
         ]);
         $encabezado="Búsqueda de Estudiante";
-        $control = $request->control;
-        $tbusqueda = $request->tbusqueda;
+        $control = $request->get("control");
+        $tipo_busqueda = $request->get("tbusqueda");
         $periodo = (new AccionesController)->periodo();
-        $periodos = PeriodoEscolar::orderBy('periodo', 'desc')->get();
-        if ($tbusqueda == "1") {
-            $alumno = Alumno::findOrfail($control);
-            $datos = AlumnosGeneral::where('no_de_control',$control)->first();
+        $periodos = PeriodoEscolar::orderBy('periodo', 'DESC')->get();
+        if ($tipo_busqueda == "1") {
+            try {
+                $alumno=Alumno::findOrFail($control);
+            }catch (ModelNotFoundException){
+                $encabezado="Error en la búsqueda";
+                $mensaje="El número de control ".$control." no fue localizado";
+                //$mensaje.=$e->getMessage();
+                return view('escolares.no')->with(compact('encabezado','mensaje'));
+            }
+            $datos = $this->datos_alumno($control);
             if(empty($datos)){
-                $info=collect(['domicilio_calle','domicilio_colonia','codigo_postal','telefono']);
-                $datos=$info->combine(['','','','']);
+                $info=collect(
+                    [
+                        'domicilio_calle',
+                        'domicilio_colonia',
+                        'codigo_postal',
+                        'telefono'
+                    ]
+                );
+                $datos=$info->combine(
+                    [
+                        '',
+                        '',
+                        '',
+                        ''
+                    ]
+                );
                 $bandera=0;
             }else{
                 $bandera=1;
@@ -78,16 +110,14 @@ class EscolaresController extends Controller
                 ->select('identificacion_corta')->first();
             $estatus = EstatusAlumno::where('estatus', $alumno->estatus_alumno)->first();
             $espe = Especialidad::where('especialidad', $alumno->especialidad)
-                ->where('carrera', $alumno->carrera)->where('reticula', $alumno->reticula)->first();
-            if (empty($espe)) {
-                $especialidad = "POR ASIGNAR";
-            } else {
-                $especialidad = $espe->nombre_especialidad;
-            }
-            return view('escolares.datos')->
-            with(compact('alumno', 'ncarrera', 'datos', 'control', 'periodo',
-                'periodos', 'estatus', 'especialidad', 'ingreso','bandera','encabezado'));
-        } elseif ($tbusqueda == '2') {
+                ->where('carrera', $alumno->carrera)
+                ->where('reticula', $alumno->reticula)
+                ->first();
+            $especialidad=empty($espe)?"POR ASIGNAR":$espe->nombre_especialidad;
+            return view('escolares.datos')
+                ->with(compact('alumno', 'ncarrera', 'datos', 'control', 'periodo',
+                    'periodos', 'estatus', 'especialidad', 'ingreso','bandera','encabezado'));
+        }else{
             $arroja = Alumno::where('apellido_paterno', strtoupper($control))
                 ->orWhere('apellido_materno', strtoupper($control))
                 ->orWhere('nombre_alumno', strtoupper($control))
@@ -95,10 +125,11 @@ class EscolaresController extends Controller
                 ->orderBy('apellido_materno')
                 ->orderBy('nombre_alumno')
                 ->get();
-            return view('escolares.datos2')->with(compact('arroja', 'periodo', 'periodos','encabezado'));
+            return view('escolares.datos2')
+                ->with(compact('arroja', 'periodo', 'periodos','encabezado'));
         }
     }
-    public function accion(Request $request)
+    public function accion(Request $request):Factory|View|Application
     {
         $control = $request->control;
         $periodo = $request->periodo;
@@ -294,8 +325,142 @@ class EscolaresController extends Controller
             return view('escolares.modificar_alumno')->with(compact('alumno',
                 'planes','periodos','tipos_ingreso','generales','bandera','encabezado'));
         }
+        $encabezado="Error";
+        $mensaje="Existió algún error";
+        return view('escolares.no')->with(compact('encabezado','mensaje'));
     }
-    public function accionk(Request $request)
+    public function fechas_reinscripcion($carrera,$periodo):Factory|View|Application
+    {
+        if (FechasCarrera::where('carrera', $carrera)
+                ->where('periodo', $periodo)
+                ->count() > 0) {
+            $encabezado="Error en selección de carrera";
+            $mensaje = "Ya registró una fecha para la reinscripción de la carrera";
+            return view('escolares.no')->with(compact('mensaje','encabezado'));
+        } else {
+            $encabezado="Horario para reinscripción por carrera";
+            $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
+            $ncarrera = Carrera::where('carrera', $carrera)
+                ->select('nombre_reducido')->first();
+            return view('escolares.fechas_re')->with(compact('periodo', 'carrera',
+                'nperiodo', 'ncarrera','encabezado'));
+        }
+    }
+    public function error_reinscripcion_fecha():Factory|View|Application
+    {
+        $encabezado="Error de parámetro de reinscripción";
+        $mensaje = "No ha indicado la fecha de reinscripción para la carrera";
+        return view('escolares.no')
+            ->with(compact('mensaje','encabezado'));
+    }
+    public function crear_reinscripcion($periodo,$carrera): RedirectResponse
+    {
+        $anio_extraido = (int) substr($periodo, 0, 4);
+        $numero_periodo = in_array(substr($periodo, 4, 1) ,['3', '2']) ? '1' : '3';
+        $anio = $numero_periodo == '1' ? $anio_extraido : $anio_extraido - 1;
+        $periodo_anterior = $anio . $numero_periodo;
+        $horas='';
+        if (FechasCarrera::where('periodo', $periodo)->where('carrera', $carrera)->count() > 0) {
+            $valores = FechasCarrera::where('periodo', $periodo)->where('carrera', $carrera)->first();
+            $fecha = $valores->fecha_inscripcion;
+            $hora_inicio = $valores->fecha_inicio;
+            $hora_fin = $valores->fecha_fin;
+            $intervalo = $valores->intervalo;
+            $personas = $valores->personas;
+            $hora_inicio = substr($hora_inicio, 0, 2);
+            if (str_starts_with($hora_inicio, "0")) {
+                $hora_inicio = substr($hora_inicio, 1, 1);
+            }
+            $hora_fin = substr($hora_fin, 0, 2);
+            $inicio = $hora_inicio;
+            $fin = $hora_fin;
+            $sumadorT = 0;
+            $j = 0;
+            while ($inicio < $fin) {
+                if ($sumadorT < 60) {
+                    if ($inicio < 10) {
+                        if ($sumadorT > 0) {
+                            $horas[$j] = "0" . $inicio . ":" . $sumadorT . ":00.0";
+                        } else {
+                            $horas[$j] = "0" . $inicio . ":00:00.0";
+                        }
+                    } else {
+                        $horas[$j] = $inicio . ":" . $sumadorT . ":00.0";
+                    }
+                } else {
+                    $inicio += 1;
+                    $sumadorT -= 60;
+                    if ($sumadorT < 1) {
+                        if ($inicio < 10) {
+                            $horas[$j] = "0" . $inicio . ":00:00.0";
+                        } else {
+                            $horas[$j] = $inicio . ":00:00.0";
+                        }
+                    } else {
+                        $horas[$j] = $inicio . ":" . $sumadorT . ":00.0";
+                    }
+                }
+                $sumadorT += $intervalo;
+                $j++;
+            }
+            $hora_puesta = 1;
+            $p = 0;
+            $avisos =DB::table('avisos_reinscripcion as AR')->where('periodo', $periodo)
+                ->join('alumnos as A', 'A.no_de_control', '=', 'AR.no_de_control')
+                ->where('A.estatus_alumno', 'ACT')
+                ->where('carrera', $carrera)
+                ->select('AR.no_de_control', 'A.apellido_paterno', 'A.apellido_materno', 'A.nombre_alumno', 'A.semestre', 'AR.fecha_hora_seleccion')
+                ->orderBy('A.semestre', 'ASC')
+                ->get();
+            foreach ($avisos as $seleccion) {
+                if (SeleccionMateria::where('no_de_control', $seleccion->no_de_control)
+                        ->where('periodo', $periodo_anterior)->join('materias', 'materias.materia', '=', 'seleccion_materias.materia')
+                        ->where('nombre_completo_materia', 'LIKE', "%RESIDENCIA%")->count() == 0) {
+                    $consultar_promedio = AcumuladoHistorico::where('periodo', $periodo_anterior)
+                        ->where('no_de_control', $seleccion->no_de_control)->select('promedio_ponderado')
+                        ->first();
+                    if (empty($consultar_promedio)) {
+                        $promedio_ponderado = 0;
+                    } else {
+                        $promedio_ponderado = trim($consultar_promedio->promedio_ponderado);
+                        $promedio_ponderado = substr($promedio_ponderado, 0, 5);
+                    }
+                    $listado=new GenerarListasTemporal();
+                    $listado->no_de_control=$seleccion->no_de_control;
+                    $listado->apellido_paterno=$seleccion->apellido_paterno;
+                    $listado->apellido_materno=$seleccion->apellido_materno;
+                    $listado->nombre_alumno=$seleccion->nombre_alumno;
+                    $listado->semestre=$seleccion->semestre;
+                    $listado->promedio_ponderado=$promedio_ponderado;
+                    $listado->save();
+                }
+            }
+            $consulta = GenerarListasTemporal::orderBy('semestre', 'ASC')
+                ->orderBy('promedio_ponderado', 'DESC')
+                ->get();
+            foreach ($consulta as $resultado) {
+                $fecha_asig = $fecha . " " . $horas[$p];
+                if ($hora_puesta < $personas) {
+                    $hora_puesta++;
+                } else {
+                    $hora_puesta = 1;
+                    $p++;
+                }
+                $no_de_control = $resultado->no_de_control;
+                AvisoReinscripcion::where('no_de_control', $no_de_control)
+                    ->where('periodo', $periodo)
+                    ->update([
+                        'fecha_hora_seleccion' => $fecha_asig
+                    ]);
+            }
+            GenerarListasTemporal::delete();
+            return redirect()->route('escolares.reinscripcion');
+        }else{
+            $this->error_reinscripcion_fecha();
+        }
+        return redirect()->route('inicio_escolares');
+    }
+    public function accionk(Request $request):Factory|View|Application
     {
         $control = $request->control;
         $accion = $request->accion;
@@ -318,6 +483,9 @@ class EscolaresController extends Controller
             return view('escolares.m1kardex')->with(compact('alumno', 'periodos',
                 'control','encabezado'));
         }
+        $encabezado="Error";
+        $mensaje="Existió algún error. Verifique";
+        return view('escolares.no')->with(compact('encabezado','mensaje'));
     }
     public function accionkalta(Request $request)
     {
@@ -401,10 +569,12 @@ class EscolaresController extends Controller
 
     public function eliminarkardex($periodo, $control, $materia)
     {
-        HistoriaAlumno::where('no_de_control', $control)->where('periodo', $periodo)
-            ->where('materia', $materia)->delete();
-        $alumno = Alumno::findOrfail($control);
-        $datos = AlumnosGeneral::where('no_de_control',$control)->first();
+        HistoriaAlumno::where('no_de_control', $control)
+            ->where('periodo', $periodo)
+            ->where('materia', $materia)
+            ->delete();
+        $estudiante = $this->datos_alumno($control) ;
+        $datos = $this->datos_alumno($control);
         if(empty($datos)){
             $info=collect(['domicilio_calle','domicilio_colonia','codigo_postal','telefono']);
             $datos=$info->combine(['','','','']);
@@ -412,22 +582,24 @@ class EscolaresController extends Controller
         }else{
             $bandera=1;
         }
-        $ncarrera = (new AccionesController)->ncarrera($alumno->carrera,$alumno->reticula);
+        $ncarrera = (new AccionesController)->ncarrera($estudiante->carrera,$estudiante->reticula);
         $periodo = (new AccionesController)->periodo();
         $periodos = PeriodoEscolar::orderBy('periodo', 'desc')->get();
-        $estatus = EstatusAlumno::where('estatus', $alumno->estatus_alumno)->first();
-        $espe = Especialidad::where('especialidad', $alumno->especialidad)
-            ->where('carrera', $alumno->carrera)->where('reticula', $alumno->reticula)->first();
+        $estatus = EstatusAlumno::where('estatus', $estudiante->estatus_alumno)->first();
+        $espe = Especialidad::where('especialidad', $estudiante->especialidad)
+            ->where('carrera', $estudiante->carrera)
+            ->where('reticula',$estudiante->reticula)
+            ->first();
         if (empty($espe)) {
             $especialidad = "POR ASIGNAR";
         } else {
             $especialidad = $espe->nombre_especialidad;
         }
-        $ingreso = PeriodoEscolar::where('periodo', $alumno->periodo_ingreso_it)
+        $ingreso = PeriodoEscolar::where('periodo', $estudiante->periodo_ingreso_it)
             ->select('identificacion_corta')->first();
         $encabezado="Materia eliminada de Kardex";
-        return view('escolares.datos')->
-        with(compact('alumno', 'ncarrera', 'datos', 'periodo',
+        return view('escolares.datos')
+            ->with(compact('estudiante', 'ncarrera', 'datos', 'periodo',
             'periodos', 'estatus', 'especialidad', 'ingreso','bandera','encabezado'));
     }
     public function kardexupdate(Request $request)
@@ -445,8 +617,8 @@ class EscolaresController extends Controller
                 'tipo_evaluacion' => $tipo_ev,
                 'updated_at' => Carbon::now()
             ]);
-        $alumno = Alumno::findOrfail($control);
-        $datos = AlumnosGeneral::where('no_de_control',$control)->first();
+        $alumno = (new AccionesController)->datos_alumnos($control);
+        $datos = $this->datos_alumno($control);
         if(empty($datos)){
             $info=collect(['domicilio_calle','domicilio_colonia','codigo_postal','telefono']);
             $datos=$info->combine(['','','','']);
@@ -729,7 +901,6 @@ class EscolaresController extends Controller
                 ->where('nivel_escolar', 'L')
                 ->where('tipo_ingreso', '1')->max('no_de_control');
             $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
-            $mensaje = "El último número de control asignado en " . $nperiodo->identificacion_corta . " fue " . $ultimo;
         } else {
             $last = substr($periodo, -1);
             $anio = substr($periodo, 0, 4);
@@ -743,8 +914,8 @@ class EscolaresController extends Controller
                 ->where('nivel_escolar', 'L')
                 ->where('tipo_ingreso', '1')->max('no_de_control');
             $nperiodo = PeriodoEscolar::where('periodo', $per_ult)->first();
-            $mensaje = "El último número de control asignado en " . $nperiodo->identificacion_corta . " fue " . $ultimo;
         }
+        $mensaje = "El último número de control asignado en " . $nperiodo->identificacion_corta . " fue " . $ultimo;
         $periodos = PeriodoEscolar::orderBy('periodo', 'desc')->get();
         $carreras = Carrera::orderBy('nombre_reducido')->get();
         $planes = PlanDeEstudio::all();
@@ -1040,154 +1211,42 @@ class EscolaresController extends Controller
         return view('escolares.prereinscripcion')->with(compact('periodos',
             'periodo_actual', 'carreras','encabezado'));
     }
+    public function listado_reinscripcion($periodo,$carrera)
+    {
+        $avisos = DB::table('avisos_reinscripcion as AR')
+            ->where('periodo', $periodo)
+            ->join('alumnos as A', 'A.no_de_control', '=', 'AR.no_de_control')
+            ->where('A.estatus_alumno', 'ACT')
+            ->where('carrera', $carrera)
+            ->whereNotNull('AR.fecha_hora_seleccion')
+            ->select('AR.no_de_control', 'A.apellido_paterno', 'A.apellido_materno', 'A.nombre_alumno', 'A.semestre', 'AR.fecha_hora_seleccion')
+            ->orderBy('A.semestre', 'ASC')
+            ->orderBy('A.apellido_paterno', 'ASC')
+            ->orderBy('A.apellido_materno', 'ASC')
+            ->orderBy('A.no_de_control', 'ASC')
+            ->get();
+        $nperiodo = PeriodoEscolar::where('periodo', $periodo)->select('identificacion_corta')->first();
+        $ncarrera = Carrera::where('carrera', $carrera)->select('nombre_reducido')->first();
+        $data = [
+            'alumnos' => $avisos,
+            'nperiodo' => $nperiodo,
+            'ncarrera' => $ncarrera
+        ];
+        $pdf = PDF::loadView('escolares.pdf_listado', $data)
+            ->setPaper('Letter');
+        return $pdf->download('listado.pdf');
+    }
     public function accion_re(Request $request)
     {
         $periodo = $request->get('periodo');
         $carrera = $request->get('carrera');
         $accion = $request->get('accion');
         if ($accion == 1) {
-            if (FechasCarrera::where('carrera', $carrera)->where('periodo', $periodo)->count() > 0) {
-                $encabezado="Error en selección de carrera";
-                $mensaje = "Ya registró una fecha para la reinscripción de la carrera";
-                return view('escolares.no')->with(compact('mensaje','encabezado'));
-            } else {
-                $encabezado="Horario para reinscripción por carrera";
-                $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
-                $ncarrera = Carrera::where('carrera', $carrera)->select('nombre_reducido')->first();
-                return view('escolares.fechas_re')->with(compact('periodo', 'carrera',
-                    'nperiodo', 'ncarrera','encabezado'));
-            }
+            $this->fechas_reinscripcion($carrera,$periodo);
         } elseif ($accion == 2) {
-            $anio_extraido = substr($periodo, 0, 4);
-            $numero_periodo = (substr($periodo, 4, 1) == '3' || substr($periodo, 4, 1) == '2') ? '1' : '3';
-            $anio = $numero_periodo == '1' ? $anio_extraido : $anio_extraido - 1;
-            $periodo_anterior = $anio . $numero_periodo;
-            if (FechasCarrera::where('periodo', $periodo)->where('carrera', $carrera)->count() > 0) {
-                $valores = FechasCarrera::where('periodo', $periodo)->where('carrera', $carrera)->first();
-                $fecha = $valores->fecha_inscripcion;
-                $hora_inicio = $valores->fecha_inicio;
-                $hora_fin = $valores->fecha_fin;
-                $intervalo = $valores->intervalo;
-                $personas = $valores->personas;
-                $hora_inicio = substr($hora_inicio, 0, 2);
-                if (str_starts_with($hora_inicio, "0")) {
-                    $hora_inicio = substr($hora_inicio, 1, 1);
-                }
-                $hora_fin = substr($hora_fin, 0, 2);
-                $inicio = $hora_inicio;
-                $fin = $hora_fin;
-                $sumadorT = 0;
-                $j = 0;
-                while ($inicio < $fin) {
-                    if ($sumadorT < 60) {
-                        if ($inicio < 10) {
-                            if ($sumadorT > 0) {
-                                $horas[$j] = "0" . $inicio . ":" . $sumadorT . ":00.0";
-                            } else {
-                                $horas[$j] = "0" . $inicio . ":00:00.0";
-                            }
-                        } else {
-                            $horas[$j] = $inicio . ":" . $sumadorT . ":00.0";
-                        }
-                    } else {
-                        $inicio += 1;
-                        $sumadorT -= 60;
-                        if ($sumadorT < 1) {
-                            if ($inicio < 10) {
-                                $horas[$j] = "0" . $inicio . ":00:00.0";
-                            } else {
-                                $horas[$j] = $inicio . ":00:00.0";
-                            }
-                        } else {
-                            $horas[$j] = $inicio . ":" . $sumadorT . ":00.0";
-                        }
-                    }
-                    $sumadorT += $intervalo;
-                    $j++;
-                }
-                $hora_puesta = 1;
-                $p = 0;
-                $avisos =DB::table('avisos_reinscripcion as AR')->where('periodo', $periodo)
-                    ->join('alumnos as A', 'A.no_de_control', '=', 'AR.no_de_control')
-                    ->where('A.estatus_alumno', 'ACT')
-                    ->where('carrera', $carrera)
-                    ->select('AR.no_de_control', 'A.apellido_paterno', 'A.apellido_materno', 'A.nombre_alumno', 'A.semestre', 'AR.fecha_hora_seleccion')
-                    ->orderBy('A.semestre', 'ASC')
-                    ->get();
-                $cont = 1;
-                foreach ($avisos as $seleccion) {
-                    if (SeleccionMateria::where('no_de_control', $seleccion->no_de_control)
-                            ->where('periodo', $periodo_anterior)->join('materias', 'materias.materia', '=', 'seleccion_materias.materia')
-                            ->where('nombre_completo_materia', 'LIKE', "%RESIDENCIA%")->count() == 0) {
-                        $consultar_promedio = AcumuladoHistorico::where('periodo', $periodo_anterior)
-                            ->where('no_de_control', $seleccion->no_de_control)->select('promedio_ponderado')
-                            ->first();
-                        if (empty($consultar_promedio)) {
-                            $promedio_ponderado = 0;
-                        } else {
-                            $promedio_ponderado = trim($consultar_promedio->promedio_ponderado);
-                            $promedio_ponderado = substr($promedio_ponderado, 0, 5);
-                        }
-                        $listado=new GenerarListasTemporal();
-                        $listado->no_de_control=$seleccion->no_de_control;
-                        $listado->apellido_paterno=$seleccion->apellido_paterno;
-                        $listado->apellido_materno=$seleccion->apellido_materno;
-                        $listado->nombre_alumno=$seleccion->nombre_alumno;
-                        $listado->semestre=$seleccion->semestre;
-                        $listado->promedio_ponderado=$promedio_ponderado;
-                        $listado->save();
-                        $cont++;
-                    }
-                }
-                $consulta = GenerarListasTemporal::orderBy('semestre', 'asc')
-                    ->orderBy('promedio_ponderado', 'desc')
-                    ->get();
-                foreach ($consulta as $resultado) {
-                    if ($hora_puesta < $personas) {
-                        $fecha_asig = $fecha . " " . $horas[$p];
-                        $hora_puesta++;
-                    } else {
-                        $fecha_asig = $fecha . " " . $horas[$p];
-                        $hora_puesta = 1;
-                        $p++;
-                    }
-                    $no_de_control = $resultado->no_de_control;
-                    AvisoReinscripcion::where('no_de_control', $no_de_control)
-                        ->where('periodo', $periodo)
-                        ->update([
-                            'fecha_hora_seleccion' => $fecha_asig
-                        ]);
-                }
-                GenerarListasTemporal::delete();
-                return redirect('/escolares/periodos/reinscripcion');
-            } else {
-                $encabezado="Error de parámetro de reinscripción";
-                $mensaje = "No ha indicado la fecha de reinscripción para la carrera";
-                return view('escolares.no')->with(compact('mensaje','encabezado'));
-            }
-        } elseif ($accion == 3) {
-            $avisos = DB::table('avisos_reinscripcion as AR')
-                ->where('periodo', $periodo)
-                ->join('alumnos as A', 'A.no_de_control', '=', 'AR.no_de_control')
-                ->where('A.estatus_alumno', 'ACT')
-                ->where('carrera', $carrera)
-                ->whereNotNull('AR.fecha_hora_seleccion')
-                ->select('AR.no_de_control', 'A.apellido_paterno', 'A.apellido_materno', 'A.nombre_alumno', 'A.semestre', 'AR.fecha_hora_seleccion')
-                ->orderBy('A.semestre', 'ASC')
-                ->orderBy('A.apellido_paterno', 'ASC')
-                ->orderBy('A.apellido_materno', 'ASC')
-                ->orderBy('A.no_de_control', 'ASC')
-                ->get();
-            $nperiodo = PeriodoEscolar::where('periodo', $periodo)->select('identificacion_corta')->first();
-            $ncarrera = Carrera::where('carrera', $carrera)->select('nombre_reducido')->first();
-            $data = [
-                'alumnos' => $avisos,
-                'nperiodo' => $nperiodo,
-                'ncarrera' => $ncarrera
-            ];
-            $pdf = PDF::loadView('escolares.pdf_listado', $data)
-                ->setPaper('Letter');
-            return $pdf->download('listado.pdf');
+            $this->crear_reinscripcion($periodo,$carrera);
+        } else {
+            $this->listado_reinscripcion($periodo,$carrera);
         }
     }
     public function altaf_re(Request $request)
@@ -1429,7 +1488,7 @@ class EscolaresController extends Controller
                     ->orderBy('apellido_materno', 'ASC')
                     ->orderBy('nombre_alumno', 'ASC')
                     ->get();
-                $datos = Grupo::where('periodo', $periodo)
+                $datos_grupo = Grupo::where('periodo', $periodo)
                     ->where('materia', $materia)
                     ->where('grupo', $grupo)
                     ->first();
@@ -1440,13 +1499,12 @@ class EscolaresController extends Controller
                     'alumnos' => $inscritos,
                     'docente' => $ndocente,
                     'nombre_periodo' => $nperiodo,
-                    'datos' => $datos,
+                    'datos' => $datos_grupo,
                     'nmateria' => $nombre_mat,
                     'materia' => $materia,
                     'grupo' => $grupo
                 ];
                 $pdf = PDF::loadView('escolares.pdf_acta', $data);
-                return $pdf->download('acta.pdf');
             } else {
                 $inscritos = SeleccionMateria::where('periodo', $periodo)
                     ->where('materia', $materia)
@@ -1456,7 +1514,7 @@ class EscolaresController extends Controller
                     ->orderBy('apellido_materno', 'ASC')
                     ->orderBy('nombre_alumno', 'ASC')
                     ->get();
-                $datos = Grupo::where('periodo', $periodo)
+                $datos_grupo= Grupo::where('periodo', $periodo)
                     ->where('materia', $materia)
                     ->where('grupo', $grupo)
                     ->first();
@@ -1467,15 +1525,15 @@ class EscolaresController extends Controller
                     'alumnos' => $inscritos,
                     'docente' => $ndocente,
                     'nombre_periodo' => $nperiodo,
-                    'datos' => $datos,
+                    'datos' => $datos_grupo,
                     'nmateria' => $nombre_mat,
                     'materia' => $materia,
                     'grupo' => $grupo
                 ];
                 $pdf = PDF::loadView('escolares.pdf_acta2', $data)
                     ->setPaper('Letter');
-                return $pdf->download('acta.pdf');
             }
+            return $pdf->download('acta.pdf');
         } else {
             $encabezado="Error para impresión de acta";
             $mensaje = "No cuenta con alumnos inscritos en la materia";
@@ -1640,22 +1698,34 @@ class EscolaresController extends Controller
             $acad = Organigrama::where('area_depende', 'like', '110%')
                 ->where('clave_area', 'like', '%00')
                 ->get();
-            $espe = Especialidad::where('carrera', $carrera)->where('reticula', $reticula)->get();
+            $espe = Especialidad::where('carrera', $carrera)
+                ->where('reticula', $reticula)
+                ->get();
             $materias = MateriaCarrera::where('carrera', $carrera)->where('reticula', $reticula)
                 ->join('materias', 'materias_carreras.materia', '=', 'materias.materia')
                 ->whereNull('especialidad')
                 ->select('materias_carreras.materia as matteria', 'nombre_abreviado_materia',
                     'creditos_materia', 'horas_teoricas', 'horas_practicas', 'semestre_reticula', 'renglon')
                 ->get();
-            $ncarrera = Carrera::where('carrera', $carrera)->where('reticula', $reticula)->first();
+            $ncarrera = Carrera::where('carrera', $carrera)
+                ->where('reticula', $reticula)
+                ->first();
             return view('escolares.materia_nueva')->with(compact('carrera',
                 'reticula', 'acad', 'espe', 'materias', 'ncarrera','encabezado'));
-        } elseif ($accion == 3) {
+        }elseif ($accion==2){
+            $accion="FALTA POR PROGRAMAR";
+        }else {
             $encabezado="Vista retícula de la carrera con especialidad";
-            $espe = Especialidad::where('carrera', $carrera)->where('reticula', $reticula)->get();
-            $ncarrera = Carrera::where('carrera', $carrera)->where('reticula', $reticula)->first();
-            return view('escolares.reticulas')->with(compact('carrera',
-                'reticula', 'espe', 'ncarrera','encabezado'));
+            $espe = Especialidad::where('carrera', $carrera)
+                ->where('reticula', $reticula)
+                ->get();
+            $ncarrera = Carrera::where('carrera', $carrera)
+                ->where('reticula', $reticula)
+                ->first();
+            return view('escolares.reticulas')
+                ->with(compact(
+                    'carrera', 'reticula', 'espe',
+                    'ncarrera','encabezado'));
         }
     }
     public function materiaalta(Request $request)

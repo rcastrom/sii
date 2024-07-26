@@ -43,12 +43,17 @@
                         @else
                             @if(\App\Models\MateriaCarrera::where('carrera',$carrera)
                                     ->where('reticula',$reticula)
-                                    ->where('semestre_reticula',$semestre)->where('renglon',$renglon)
+                                    ->where('semestre_reticula',$semestre)
+                                    ->where('renglon',$renglon)
                                     ->whereNotNull('materia')
                                     ->whereNotNull('especialidad')->count()>0)
-                                @php($bandera=2;) @endphp
+                                @php
+                                    $bandera=2;
+                                @endphp
                             @else
-                                @php($bandera=0;) @endphp
+                                @php
+                                    $bandera=0;
+                                @endphp
                             @endif
                         @endif
                         @if($bandera==1)

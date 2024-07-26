@@ -4,7 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 
+/**
+ * Class Personal
+ * @package App
+ * @mixin Builder
+ */
 class Personal extends Model
 {
     use HasFactory;

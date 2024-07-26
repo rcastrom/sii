@@ -10,6 +10,13 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Builder;
+
+/**
+ * Class User
+ * @package App
+ * @mixin Builder
+ */
 
 class User extends Authenticatable
 {
