@@ -27,7 +27,7 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-12 col-md-6">Telefono</div>
+            <div class="col-sm-12 col-md-6">Teléfono</div>
             <div class="col-sm-12 col-md-6">{{ $bandera==1?$datos->telefono:'' }} </div>
         </div>
         <div class="row">

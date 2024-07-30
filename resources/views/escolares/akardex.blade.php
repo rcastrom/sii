@@ -22,7 +22,7 @@
                 </ul>
             </div>
         @endif
-        <form action="{{route('escolares.accion_kardex_alta')}}" method="post" role="form">
+        <form action="{{route('kardex.store')}}" method="post" role="form">
             @csrf
             <div class="row">
                 <div class="col-sm-12 col-md-6">
@@ -63,6 +63,7 @@
             <input type="hidden" name="control" id="control" value="{{ $control }}">
         </form>
     </x-additional>
+
 @stop
 
 

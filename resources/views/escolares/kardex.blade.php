@@ -33,6 +33,7 @@
                         <th>Oportunidad</th>
                         <th>Créditos</th>
                         <th>Observaciones</th>
+                        <th colspan="2">Acciones</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -57,7 +58,13 @@
                                 @else
                                     <td></td>
                                 @endif
+                            @else
+                                <td></td>
                             @endif
+                            <td>
+                                <a href="{{route('kardex.edit',$data->id)}}"><i class="fas fa-edit"></i>Editar</a>
+                                <a href="{{route('kardex.show',$data->id)}}"><i class="fas fa-trash"></i>Eliminar</a>
+                            </td>
                         </tr>
                         @if($data->calificacion>=70||in_array($data->tipo_evaluacion,$tipos_aprob))
                             @php
@@ -99,21 +106,21 @@
                 </table>
             @endif
         @endforeach
-        <table class="table table-responsive">
+        <table class="table table-responsive" id="cssTable">
             <thead>
             <tr>
                 <th>Porcentaje de avance</th>
                 <th>Promedio General</th>
             </tr>
             <tr>
-                <td align="center">
+                <td>
                     @php
                         $avance1=$suma_total==0?0:round(($suma_total/$ncarrera->creditos_totales)*100,2);
                         $avance = ($avance1>=100)?100:$avance1;
                     @endphp
                         {{$avance."%"}}
                 </td>
-                <td align="center">
+                <td>
                     @php
                         $prom_tot=($j-1)==0?0:round($calificaciones_totales/($j-1),2);
                     @endphp
@@ -124,37 +131,22 @@
         </table>
     </x-additional>
     <x-information :encabezado="$encabezado2">
-        <form method="post" action="{{route('escolares.accion_kardex')}}" class="form-inline" role="form">
-            @csrf
-            <legend>Seleccione una opción</legend>
             <div class="row">
                 <div class="form-group col-sm-12 col-md-6">
-                    <label for="accion" class="sr-only">Acción</label>
-                    <select name="accion" id="accion" required class="form-control">
-                        <option value="" selected>--Seleccione--</option>
-                        <option value="1">Agregar materia</option>
-                        <option value="2">Modificar materia</option>
-                    </select>
+                    <ul>
+                        <li><a href="{{route('kardex.create',['control'=>$control])}}">Agregar materia</a></li>
+                        <li><a href="{{route('escolares.imprimirkardex',['control'=>$control])}}">Imprimir</a></li>
+                    </ul>
                 </div>
             </div>
-            <button type="submit" class="btn btn-primary">Continuar</button>
-            <input type="hidden" name="control" id="control" value="{{ $control }}">
-        </form>
     </x-information>
-    <x-information :encabezado="$encabezado3">
-        <form action="{{route('escolares.imprimirkardex')}}" target="_blank" method="post" class="form-inline" role="form">
-            @csrf
-            <div class="row">
-                <div class="form-group col-sm-12 col-md-6">
-                    <input type="hidden" name="control" id="control" value="{{ $control }}">
-                    <button type="submit" class="btn btn-primary">Imprimir</button>
-                </div>
-            </div>
-        </form>
-    </x-information>
-    <x-aviso>
-        <p>Para modificar o eliminar una materia, el sistema le solicitará indique primeramente el período
-            de la misma</p>
-    </x-aviso>
+
 @stop
 
+@section('css')
+    #cssTable td
+    {
+        text-align: center;
+        vertical-align: middle;
+    }
+@endsection

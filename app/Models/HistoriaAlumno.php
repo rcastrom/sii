@@ -16,8 +16,12 @@ class HistoriaAlumno extends Model
 {
     use HasFactory;
     protected $table='historia_alumno';
-    protected $primaryKey="no_de_control";
+    protected $fillable=['no_de_control','periodo','materia','calificacion','tipo_evaluacion'];
     protected $casts=[
         'no_de_control'=>'string',
+        'tipo_evaluacion' => 'string',
+        'plan_de_estudios' => 'string',
+        'periodo' => 'string',
+        'calificacion' => 'integer'
     ];
 }

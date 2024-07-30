@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Escolares\EscolaresController;
+use App\Http\Controllers\Escolares\EscolaresAlumnosController;
+use App\Http\Controllers\Escolares\KardexController;
 use App\Http\Controllers\PDF\ConstanciaPDFController;
 use App\Http\Controllers\PDF\IdiomasPDFController;
 use App\Http\Controllers\PDF\CertificadoPDFController;
@@ -10,22 +12,22 @@ use App\Http\Controllers\PDF\KardexPDFController;
 Route::group(['prefix'=>'escolares','middleware'=>['auth','role:escolares']],function () {
     Route::get('/', [EscolaresController::class, 'index'])->name('inicio_escolares');
     Route::group(['prefix'=>'alumnos'],function (){
-        Route::get('/consulta',[EscolaresController::class,'buscar']);
-        Route::post('/buscar',[EscolaresController::class,'busqueda'])->name('escolares.buscar');
-        Route::post('/consulta_alumno',[EscolaresController::class, 'accion'])
+        Route::get('/consulta',[EscolaresAlumnosController::class,'buscar']);
+        Route::post('/buscar',[EscolaresAlumnosController::class,'busqueda'])->name('escolares.buscar');
+        Route::post('/consulta_alumno',[EscolaresAlumnosController::class, 'accion'])
             ->name('escolares.acciones');
-        Route::post('/accionesk',[EscolaresController::class, 'accionk'])
-            ->name('escolares.accion_kardex');
-        Route::post('/accionesk_alta',[EscolaresController::class, 'accionkalta'])
+        Route::resource('/kardex',KardexController::class);
+        Route::post('/accionesk_alta',[EscolaresAlumnosController::class, 'accion_kardex_alta'])
             ->name('escolares.accion_kardex_alta');
-        Route::post('/periodo_k',[EscolaresController::class, 'accionkperiodo'])
+        Route::post('/periodo_k',[EscolaresAlumnosController::class, 'accion_kardex_periodo'])
             ->name('escolares.accion_kardex_modificar1');
-        Route::post('/impresion/kardex',[KardexPDFController::class,'crearPDF'])
-            ->name('escolares.imprimirkardex');
-        Route::get('/modificar/{periodo}/{control}/{materia}',[EscolaresController::class, 'modificarkardex']);
-        Route::get('/eliminar/{periodo}/{control}/{materia}',[EscolaresController::class, 'eliminarkardex']);
-        Route::post('/actualizar/kardex',[EscolaresController::class, 'kardexupdate'])
+        Route::get('/modificar/{periodo}/{control}/{materia}',[EscolaresAlumnosController::class, 'modificar_kardex']);
+        Route::get('/eliminar/{periodo}/{control}/{materia}',[EscolaresAlumnosController::class, 'eliminar_kardex']);
+        Route::post('/actualizar/kardex',[EscolaresAlumnosController::class, 'actualizar_kardex'])
             ->name('escolares.accion_actualiza_kardex');
+
+        Route::get('/impresion/kardex',[KardexPDFController::class,'crearPDF'])
+            ->name('escolares.imprimirkardex');
         Route::post('/constancia',[ConstanciaPDFController::class,'crearPDF'])
             ->name('escolares.constancia');
         Route::post('/imprimir_boleta',[EscolaresController::class, 'imprimirboleta'])
