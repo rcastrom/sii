@@ -17,13 +17,9 @@ use App\Models\MateriaCarrera;
 use App\Models\PeriodoEscolar;
 use App\Models\PlanDeEstudio;
 use App\Models\SeleccionMateria;
-use App\Models\TipoEvaluacion;
 use App\Models\TiposIngreso;
 use Carbon\Carbon;
 use Illuminate\Contracts\Events\Dispatcher;
-use Illuminate\Contracts\Foundation\Application;
-use Illuminate\Contracts\View\Factory;
-use Illuminate\Contracts\View\View;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -298,119 +294,5 @@ class EscolaresAlumnosController extends Controller
         $encabezado="Error";
         $mensaje="Existió algún error";
         return view('escolares.no')->with(compact('encabezado','mensaje'));
-    }
-
-    public function accion_kardex_periodo(Request $request)
-    {
-        $control = $request->control;
-        $alumno = Alumno::findOrfail($control);
-        $periodo = $request->get('pbusqueda');
-        $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
-        $mat = HistoriaAlumno::where('periodo', $periodo)
-            ->where('no_de_control', $control)
-            ->join('materias_carreras as mc', 'mc.materia', '=', 'historia_alumno.materia')
-            ->where('mc.carrera', $alumno->carrera)
-            ->where('mc.reticula', $alumno->reticula)
-            ->join('materias', 'materias.materia', '=', 'mc.materia')
-            ->join('tipos_evaluacion as te', 'te.tipo_evaluacion', '=', 'historia_alumno.tipo_evaluacion')
-            ->where('te.plan_de_estudios', $alumno->plan_de_estudios)
-            ->select('periodo', 'historia_alumno.materia', 'calificacion', 'nombre_abreviado_materia', 'historia_alumno.tipo_evaluacion', 'descripcion_corta_evaluacion')
-            ->get();
-        $encabezado="Modificación de materia en kardex";
-        return view('escolares.m2kardex')->with(compact('alumno', 'nperiodo',
-            'mat', 'periodo', 'control','encabezado'));
-    }
-    public function modificar_kardex($periodo, $control, $materia)
-    {
-        $alumno = Alumno::findOrfail($control);
-        $mat = HistoriaAlumno::where('periodo', $periodo)
-            ->where('no_de_control', $control)
-            ->where('historia_alumno.materia', $materia)
-            ->join('materias', 'materias.materia', '=', 'historia_alumno.materia')
-            ->join('tipos_evaluacion as te', 'te.tipo_evaluacion', '=', 'historia_alumno.tipo_evaluacion')
-            ->where('te.plan_de_estudios', $alumno->plan_de_estudios)
-            ->select('calificacion', 'nombre_abreviado_materia', 'historia_alumno.tipo_evaluacion')
-            ->first();
-        $periodos = PeriodoEscolar::orderBy('periodo', 'desc')->get();
-        $tipos = TipoEvaluacion::where('plan_de_estudios', $alumno->plan_de_estudios)->get();
-        $encabezado="Modificar materia en Kardex";
-        return view('escolares.modificar_kardex')->with(compact('alumno', 'periodo',
-            'mat', 'materia', 'periodos', 'tipos', 'control','encabezado'));
-    }
-    public function eliminar_kardex($periodo, $control, $materia)
-    {
-        HistoriaAlumno::where('no_de_control', $control)
-            ->where('periodo', $periodo)
-            ->where('materia', $materia)
-            ->delete();
-        $datos=Datos::datos_alumno($control);
-        if(empty($datos)){
-            $info=collect(['domicilio_calle','domicilio_colonia','codigo_postal','telefono']);
-            $datos=$info->combine(['','','','']);
-            $bandera=0;
-        }else{
-            $bandera=1;
-        }
-        $ncarrera = (new AccionesController)->ncarrera($datos->carrera,$datos->reticula);
-        $periodo = (new AccionesController)->periodo();
-        $periodos = PeriodoEscolar::orderBy('periodo', 'DESC')->get();
-        $estatus = EstatusAlumno::where('estatus', $datos->estatus_alumno)->first();
-        $espe = Especialidad::where('especialidad', $datos->especialidad)
-            ->where('carrera', $datos->carrera)
-            ->where('reticula',$datos->reticula)
-            ->first();
-        if (empty($espe)) {
-            $especialidad = "POR ASIGNAR";
-        } else {
-            $especialidad = $espe->nombre_especialidad;
-        }
-        $ingreso = PeriodoEscolar::where('periodo', $datos->periodo_ingreso_it)
-            ->select('identificacion_corta')->first();
-        $encabezado="Materia eliminada de Kardex";
-        return view('escolares.datos')
-            ->with(compact( 'ncarrera', 'datos', 'periodo',
-                'periodos', 'estatus', 'especialidad', 'ingreso','bandera','encabezado'));
-    }
-    public function actualizar_kardex(Request $request)
-    {
-        $materia = $request->get('materia');
-        $control = $request->get('control');
-        $tipo_ev = $request->get('tipo_ev');
-        $periodo_n = $request->get('periodo');
-        $calif = $request->get('calificacion');
-        $periodo_o = $request->get('periodo_o');
-        HistoriaAlumno::where('no_de_control', $control)
-            ->where('materia', $materia)->where('periodo', $periodo_o)->update([
-                'calificacion' => $calif,
-                'periodo' => $periodo_n,
-                'tipo_evaluacion' => $tipo_ev,
-                'updated_at' => Carbon::now()
-            ]);
-        $datos = (new AccionesController)->datos_generales_alumno($control);
-        if(empty($datos)){
-            $info=collect(['domicilio_calle','domicilio_colonia','codigo_postal','telefono']);
-            $datos=$info->combine(['','','','']);
-            $bandera=0;
-        }else{
-            $bandera=1;
-        }
-        $ncarrera = (new AccionesController)->ncarrera($datos->carrera,$datos->reticula);
-        $periodo = (new AccionesController)->periodo();
-        $periodos = PeriodoEscolar::orderBy('periodo', 'DESC')->get();
-        $estatus = EstatusAlumno::where('estatus', $datos->estatus_alumno)->first();
-        $espe = Especialidad::where('especialidad', $datos->especialidad)
-            ->where('carrera', $datos->carrera)
-            ->where('reticula', $datos->reticula)->first();
-        if (empty($espe)) {
-            $especialidad = "POR ASIGNAR";
-        } else {
-            $especialidad = $espe->nombre_especialidad;
-        }
-        $ingreso = PeriodoEscolar::where('periodo', $datos->periodo_ingreso_it)
-            ->select('identificacion_corta')->first();
-        $encabezado="Materia actualizada en kardex";
-        return view('escolares.datos')->
-        with(compact( 'ncarrera', 'datos', 'control', 'periodo',
-            'periodos', 'estatus', 'especialidad', 'ingreso','bandera','encabezado'));
     }
 }

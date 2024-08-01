@@ -123,17 +123,32 @@ class KardexController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(HistoriaAlumno $historiaAlumno)
+    public function edit(HistoriaAlumno $kardex)
     {
-        //
+        $alumno=Alumno::where('no_de_control',$kardex->no_de_control)->first();
+        $materia=Materia::where('materia',$kardex->materia)->first();
+        $periodos = PeriodoEscolar::orderBy('periodo', 'desc')->get();
+        $tipos = TipoEvaluacion::where('plan_de_estudios', $alumno->plan_de_estudios)->get();
+        $encabezado="Modificar materia en Kardex";
+        return view('escolares.modificar_kardex')->with(compact('alumno' ,
+            'kardex', 'materia', 'periodos', 'tipos','encabezado'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, HistoriaAlumno $historiaAlumno)
+    public function update(Request $request, HistoriaAlumno $kardex)
     {
-        //
+        $id=$kardex->id;
+        HistoriaAlumno::where('id', $id)->update([
+           'periodo'=>$request->get('periodo'),
+            'calificacion'=>$request->get('calificacion'),
+            'tipo_evaluacion'=>$request->get('tipo_evaluacion'),
+        ]);
+        $encabezado="Actualización de materia";
+        $mensaje="Se llevó a cabo la actualización en el kardex del estudiante";
+        return view('escolares.si')
+            ->with(compact('encabezado','mensaje'));
     }
 
     /**

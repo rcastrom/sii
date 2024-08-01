@@ -8,51 +8,55 @@
 
 @section('content')
     <x-information :encabezado="$encabezado">
-        <h4 class="card-title">{{$alumno->apellido_paterno}} {{$alumno->apellido_materno}} {{$alumno->nombre_alumno}}</h4>
+        <h3 class="card-title">{{$alumno->apellido_paterno}} {{$alumno->apellido_materno}} {{$alumno->nombre_alumno}}</h3>
         <br>
-        <h4 class="card-title">Número de control {{$control}}</h4><br>
-        <form action="{{route('escolares.accion_actualiza_kardex')}}" method="post" role="form">
+        <h4 class="card-title">Número de control {{$alumno->no_de_control}}</h4><br>
+        <form action="{{route('kardex.update',$kardex->id)}}" method="post" role="form">
             @csrf
+            @method('PUT')
             <div class="row">
                 <div class="col-sm-6 col-md-6">
                     Materia
                 </div>
                 <div class="col-sm-6 col-md-6">
-                    {{$materia}} / {{$mat->nombre_abreviado_materia}}
+                    {{$kardex->materia}} / {{$materia->nombre_abreviado_materia}}
                 </div>
             </div>
             <div class="form-group row">
                 <label for="calificacion" class="col-sm-4 col-form-label">Calificación</label>
                 <div class="col-sm-8">
-                    <input type="number" value="{{$mat->calificacion}}" name="calificacion" class="form-control">
+                    <input type="number" value="{{$kardex->calificacion}}" required
+                           name="calificacion" id="calificacion" max="100" min="0" class="form-control">
                 </div>
             </div>
             <div class="form-group row">
                 <label for="periodo" class="col-sm-4 col-form-label">Período</label>
                 <div class="col-sm-8">
-                    <select name="periodo" id="periodo" class="form-control">
-                        @foreach($periodos as $per)
-                            <option value="{{$per->periodo}}" {{$per->periodo==$periodo?' selected':''}}>{{$per->identificacion_corta}}</option>
+                    <select name="periodo" id="periodo" required class="form-control">
+                        @foreach($periodos as $periodo)
+                            <option value="{{$periodo->periodo}}" {{$periodo->periodo==$kardex->periodo?' selected':''}}>{{$periodo->identificacion_corta}}</option>
                         @endforeach
                     </select>
                 </div>
             </div>
             <div class="form-group row">
-                <label for="tipo_ev" class="col-sm-4 col-form-label">Tipo de evaluación</label>
+                <label for="tipo_evaluacion" class="col-sm-4 col-form-label">Tipo de evaluación</label>
                 <div class="col-sm-8">
-                    <select name="tipo_ev" id="tipo_ev" class="form-control">
+                    <select name="tipo_evaluacion" id="tipo_evaluacion" required class="form-control">
                         @foreach($tipos as $tipo)
-                            <option value="{{$tipo->tipo_evaluacion}}" {{$tipo->tipo_evaluacion==$mat->tipo_evaluacion?' selected':''}}>({{$tipo->tipo_evaluacion}}) {{$tipo->descripcion_corta_evaluacion}}</option>
+                            <option value="{{$tipo->tipo_evaluacion}}" {{$tipo->tipo_evaluacion==$kardex->tipo_evaluacion?' selected':''}}>({{$tipo->tipo_evaluacion}}) {{$tipo->descripcion_corta_evaluacion}}</option>
                         @endforeach
                     </select>
                 </div>
             </div>
-            <input type="hidden" name="control" value="{{$control}}">
-            <input type="hidden" name="materia" value="{{$materia}}">
-            <input type="hidden" name="periodo_o" value="{{$periodo}}">
             <div class="form-group">
                 <button type="submit" class="btn btn-primary">Continuar</button>
             </div>
         </form>
     </x-information>
+    <x-aviso>
+        Una materia por ser acreditada como equivalencia, revalidación o convalidación,
+        debe asignársele una calificación de 60 e indicar el tipo de acreditación que le
+        corresponda.
+    </x-aviso>
 @stop

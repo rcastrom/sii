@@ -17,15 +17,6 @@ Route::group(['prefix'=>'escolares','middleware'=>['auth','role:escolares']],fun
         Route::post('/consulta_alumno',[EscolaresAlumnosController::class, 'accion'])
             ->name('escolares.acciones');
         Route::resource('/kardex',KardexController::class);
-        Route::post('/accionesk_alta',[EscolaresAlumnosController::class, 'accion_kardex_alta'])
-            ->name('escolares.accion_kardex_alta');
-        Route::post('/periodo_k',[EscolaresAlumnosController::class, 'accion_kardex_periodo'])
-            ->name('escolares.accion_kardex_modificar1');
-        Route::get('/modificar/{periodo}/{control}/{materia}',[EscolaresAlumnosController::class, 'modificar_kardex']);
-        Route::get('/eliminar/{periodo}/{control}/{materia}',[EscolaresAlumnosController::class, 'eliminar_kardex']);
-        Route::post('/actualizar/kardex',[EscolaresAlumnosController::class, 'actualizar_kardex'])
-            ->name('escolares.accion_actualiza_kardex');
-
         Route::get('/impresion/kardex',[KardexPDFController::class,'crearPDF'])
             ->name('escolares.imprimirkardex');
         Route::post('/constancia',[ConstanciaPDFController::class,'crearPDF'])
