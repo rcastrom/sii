@@ -7,6 +7,7 @@ use App\Models\Alumno;
 use App\Http\Controllers\Controller;
 use App\Models\HistoriaAlumno;
 use App\Models\Jefe;
+use App\Models\Parametro;
 use App\Models\Personal;
 use Codedge\Fpdf\Fpdf\Fpdf;
 use Illuminate\Http\Request;
@@ -82,7 +83,7 @@ class CertificadoPDFController extends Controller
         $iniciales=$request->get('iniciales');
         $tipo=$request->get('tipo');
 
-        $alumno=Alumno::findOrfail($control);
+        $alumno=Alumno::where('no_de_control',$control)->first();
         $nombre_alumno=$alumno->nombre_alumno." ".$alumno->apellido_paterno." ".$alumno->apellido_materno;
         $ncarrera=(new AccionesController)->ncarrera($alumno->carrera,$alumno->reticula);
         $ultimo_periodo=HistoriaAlumno::where('no_de_control',$control)
@@ -111,8 +112,7 @@ class CertificadoPDFController extends Controller
         $fpdf->SetXY($x_texto_inicial_y_final,$y_texto_inicial);
         //Renglon 1
         $consulta=Jefe::where('clave_area','=','100000')->first();
-        $rfc=$consulta->rfc;
-        $personal=Personal::where('rfc',$rfc)->first();
+        $personal=Personal::where('id',$consulta->id_jefe)->first();
         $genero=$personal->sexo_empleado;
         $gTexto=$genero=='F'?"LA":"EL";
         $fpdf->SetFont('Helvetica','',$tamano_fuente);
@@ -127,11 +127,17 @@ class CertificadoPDFController extends Controller
             $folio=$request->get('folio');
             $fecha_elaboracion=$request->get('fecha_elaboracion');
             $texto_equivalencia = "Equivalencia de Estudios expedida por ".$autoridad_educativa." número de folio ".$folio." fecha ".substr($fecha_elaboracion,8,2)."-".$this->mes_romano(substr($fecha_elaboracion,5,2))."-".substr($fecha_elaboracion,0,4);
-            $equivalencia_impresa = 0;
+
+        }else{
+            $texto_equivalencia='';
         }
-        $texto_encapsulado = $gTexto . " C. " . $director . " DIRECTOR DEL INSTITUTO TECNOLÓGICO DE ENSENADA";
-        $texto_encapsulado.=" CLAVE 02DIT0023K CERTIFICA QUE SEGÚN CONSTANCIAS QUE EXISTEN EN EL ARCHIVO ";
-        $texto_encapsulado.="ESCOLAR DE ESTE INSTITUTO EL (LA) C. ".$nombre_alumno." CURSÓ LAS ASIGNATURAS QUE";
+        $datos_tec=Parametro::where('id',1)->first();
+        $tec=strtoupper($datos_tec->tec);
+        $cct=strtoupper($datos_tec->cct);
+        $ciudad=strtoupper($datos_tec->ciudad);
+        $texto_encapsulado = $gTexto . " C. " . $director . " DIRECTOR DEL ".trim($tec);
+        $texto_encapsulado.=" CLAVE ".trim($cct)." CERTIFICA QUE, SEGÚN CONSTANCIAS QUE EXISTEN EN EL ARCHIVO ";
+        $texto_encapsulado.="ESCOLAR DE ESTE INSTITUTO, EL (LA) C. ".$nombre_alumno." CURSÓ LAS ASIGNATURAS QUE";
         $texto_encapsulado.=" INTEGRAN EL PLAN DE ESTUDIOS DE ".strtoupper($ncarrera->nreal)." DE ";
         $texto_encapsulado.=$mes_inicial." ".$anio_inicial;
         $texto_encapsulado.=" A ".$mes_final." ".$anio_final." CON LOS RESULTADOS QUE A CONTINUACIÓN SE ANOTAN:";
@@ -198,7 +204,7 @@ class CertificadoPDFController extends Controller
         $convalidacion=0;
 
         $qry_materias = (new AccionesController)->historial($control);
-        foreach($qry_materias as $key=>$value)
+        foreach($qry_materias as $value)
         {
             $fpdf->SetX($x_materias);
             //Nombre de la materia
@@ -215,7 +221,15 @@ class CertificadoPDFController extends Controller
             if($value->tipo_evaluacion == "RU"||$value->tipo_evaluacion == "PG"){
                 $fpdf->Cell(3,3,'AC',0,0,'R');
             }elseif(($value->tipo_evaluacion) == "AC"){
-                $alumno->reticula==15?(substr($control,0,2)<19? $fpdf->Cell(3,3,'ACA',0,0,'R'): $fpdf->Cell(3,3,'',0,0,'R')): $fpdf->Cell(3,3,'ACA',0,0,'R');
+                if($alumno->reticula==15){
+                    if(substr($control,0,2)<19){
+                        $fpdf->Cell(3,3,'ACA',0,0,'R');
+                    }else{
+                        $fpdf->Cell(3,3,'',0,0,'R');
+                    }
+                }else{
+                    $fpdf->Cell(3,3,'ACA',0,0,'R');
+                }
             }else{
                 $fpdf->Cell(3,3,$value->calificacion,0,0,'R');
             }
@@ -228,8 +242,6 @@ class CertificadoPDFController extends Controller
                 $mes_certificado=$fecha_explotada[1];
                 $anio_certificado=$fecha_explotada[2];
                 $mes_romano='';
-                $equivalencia_impresa='';
-                $texto_equivalencia='';
                 switch($mes_certificado){
                     case 1: $mes_romano="I"; break;
                     case 2: $mes_romano="II"; break;
@@ -249,6 +261,8 @@ class CertificadoPDFController extends Controller
                 $y_renglon_libre = $y_materias;
             }else{
                 $renglon_libre++;
+                $equivalencia_impresa='';
+                $texto_equivalencia='';
                 if(($value->tipo_evaluacion) == "RU"){
                     $fpdf->Cell($ancho_observaciones,3,"",0,0,'C');
                     $renglon_libre=0;
@@ -284,7 +298,6 @@ class CertificadoPDFController extends Controller
                     $convalidacion++;
                 }else{
                     if($renglon_libre==5 && $alumno->tipo_ingreso=='2' && $equivalencia_impresa==0){
-                        $equivalencia_impresa = 1;
                         $x_temp = $fpdf->GetX();
                         $y_temp = $fpdf->GetY();
                         $fpdf->SetXY($x_temp,$y_renglon_libre);
@@ -298,7 +311,7 @@ class CertificadoPDFController extends Controller
                 }
             }
 
-            //Creditos
+            //Créditos
             $fpdf->Cell(2,3,"",0,0,'C');
             $fpdf->Cell(5,3,$value->creditos_materia,0,0,'R');
             $fpdf->Cell(2,3,"",0,1,'C');
@@ -328,7 +341,7 @@ class CertificadoPDFController extends Controller
             $sumacreditos=$ncarrera->creditos_totales;
         }
         $texto_final  = "SE EXPIDE EL PRESENTE CERTIFICADO QUE AMPARA ".$sumacreditos." CREDITOS DE UN TOTAL DE ".$ncarrera->creditos_totales;
-        $texto_final .= " QUE INTEGRAN EL PLAN DE ESTUDIOS CON CLAVE ".trim($ncarrera->clave_oficial)." EN LA CIUDAD DE ENSENADA, BAJA CALIFORNIA A";
+        $texto_final .= " QUE INTEGRAN EL PLAN DE ESTUDIOS CON CLAVE ".trim($ncarrera->clave_oficial)." EN LA CIUDAD DE ".$ciudad." A";
         $texto_final .= " LOS ".substr($fecha_emision,8,2)." DIAS DEL MES DE ".strtoupper($this->mes_espanol(substr($fecha_emision,5,2)))." DE ".substr($fecha_emision,0,4).".";
         $fpdf->SetXY($x_texto_inicial_y_final,$y_texto_final);
         $fpdf->SetFont('Helvetica','','7');

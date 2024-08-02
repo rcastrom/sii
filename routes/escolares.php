@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Escolares\EscolaresController;
 use App\Http\Controllers\Escolares\EscolaresAlumnosController;
+use App\Http\Controllers\Escolares\ActualizarAlumnoController;
 use App\Http\Controllers\Escolares\KardexController;
 use App\Http\Controllers\PDF\ConstanciaPDFController;
 use App\Http\Controllers\PDF\IdiomasPDFController;
@@ -17,37 +18,37 @@ Route::group(['prefix'=>'escolares','middleware'=>['auth','role:escolares']],fun
         Route::post('/consulta_alumno',[EscolaresAlumnosController::class, 'accion'])
             ->name('escolares.acciones');
         Route::resource('/kardex',KardexController::class);
+        Route::post('/imprimir_boleta',[EscolaresAlumnosController::class, 'imprimirboleta'])
+            ->name('escolares.imprimir boleta');
+        Route::post('/actualizar', [EscolaresAlumnosController::class,'modificar_datos'])
+            ->name('escolares.actualizar_alumno');
+        Route::post('/actualizar/estatus',[ActualizarAlumnoController::class, 'estatusupdate'])
+            ->name('escolares.accion_actualiza_estatus');
+        Route::post('/actualizar/especialidad',[ActualizarAlumnoController::class, 'especialidadupdate'])
+            ->name('escolares.accion_actualiza_especialidad');
+        Route::post('/actualizar/carrera',[ActualizarAlumnoController::class, 'carreraupdate'])
+            ->name('escolares.accion_actualiza_carrera');
+        Route::post('/eliminar/',[ActualizarAlumnoController::class, 'alumnodelete'])
+            ->name('escolares.accion_borrar');
+        Route::post('/baja/',[ActualizarAlumnoController::class, 'alumnobajatemp'])
+            ->name('escolares.accion_bajatemp');
+        Route::post('/nss/',[ActualizarAlumnoController::class, 'alumnonss'])
+            ->name('escolares.nss');
+        Route::post('/certificado',[EscolaresAlumnosController::class, 'certificado'])
+            ->name('escolares.certificado');
+        Route::get('/alta', [EscolaresAlumnosController::class, 'alta']);
+        Route::post('/nuevo',[EscolaresAlumnosController::class, 'alta_nuevo'])
+            ->name('escolares.nuevo_alumno');
+        Route::post('/acciones',[EscolaresAlumnosController::class, 'accion_re'])
+            ->name('escolares.accion-reinscripcion');
         Route::get('/impresion/kardex',[KardexPDFController::class,'crearPDF'])
             ->name('escolares.imprimirkardex');
         Route::post('/constancia',[ConstanciaPDFController::class,'crearPDF'])
             ->name('escolares.constancia');
-        Route::post('/imprimir_boleta',[EscolaresController::class, 'imprimirboleta'])
-            ->name('escolares.imprimir boleta');
-        Route::post('/actualizar/estatus',[EscolaresController::class, 'estatusupdate'])
-            ->name('escolares.accion_actualiza_estatus');
-        Route::post('/actualizar/especialidad',[EscolaresController::class, 'especialidadupdate'])
-            ->name('escolares.accion_actualiza_especialidad');
-        Route::post('/actualizar/carrera',[EscolaresController::class, 'carreraupdate'])
-            ->name('escolares.accion_actualiza_carrera');
-        Route::post('/eliminar/',[EscolaresController::class, 'alumnodelete'])
-            ->name('escolares.accion_borrar');
-        Route::post('/baja/',[EscolaresController::class, 'alumnobajatemp'])
-            ->name('escolares.accion_bajatemp');
-        Route::post('/nss/',[EscolaresController::class, 'alumnonss'])
-            ->name('escolares.nss');
         Route::post('/idiomas',[IdiomasPDFController::class,'crearPDF'])
             ->name('escolares.idiomas');
-        Route::post('/certificado',[EscolaresController::class, 'certificado'])
-            ->name('escolares.certificado');
         Route::post('/imprimir_certificado',[CertificadoPDFController::class,'crearPDF'])
             ->name('escolares.certificado_pdf');
-        Route::post('/actualizar', [EscolaresController::class,'modificar_datos'])
-            ->name('escolares.actualizar_alumno');
-        Route::get('/alta', [EscolaresController::class, 'nuevo']);
-        Route::post('/nuevo',[EscolaresController::class, 'altanuevo'])
-            ->name('escolares.nuevo_alumno');
-        Route::post('/acciones',[EscolaresController::class, 'accion_re'])
-            ->name('escolares.accion-reinscripcion');
     });
     Route::controller(EscolaresController::class)->prefix('periodos')->group(function (){
         Route::get('/alta','periodos');

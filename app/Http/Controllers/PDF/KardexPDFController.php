@@ -24,11 +24,13 @@ class KardexPDFController extends Controller
         $y = 19;
         $ancho_imagen = 115;
         $altura_imagen = 80;
-        $this->fpdf->Image('tecnm.jpg',$x,$y,$ancho_imagen,$altura_imagen);
+        $imagen_tecnm=asset('img/tecnm.jpg');
+        $imagen_tec=asset('img/escudo.jpg');
+        $this->fpdf->Image($imagen_tecnm,$x,$y,$ancho_imagen,$altura_imagen);
         $this->fpdf->SetXY($x+$ancho_imagen + 40,$y+$altura_imagen*0.28);
         $this->fpdf->SetFont('Times', 'B', 9);
         $this->fpdf->Cell(250,4,utf8_decode("TECNOLÓGICO NACIONAL DE MÉXICO"), 0,0,"C");
-        $this->fpdf->Image('escudo.jpg',$x+470,$y+10,55,50);
+        $this->fpdf->Image($imagen_tec,$x+470,$y+10,55,50);
         $this->fpdf->SetXY($x+$ancho_imagen + 40,$y+$altura_imagen*0.48);
         $this->fpdf->SetFont('Times', 'B', 8);
         $generales = Parametro::first();
@@ -78,7 +80,7 @@ class KardexPDFController extends Controller
         $suma_total=0; $calificaciones_totales=0; $j=1;
         $tipos_mat=array("E2","3","4","5","R1","R2","RO","RP"); $tipos_aprob=array('AC','RC','93','92','91','RU','PG');
         foreach ($calificaciones as $key=>$value){
-            $this->fpdf->SetFillColor(199,21,133); //gris: 189,189,189
+            $this->fpdf->SetFillColor(200,100,33); //gris: 189,189,189
             $this->fpdf->Cell(150,10,"Periodo ".$nombre_periodo[$key]->identificacion_larga,0,1,'L',1);
             $this->fpdf->SetFillColor(6,6,6);
             $this->fpdf->SetTextColor(255,255,255);
@@ -149,21 +151,20 @@ class KardexPDFController extends Controller
         $this->fpdf->Cell(170,8,utf8_decode("La información presentada es sujeta a revisión"),0,1,'L');
         $fmt1=new IntlDateFormatter(
             'es_ES',
+            IntlDateFormatter::SHORT,
+            0,
             'America/Tijuana',
-            "d"
+            1,
+            "dd/MMMM/YYYY",
         );
-        $fmt2=new IntlDateFormatter(
-            'es_ES',
-            'America/Tijuana',
-            "MMMM"
-        );
-        $fmt3=new IntlDateFormatter(
-            'es_ES',
-            'America/Tijuana',
-            "YYYY"
-        );
+        $fecha=$fmt1->format(time());
+        $datos_fecha=explode("/",$fecha);
+        $dia=$datos_fecha[0];
+        $mes=$datos_fecha[1];
+        $anio=$datos_fecha[2];
+
         $generales = Parametro::first();
-        $fecha=$generales->ciudad." a ".$fmt1->format(time())." de ".$fmt2->format(time()).' del '.$fmt3->format(time());
+        $fecha=$generales->ciudad." a ".$dia." de ".$mes.' del '.$anio;
         $this->fpdf->Cell(0,10,$fecha,0,0,'R');
         $this->fpdf->Output();
         exit();

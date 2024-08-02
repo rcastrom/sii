@@ -50,7 +50,7 @@ switch ($hoy){
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <h3 class="card-title">Instituto Tecnológico de Ensenada</h3>
+                    <h3 class="card-title">{{$tec}}</h3>
                     <h4 class="card-title">Alta nuevo ingreso</h4>
                 </div>
             </div>
@@ -72,17 +72,15 @@ switch ($hoy){
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <p>El Tecnológico Nacional de México Campus Instituto Tecnológico de Ensenada, te da la más
+                    <p>El Tecnológico Nacional de México Campus {{$tec}}, te da la más
                         cordial bienvenida a esta institución educativa.</p>
                     <p>Existen algunos puntos que debes conocer:
                     <ol>
                         <li>Aún no cuentas con carga académica activa; se te solicita acudas a la Coordinación
                             correspondiente a tu carrera para la selección de materias</li>
                         <li>Para cualquier trámite en la institución, te solicitarán tu número de control <strong>{{$control}}</strong></li>
-                        <li><strong>Tu cuenta de correo se activará en unos días</strong>; para lo cuál, deberás ingresar a Gmail y está
-                            conformado por la abreviatura de "alumno" + tu número de control + @ite.edu.mx; es decir, tu cuenta
-                            de correo será <u>al{{$control}}@ite.edu.mx</u> con contraseña <u>tecnologico</u>, misma que deberás
-                            cambiar al momento de ingresar.</li>
+                        <li>Tu cuenta de correo se activará en unos días más. Por favor, manténte al tanto de
+                        la información que tu coordinación de carrera te indique.</li>
                         <li>Para acceder al sistema de consulta de calificaciones SII, tu usuario es el correo electrónico, pero
                             la contraseña es tu NIP: {{$nip}}</li>
                     </ol>
@@ -93,7 +91,7 @@ switch ($hoy){
     </div>
     <div class="row">
         <div class="col-md-12">
-            Ensenada B.C. a {{date('d')}} de {{$mes}} del {{date('Y')}}
+            {{$ciudad}} a {{date('d')}} de {{$mes}} del {{date('Y')}}
         </div>
     </div>
 </div>

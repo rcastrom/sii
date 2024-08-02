@@ -27,30 +27,16 @@
     <title>Boleta</title>
 </head>
 <?php
-$hoy=date('m');
-switch ($hoy){
-    case "01": $mes="enero"; break;
-    case "02": $mes="febrero"; break;
-    case "03": $mes="marzo"; break;
-    case "04": $mes="abril"; break;
-    case "05": $mes="mayo"; break;
-    case "06": $mes="junio"; break;
-    case "07": $mes="julio"; break;
-    case "08": $mes="agosto"; break;
-    case "09": $mes="septiembre"; break;
-    case "10": $mes="octubre"; break;
-    case "11": $mes="noviembreo"; break;
-    case "12": $mes="diciembre"; break;
-}
+
 ?>
 <body>
 <div class="container">
     <div class="row">
         <table width="100%" align="center">
             <tr>
-                <td width="20%"><img src="{{asset('img/tecnm.jpg')}}" width="175px" height="85px" ></td>
+                <td width="20%"><img src="{{asset('img/tecnm.jpg')}}" alt="" width="175px" height="85px" ></td>
                 <td width="75%" align="center"><strong>Tecnológico Nacional de México<br>Instituto Tecnológico de Ensenada</strong></td>
-                <td width="15%"><img src="{{asset('img/escudo.jpg')}}" width="55px" height="50px" ></td>
+                <td width="15%"><img src="{{asset('img/escudo.jpg')}}" alt="" width="55px" height="50px" ></td>
             </tr>
         </table>
     </div>
@@ -166,7 +152,7 @@ switch ($hoy){
     </div>
     <div class="row">
         <div class="col-md-12">
-            Ensenada B.C. a {{date('d')}} de {{$mes}} del {{date('Y')}} <br>
+            Ensenada B.C. a {{$fecha}} <br>
         </div>
     </div>
 </div>

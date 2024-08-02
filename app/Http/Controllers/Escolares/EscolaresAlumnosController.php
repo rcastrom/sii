@@ -9,12 +9,16 @@ use App\Models\Alumno;
 use App\Models\AlumnosGeneral;
 use App\Models\AvisoReinscripcion;
 use App\Models\Carrera;
+use App\Models\EntidadesFederativa;
 use App\Models\Especialidad;
 use App\Models\EstatusAlumno;
 use App\Models\HistoriaAlumno;
 use App\Models\IdiomasLiberacion;
+use App\Models\Jefe;
 use App\Models\MateriaCarrera;
+use App\Models\Parametro;
 use App\Models\PeriodoEscolar;
+use App\Models\Personal;
 use App\Models\PlanDeEstudio;
 use App\Models\SeleccionMateria;
 use App\Models\TiposIngreso;
@@ -23,7 +27,8 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use IntlDateFormatter;
+use PDF;
 
 class EscolaresAlumnosController extends Controller
 {
@@ -294,5 +299,295 @@ class EscolaresAlumnosController extends Controller
         $encabezado="Error";
         $mensaje="Existió algún error";
         return view('escolares.no')->with(compact('encabezado','mensaje'));
+    }
+
+    public function imprimirboleta(Request $request)
+    {
+        $control = $request->control;
+        $periodo = $request->periodo;
+        $alumno = Alumno::findOrfail($control);
+        $cal_periodo = (new AccionesController)->boleta($control, $periodo);
+        $nombre_periodo = PeriodoEscolar::where('periodo', $periodo)->first();
+        if(Jefe::where('clave_area','120600')->count()>0){
+            $jefatura=Jefe::where('clave_area','120600')->first();
+            $cargo=$jefatura->descripcion_area;
+            $jefe=Personal::where('id',$jefatura->id_jefe)->first();
+            $nombre_jefe=$jefe->siglas.' '.$jefe->nombre_empleado.' '.$jefe->apellido_paterno.' '.$jefe->apellido_materno;
+        }else{
+            $cargo="SERVICIOS ESCOLARES";
+            $nombre_jefe='';
+        }
+        $fmt1=new IntlDateFormatter(
+            'es_ES',
+            IntlDateFormatter::SHORT,
+            0,
+            'America/Tijuana',
+            1,
+            "dd/MMMM/YYYY",
+        );
+        $fecha=$fmt1->format(time());
+        $data = [
+            'alumno' => $alumno,
+            'cal_periodo' => $cal_periodo,
+            'nombre_periodo' => $nombre_periodo,
+            'periodo' => $periodo,
+            'cargo'=>$cargo,
+            'nombre_jefe'=>$nombre_jefe,
+            'fecha'=>$fecha,
+        ];
+        $pdf = PDF::loadView('escolares.pdf_boleta', $data)
+            ->setPaper('Letter');
+        return $pdf->download('boleta.pdf');
+    }
+    public function modificar_datos(Request $request){
+        request()->validate([
+            'control' => 'required',
+            'apmat' => 'required',
+            'nombre' => 'required',
+            'plan'=>'required',
+            'ingreso'=>'required',
+            'semestre' => 'required',
+            'curp' => 'required',
+            'tipo' => 'required'
+        ], [
+            'control.required' => 'Debe indicar el numero de control',
+            'apmat.required' => 'Debe escribir el apellido materno',
+            'nombre.required' => 'Debe escribir el nombre',
+            'plan.required'=> 'Especifique el plan de estudios',
+            'ingreso.required'=>'Especifique el período de ingreso',
+            'semestre.required' => 'Debe indicar el semestre que se encuentra actualmente',
+            'curp.required' => 'Debe escribir el CURP',
+            'tipo.required' => 'Debe especificar el tipo de ingreso del estudiante'
+        ]);
+        $control=$request->get('control');
+        $appat = $request->get('appat');
+        $apmat = $request->get('apmat');
+        $nombre = $request->get('nombre');
+        $plan = $request->get('plan');
+        $ingreso = $request->get('ingreso');
+        $semestre = $request->get('semestre');
+        $nss = $request->get('nss');
+        $curp = $request->get('curp');
+        $calle = $request->get('calle');
+        $colonia = $request->get('colonia');
+        $cp = $request->get('cp');
+        $telcel = $request->get('telcel');
+        $correo = $request->get('correo');
+        $rev = $request->get('periodos_revalidacion');
+        $tipo = $request->get('tipo');
+        Alumno::where('no_de_control',$control)
+            ->update([
+                'apellido_paterno' => $appat,
+                'apellido_materno' => $apmat,
+                'nombre_alumno' => $nombre,
+                'semestre' => $semestre,
+                'plan_de_estudios' => $plan,
+                'curp_alumno' => $curp,
+                'tipo_ingreso' => $tipo,
+                'periodo_ingreso_it' => $ingreso,
+                'correo_electronico' => $correo,
+                'periodos_revalidacion' => $rev,
+                'nss' => $nss
+            ]);
+        AlumnosGeneral::where('no_de_control',$control)
+            ->update([
+                'domicilio_calle' => $calle,
+                'domicilio_colonia' => $colonia,
+                'codigo_postal' => $cp,
+                'telefono' => $telcel
+            ]);
+        $encabezado="Datos del estudiante modificados";
+        $mensaje="Se actualizó la información de la base de datos del estudiante con número de control ".$control;
+        return view('escolares.si')->with(compact('encabezado','mensaje'));
+    }
+
+    public function certificado(Request $request)
+    {
+        request()->validate([
+            'femision' => 'required',
+            'iniciales' => 'required',
+            'director' => 'required',
+            'registro' => 'required',
+            'libro' => 'required',
+            'foja' => 'required',
+            'fregistro' => 'required'
+        ], [
+            'femision.required' => 'Debe indicar la fecha de cuando se emite el certificado',
+            'iniciales.required' => 'Debe indicar las iniciales del Jefe de Servicios Escolares',
+            'director.required' => 'Debe indicar el nombre completo del(la) Director(a)',
+            'registro.required' => 'Debe indicar el número de registro para el certificado',
+            'libro.required' => 'Debe indicar el libro del registro del certificado',
+            'foja.required' => 'Debe indicar la foja del registro del certificado',
+            'fregistro.required' => 'Debe especificar la fecha del registro del certificado'
+        ]);
+        $info = $request->all();
+        $encabezado="Imprimir certificado";
+        return view('escolares.imprimir_certificado')->with(compact('info','encabezado'));
+    }
+
+    public function alta()
+    {
+        $estados = EntidadesFederativa::all();
+        $periodo_actual = (new AccionesController)->periodo();
+        $periodo=$periodo_actual[0]->periodo;
+        if (Alumno::where('periodo_ingreso_it', $periodo)->where('nivel_escolar', 'L')
+                ->where('tipo_ingreso', '1')->count() > 0) {
+            $ultimo = Alumno::where('periodo_ingreso_it', $periodo)
+                ->where('nivel_escolar', 'L')
+                ->where('tipo_ingreso', '1')->max('no_de_control');
+            $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
+        } else {
+            $last = substr($periodo, -1);
+            $anio = substr($periodo, 0, 4);
+            if ($last == 1) {
+                $anio_ant = $anio - 1;
+                $per_ult = $anio_ant . "3";
+            } else {
+                $per_ult = $anio . "1";
+            }
+            $ultimo = Alumno::where('periodo_ingreso_it', $per_ult)
+                ->where('nivel_escolar', 'L')
+                ->where('tipo_ingreso', '1')->max('no_de_control');
+            $nperiodo = PeriodoEscolar::where('periodo', $per_ult)->first();
+        }
+        $mensaje = "El último número de control asignado en " . $nperiodo->identificacion_corta . " fue " . $ultimo;
+        $periodos = PeriodoEscolar::orderBy('periodo', 'desc')->get();
+        $carreras = Carrera::orderBy('nombre_reducido')->get();
+        $planes = PlanDeEstudio::all();
+        $tipos_ingreso = TiposIngreso::all();
+        $encabezado="Alta de estudiante al sistema";
+        return view('escolares.nuevo_alumno')->with(compact('estados', 'periodo',
+            'mensaje', 'periodos', 'carreras', 'planes','tipos_ingreso','encabezado'));
+    }
+    public function alta_nuevo(Request $request)
+    {
+        request()->validate([
+            'control' => 'required',
+            'apmat' => 'required',
+            'nombre' => 'required',
+            'semestre' => 'required',
+            'curp' => 'required',
+            'fnac' => 'required'
+        ], [
+            'control.required' => 'Debe indicar el numero de control',
+            'apmat.required' => 'Debe escribir el apellido materno',
+            'nombre.required' => 'Debe escribir el nombre',
+            'semestre.required' => 'Debe indicar el semestre que se encuentra actualmente',
+            'curp.required' => 'Debe escribir el CURP',
+            'fnac.required' => 'Debe escribir la fecha de nacimiento'
+        ]);
+        $control = $request->get('control');
+        if (Alumno::where('no_de_control', $control)->count() > 0) {
+            $encabezado="Error de alta de alumno";
+            $mensaje = "El numero de control ya existe en la base de datos";
+            return view('escolares.no')->with(compact('mensaje','encabezado'));
+        } else {
+            $appat = $request->get('appat');
+            $apmat = $request->get('apmat');
+            $nombre = $request->get('nombre');
+            $carr = $request->get('carrera');
+            $datos = explode("_", $carr);
+            $carrera = $datos[0];
+            $reticula = $datos[1];
+            $nivel = $datos[2];
+            $semestre = $request->get('semestre');
+            $plan = $request->get('plan');
+            $ingreso = $request->get('ingreso');
+            $nss = $request->get('nss');
+            $curp = $request->get('curp');
+            $nip = rand(1000, 9999);
+            $lnac = $request->get('lnac');
+            $ciudad = $request->get('ciudad');
+            $fnac = $request->get('fnac');
+            $sexo = $request->get('sexo');
+            $ecivil = $request->get('ecivil');
+            $calle = $request->get('calle');
+            $colonia = $request->get('colonia');
+            $cp = $request->get('cp');
+            $telcel = $request->get('telcel');
+            $correo = $request->get('correo');
+            $proc = $request->get('proc');
+            $rev = $request->get('rev');
+            $tipo = $request->get('tipo');
+            $quien = Auth::user()->email;
+            $alumno=new Alumno();
+            $alumno->no_de_control=$control;
+            $alumno->carrera=$carrera;
+            $alumno->reticula=$reticula;
+            $alumno->especialidad=null;
+            $alumno->nivel_escolar=$nivel;
+            $alumno->semestre=$semestre;
+            $alumno->estatus_alumno='ACT';
+            $alumno->plan_de_estudios=$plan;
+            $alumno->apellido_paterno=$appat;
+            $alumno->apellido_materno=$apmat;
+            $alumno->nombre_alumno=$nombre;
+            $alumno->curp_alumno=$curp;
+            $alumno->fecha_nacimiento=$fnac;
+            $alumno->sexo=$sexo;
+            $alumno->estado_civil=$ecivil;
+            $alumno->tipo_ingreso=$tipo;
+            $alumno->periodo_ingreso_it=$ingreso;
+            $alumno->ultimo_periodo_inscrito=null;
+            $alumno->promedio_periodo_anterior=null;
+            $alumno->promedio_aritmetico_acumulado=null;
+            $alumno->creditos_aprobados=null;
+            $alumno->creditos_cursados=null;
+            $alumno->promedio_final_alcanzado=null;
+            $alumno->escuela_procedencia=$proc;
+            $alumno->entidad_procedencia=$lnac;
+            $alumno->ciudad_procedencia=$ciudad;
+            $alumno->correo_electronico=$correo;
+            $alumno->periodos_revalidacion=$rev;
+            $alumno->becado_por=null;
+            $alumno->nip=$nip;
+            $alumno->usuario=$quien;
+            $alumno->fecha_actualizacion=null;
+            $alumno->fecha_titulacion=null;
+            $alumno->opcion_titulacion=null;
+            $alumno->periodo_titulacion=null;
+            $alumno->registro_patronal=null;
+            $alumno->digito_registro_patronal=null;
+            $alumno->nss=$nss;
+            $alumno->save();
+            $generales=new AlumnosGeneral();
+            $generales->no_de_control=$control;
+            $generales->domicilio_calle=$calle;
+            $generales->domicilio_colonia=$colonia;
+            $generales->codigo_postal=$cp;
+            $generales->telefono=$telcel;
+            $generales->facebook=null;
+            $generales->save();
+            $ncarrera = (new AccionesController)->ncarrera($carrera,$reticula);
+            $datos_tec=Parametro::where('id',1)->first();
+            $ciudad=$datos_tec->ciudad;
+            $tec=$datos_tec->tec;
+            $data = [
+                'appat' => $appat,
+                'apmat' => $apmat,
+                'nombre' => $nombre,
+                'control' => $control,
+                'ncarrera' => $ncarrera,
+                'nip' => $nip,
+                'ciudad'=>$ciudad,
+                'tec'=>$tec,
+            ];
+            $pdf = PDF::loadView('escolares.pdf_nuevo', $data)
+                ->setPaper('Letter');
+            return $pdf->download('alta.pdf');
+        }
+    }
+    public function accion_re(Request $request)
+    {
+        $periodo = $request->get('periodo');
+        $carrera = $request->get('carrera');
+        $accion = $request->get('accion');
+        if ($accion == 1) {
+            $this->fechas_reinscripcion($carrera,$periodo);
+        } elseif ($accion == 2) {
+            $this->crear_reinscripcion($periodo,$carrera);
+        } else {
+            $this->listado_reinscripcion($periodo,$carrera);
+        }
     }
 }

@@ -13,3 +13,7 @@ import './bootstrap';
  */
 
 import './components/Example';
+
+import.meta.glob([
+    '../img/**',
+]);

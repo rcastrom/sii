@@ -135,7 +135,7 @@
                 <div class="form-group col-sm-12 col-md-6">
                     <ul>
                         <li><a href="{{route('kardex.create',['control'=>$control])}}">Agregar materia</a></li>
-                        <li><a href="{{route('escolares.imprimirkardex',['control'=>$control])}}">Imprimir</a></li>
+                        <li><a href="{{route('escolares.imprimirkardex',['control'=>$control])}}" target="_blank">Imprimir</a></li>
                     </ul>
                 </div>
             </div>
