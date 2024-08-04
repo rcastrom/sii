@@ -8,7 +8,7 @@
 
 @section('content')
     <x-information :encabezado="$encabezado">
-        <form action="{{route('escolares.accion-reinscripcion')}}" method="post" role="form">
+        <form action="{{route('escolares.accion_reinscripcion')}}" method="post" role="form">
             @csrf
             <div class="form-group row">
                 <label for="periodo" class="col-sm-4 col-form-label">Período</label>

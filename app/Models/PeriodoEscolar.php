@@ -15,5 +15,10 @@ class PeriodoEscolar extends Model
 {
     use HasFactory;
     protected $table='periodos_escolares';
-    protected $primaryKey="periodo";
+    protected $fillable=['periodo','fecha_inicio','fecha_termino'];
+    protected $casts=[
+        'periodo'=>'string',
+        'cierre_seleccion' => 'string',
+        'cierre_horarios' => 'string'
+    ];
 }

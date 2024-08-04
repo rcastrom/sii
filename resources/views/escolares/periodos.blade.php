@@ -19,7 +19,7 @@
         @endif
         <div class="alert alert-dismissible">Los datos marcados con (*) son obligatorios</div>
 
-        <form action="{{route('escolares.periodo_nuevo')}}" method="post" role="form">
+        <form action="{{route('periodo_escolar.store')}}" method="post" role="form">
             @csrf
             <div class="form-group">
                 <label for="anio" class="col-sm-6 col-form-label">Año (*)</label>

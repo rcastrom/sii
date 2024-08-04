@@ -5,6 +5,10 @@ use App\Http\Controllers\Escolares\EscolaresController;
 use App\Http\Controllers\Escolares\EscolaresAlumnosController;
 use App\Http\Controllers\Escolares\ActualizarAlumnoController;
 use App\Http\Controllers\Escolares\KardexController;
+use App\Http\Controllers\Escolares\PeriodoEscolarController;
+use App\Http\Controllers\Escolares\ReinscripcionController;
+use App\Http\Controllers\Escolares\CierrePeriodoController;
+use App\Http\Controllers\Escolares\ActasController;
 use App\Http\Controllers\PDF\ConstanciaPDFController;
 use App\Http\Controllers\PDF\IdiomasPDFController;
 use App\Http\Controllers\PDF\CertificadoPDFController;
@@ -39,8 +43,6 @@ Route::group(['prefix'=>'escolares','middleware'=>['auth','role:escolares']],fun
         Route::get('/alta', [EscolaresAlumnosController::class, 'alta']);
         Route::post('/nuevo',[EscolaresAlumnosController::class, 'alta_nuevo'])
             ->name('escolares.nuevo_alumno');
-        Route::post('/acciones',[EscolaresAlumnosController::class, 'accion_re'])
-            ->name('escolares.accion-reinscripcion');
         Route::get('/impresion/kardex',[KardexPDFController::class,'crearPDF'])
             ->name('escolares.imprimirkardex');
         Route::post('/constancia',[ConstanciaPDFController::class,'crearPDF'])
@@ -51,19 +53,24 @@ Route::group(['prefix'=>'escolares','middleware'=>['auth','role:escolares']],fun
             ->name('escolares.certificado_pdf');
     });
     Route::controller(EscolaresController::class)->prefix('periodos')->group(function (){
-        Route::get('/alta','periodos');
-        Route::post('/nuevo', 'periodoalta')->name('escolares.periodo_nuevo');
-        Route::get('/modifica', 'periodomodifica');
-        Route::post('/modificar', 'periodomodificar')->name('escolares.periodo_mod1');
-        Route::post('/modificado', 'periodoupdate')->name('escolares.periodo_upd');
-        Route::get('/reinscripcion', 'reinscripcion')->name('escolares.reinscripcion');
-        Route::post('/alta_fechas', 'altaf_re')->name('escolares.fechas-reinscripcion');
-        Route::get('/cierre', 'cierre');
+        Route::resource('/periodo_escolar',PeriodoEscolarController::class);
+        Route::get('/modificar', [EscolaresController::class,'modificar_periodo']);
+        Route::post('/modificar',[EscolaresController::class,'mostrar_periodo'])
+            ->name('escolares.modificar_periodo');
+        Route::get('/reinscripcion', [ReinscripcionController::class,'reinscripcion'])
+            ->name('escolares.reinscripcion');
+        Route::post('/acciones',[ReinscripcionController::class, 'accion_re'])
+            ->name('escolares.accion_reinscripcion');
+        Route::post('/alta_fechas', [ReinscripcionController::class,'altaf_re'])
+            ->name('escolares.fechas-reinscripcion');
+        Route::get('/cierre', [CierrePeriodoController::class,'cierre']);
     });
     Route::controller(EscolaresController::class)->prefix('actas')->group(function (){
-        Route::get('/inicio','periodoactas_m1');
-        Route::post('/por_docente','periodoactas_m2')->name('escolares.registro2');
-        Route::post('/por_gpodoc','periodoactas_m3')->name('escolares.registro3');
+        Route::get('/inicio',[ActasController::class,'periodoactas_m1']);
+        Route::post('/por_docente',[ActasController::class,'periodoactas_m2'])
+            ->name('escolares.registro2');
+        Route::post('/por_gpodoc',[ActasController::class,'periodoactas_m3'])
+            ->name('escolares.registro3');
         Route::get('/registro','periodoactas1');
         Route::post('/actas2','periodoactas2')->name('escolares.actas2');
         Route::post('/actas3','periodoactas3')->name('escolares.actas3');

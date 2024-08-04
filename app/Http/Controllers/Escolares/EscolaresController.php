@@ -2,14 +2,8 @@
 
 namespace App\Http\Controllers\Escolares;
 
-use App\Models\AcumuladoHistorico;
 use App\Models\Alumno;
-use App\Models\AlumnosGeneral;
-use App\Models\AvisoReinscripcion;
 use App\Models\Carrera;
-use App\Models\EntidadesFederativa;
-use App\Models\FechasCarrera;
-use App\Models\GenerarListasTemporal;
 use App\Models\Grupo;
 use App\Models\Idioma;
 use App\Models\IdiomasGrupo;
@@ -20,24 +14,20 @@ use App\Models\Organigrama;
 use App\Models\PeriodoEscolar;
 use App\Models\Especialidad;
 use App\Models\Personal;
-use App\Models\PlanDeEstudio;
 use App\Models\TipoEvaluacion;
 use App\Models\HistoriaAlumno;
 use App\Models\SeleccionMateria;
 use App\Http\Controllers\Controller;
-use App\Models\TiposIngreso;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Controllers\MenuEscolaresController;
 use Illuminate\Contracts\Events\Dispatcher;
 use App\Http\Controllers\Acciones\AccionesController;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use PDF;
 
 
@@ -50,374 +40,26 @@ class EscolaresController extends Controller
     public function index(){
         return view('escolares.index');
     }
-    public function fechas_reinscripcion($carrera,$periodo):Factory|View|Application
+
+    public function modificar_periodo(): Factory|View|Application
     {
-        if (FechasCarrera::where('carrera', $carrera)
-                ->where('periodo', $periodo)
-                ->count() > 0) {
-            $encabezado="Error en selección de carrera";
-            $mensaje = "Ya registró una fecha para la reinscripción de la carrera";
-            return view('escolares.no')->with(compact('mensaje','encabezado'));
-        } else {
-            $encabezado="Horario para reinscripción por carrera";
-            $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
-            $ncarrera = Carrera::where('carrera', $carrera)
-                ->select('nombre_reducido')->first();
-            return view('escolares.fechas_re')->with(compact('periodo', 'carrera',
-                'nperiodo', 'ncarrera','encabezado'));
-        }
-    }
-    public function error_reinscripcion_fecha():Factory|View|Application
-    {
-        $encabezado="Error de parámetro de reinscripción";
-        $mensaje = "No ha indicado la fecha de reinscripción para la carrera";
-        return view('escolares.no')
-            ->with(compact('mensaje','encabezado'));
-    }
-    public function crear_reinscripcion($periodo,$carrera): RedirectResponse
-    {
-        $anio_extraido = (int) substr($periodo, 0, 4);
-        $numero_periodo = in_array(substr($periodo, 4, 1) ,['3', '2']) ? '1' : '3';
-        $anio = $numero_periodo == '1' ? $anio_extraido : $anio_extraido - 1;
-        $periodo_anterior = $anio . $numero_periodo;
-        $horas='';
-        if (FechasCarrera::where('periodo', $periodo)->where('carrera', $carrera)->count() > 0) {
-            $valores = FechasCarrera::where('periodo', $periodo)->where('carrera', $carrera)->first();
-            $fecha = $valores->fecha_inscripcion;
-            $hora_inicio = $valores->fecha_inicio;
-            $hora_fin = $valores->fecha_fin;
-            $intervalo = $valores->intervalo;
-            $personas = $valores->personas;
-            $hora_inicio = substr($hora_inicio, 0, 2);
-            if (str_starts_with($hora_inicio, "0")) {
-                $hora_inicio = substr($hora_inicio, 1, 1);
-            }
-            $hora_fin = substr($hora_fin, 0, 2);
-            $inicio = $hora_inicio;
-            $fin = $hora_fin;
-            $sumadorT = 0;
-            $j = 0;
-            while ($inicio < $fin) {
-                if ($sumadorT < 60) {
-                    if ($inicio < 10) {
-                        if ($sumadorT > 0) {
-                            $horas[$j] = "0" . $inicio . ":" . $sumadorT . ":00.0";
-                        } else {
-                            $horas[$j] = "0" . $inicio . ":00:00.0";
-                        }
-                    } else {
-                        $horas[$j] = $inicio . ":" . $sumadorT . ":00.0";
-                    }
-                } else {
-                    $inicio += 1;
-                    $sumadorT -= 60;
-                    if ($sumadorT < 1) {
-                        if ($inicio < 10) {
-                            $horas[$j] = "0" . $inicio . ":00:00.0";
-                        } else {
-                            $horas[$j] = $inicio . ":00:00.0";
-                        }
-                    } else {
-                        $horas[$j] = $inicio . ":" . $sumadorT . ":00.0";
-                    }
-                }
-                $sumadorT += $intervalo;
-                $j++;
-            }
-            $hora_puesta = 1;
-            $p = 0;
-            $avisos =DB::table('avisos_reinscripcion as AR')->where('periodo', $periodo)
-                ->join('alumnos as A', 'A.no_de_control', '=', 'AR.no_de_control')
-                ->where('A.estatus_alumno', 'ACT')
-                ->where('carrera', $carrera)
-                ->select('AR.no_de_control', 'A.apellido_paterno', 'A.apellido_materno', 'A.nombre_alumno', 'A.semestre', 'AR.fecha_hora_seleccion')
-                ->orderBy('A.semestre', 'ASC')
-                ->get();
-            foreach ($avisos as $seleccion) {
-                if (SeleccionMateria::where('no_de_control', $seleccion->no_de_control)
-                        ->where('periodo', $periodo_anterior)->join('materias', 'materias.materia', '=', 'seleccion_materias.materia')
-                        ->where('nombre_completo_materia', 'LIKE', "%RESIDENCIA%")->count() == 0) {
-                    $consultar_promedio = AcumuladoHistorico::where('periodo', $periodo_anterior)
-                        ->where('no_de_control', $seleccion->no_de_control)->select('promedio_ponderado')
-                        ->first();
-                    if (empty($consultar_promedio)) {
-                        $promedio_ponderado = 0;
-                    } else {
-                        $promedio_ponderado = trim($consultar_promedio->promedio_ponderado);
-                        $promedio_ponderado = substr($promedio_ponderado, 0, 5);
-                    }
-                    $listado=new GenerarListasTemporal();
-                    $listado->no_de_control=$seleccion->no_de_control;
-                    $listado->apellido_paterno=$seleccion->apellido_paterno;
-                    $listado->apellido_materno=$seleccion->apellido_materno;
-                    $listado->nombre_alumno=$seleccion->nombre_alumno;
-                    $listado->semestre=$seleccion->semestre;
-                    $listado->promedio_ponderado=$promedio_ponderado;
-                    $listado->save();
-                }
-            }
-            $consulta = GenerarListasTemporal::orderBy('semestre', 'ASC')
-                ->orderBy('promedio_ponderado', 'DESC')
-                ->get();
-            foreach ($consulta as $resultado) {
-                $fecha_asig = $fecha . " " . $horas[$p];
-                if ($hora_puesta < $personas) {
-                    $hora_puesta++;
-                } else {
-                    $hora_puesta = 1;
-                    $p++;
-                }
-                $no_de_control = $resultado->no_de_control;
-                AvisoReinscripcion::where('no_de_control', $no_de_control)
-                    ->where('periodo', $periodo)
-                    ->update([
-                        'fecha_hora_seleccion' => $fecha_asig
-                    ]);
-            }
-            GenerarListasTemporal::delete();
-            return redirect()->route('escolares.reinscripcion');
-        }else{
-            $this->error_reinscripcion_fecha();
-        }
-        return redirect()->route('inicio_escolares');
+        $periodos = PeriodoEscolar::select('periodo','identificacion_corta')
+            ->orderBy('periodo','DESC')->get();
+        $periodo_actual = (new AccionesController)->periodo();
+        $encabezado="Modificar periodo escolar";
+        return view('escolares.periodo_mod', compact('periodos',
+            'periodo_actual','encabezado'));
     }
 
-    public function periodos()
-    {
-        $yr = date('Y');
-        $encabezado="Alta de período escolar";
-        return view('escolares.periodos')->with(compact('yr','encabezado'));
-    }
-    public function periodoalta(Request $request)
-    {
-        request()->validate([
-            'finicio' => 'required',
-            'ftermino' => 'required',
-            'finicio_vac' => 'required',
-            'ftermino_vac' => 'required',
-            'finicio_cap' => 'required',
-            'ftermino_cap' => 'required',
-            'finicio_est' => 'required',
-            'ftermino_est' => 'required'
-        ], [
-            'finicio.required' => 'Debe indicar la fecha de inicio del semestre',
-            'ftermino.required' => 'Debe escribir la fecha de término del semestre',
-            'finicio_vac.required' => 'Debe indicar la fecha de inicio de vacaciones para el semestre',
-            'ftermino_vac.required' => 'Debe escribir la fecha de término de vacaciones para el semestre',
-            'finicio_cap.required' => 'Debe indicar la fecha de inicio de captura docente para el semestre',
-            'ftermino_cap.required' => 'Debe escribir la fecha de término de captura docente para el semestre',
-            'finicio_est.required' => 'Debe indicar la fecha de inicio de selección de materias del estudiante para el semestre',
-            'ftermino_est.required' => 'Debe escribir la fecha de término de selección de materias del estudiante para el semestre'
-        ]);
-        $anio = $request->get('anio');
-        $tper = $request->get('tper');
-        $periodo = $anio . $tper;
-        $id_largo='';
-        $id_corto='';
-        if (PeriodoEscolar::where('periodo', $periodo)->count() > 0) {
-            $encabezado="Error de creación de período";
-            $mensaje = "No se puede crear el período porque ya existe en la base de datos";
-            return view('escolares.no')->with(compact('mensaje','encabezado'));
-        } else {
-            switch ($tper) {
-                case 1:
-                {
-                    $id_largo = "ENERO-JUNIO/" . $anio;
-                    $id_corto = "ENE-JUN/" . $anio;
-                    break;
-                }
-                case 2:
-                {
-                    $id_largo = "VERANO/" . $anio;
-                    $id_corto = "Verano/" . $anio;
-                    break;
-                }
-                case 3:
-                {
-                    $id_largo = "AGOSTO-DICIEMBRE/" . $anio;
-                    $id_corto = "AGO-DIC/" . $anio;
-                    break;
-                }
-            }
-            $finicio = $request->get('finicio');
-            $ftermino = $request->get('ftermino');
-            $finicio_ss1 = $request->get('finicio_ss');
-            $ftermino_ss1 = $request->get('ftermino_ss');
-            $finicio_ss = empty($finicio_ss1) ? null : $finicio_ss1;
-            $ftermino_ss = empty($ftermino_ss1) ? null : $ftermino_ss1;
-            $finicio_vac = $request->get('finicio_vac');
-            $ftermino_vac = $request->get('ftermino_vac');
-            $finicio_cap = $request->get('finicio_cap');
-            $ftermino_cap = $request->get('ftermino_cap');
-            $finicio_est = $request->get('finicio_est');
-            $ftermino_est = $request->get('ftermino_est');
-            $nperiodo=new PeriodoEscolar();
-            $nperiodo->periodo=$periodo;
-            $nperiodo->identificacion_larga=$id_largo;
-            $nperiodo->identificacion_corta=$id_corto;
-            $nperiodo->fecha_inicio=$finicio;
-            $nperiodo->fecha_termino=$ftermino;
-            $nperiodo->inicio_vacacional_ss=$finicio_ss;
-            $nperiodo->fin_vacacional_ss=$ftermino_ss;
-            $nperiodo->inicio_especial=null;
-            $nperiodo->fin_especial=null;
-            $nperiodo->cierre_horarios='S';
-            $nperiodo->cierre_seleccion='S';
-            $nperiodo->inicio_sele_alumnos=$finicio_est;
-            $nperiodo->fin_sele_alumnos=$ftermino_est;
-            $nperiodo->inicio_vacacional=$finicio_vac;
-            $nperiodo->termino_vacacional=$ftermino_vac;
-            $nperiodo->inicio_cal_docentes=$finicio_cap;
-            $nperiodo->fin_cal_docentes=$ftermino_cap;
-            $nperiodo->ccarrera=0;
-            $nperiodo->save();
-            $encabezado="Creación de período";
-            $mensaje='El período '.$id_corto." fue creado en la base de datos";
-            return view('escolares.si')->with(compact('encabezado','mensaje'));
-        }
-    }
-    public function periodomodifica()
+    public function mostrar_periodo(Request $request): Factory|View|Application
     {
         $encabezado="Modificación de período escolar";
-        $periodo_actual = (new AccionesController)->periodo();
-        $periodos = PeriodoEscolar::orderBy('periodo','desc')->get();
-        return view('escolares.periodo_mod')->with(compact('periodo_actual', 'periodos','encabezado'));
+        $periodo_leer = $request->get('periodo');
+        $periodo = PeriodoEscolar::where('periodo', $periodo_leer)->first();
+        return view('escolares.modificar_periodo')
+            ->with(compact('periodo', 'encabezado'));
     }
-    public function periodomodificar(Request $request)
-    {
-        $encabezado="Modificación de período escolar";
-        $periodo = $request->get('periodo');
-        $periodos = PeriodoEscolar::where('periodo', $periodo)->first();
-        return view('escolares.periodo_modifica')->with(compact('periodo', 'periodos','encabezado'));
-    }
-    public function periodoupdate(Request $request)
-    {
-        request()->validate([
-            'finicio' => 'required',
-            'ftermino' => 'required',
-            'finicio_vac' => 'required',
-            'ftermino_vac' => 'required',
-            'finicio_cap' => 'required',
-            'ftermino_cap' => 'required',
-            'finicio_est' => 'required',
-            'ftermino_est' => 'required'
-        ], [
-            'finicio.required' => 'Debe indicar la fecha de inicio del semestre',
-            'ftermino.required' => 'Debe escribir la fecha de término del semestre',
-            'finicio_vac.required' => 'Debe indicar la fecha de inicio de vacaciones para el semestre',
-            'ftermino_vac.required' => 'Debe escribir la fecha de término de vacaciones para el semestre',
-            'finicio_cap.required' => 'Debe indicar la fecha de inicio de captura docente para el semestre',
-            'ftermino_cap.required' => 'Debe escribir la fecha de término de captura docente para el semestre',
-            'finicio_est.required' => 'Debe indicar la fecha de inicio de selección de materias del estudiante para el semestre',
-            'ftermino_est.required' => 'Debe escribir la fecha de término de selección de materias del estudiante para el semestre'
-        ]);
-        $periodo = $request->get('periodo');
-        $ccarrera = $request->get('ccarrera');
-        $finicio = $request->get('finicio');
-        $ftermino = $request->get('ftermino');
-        $finicio_ss1 = $request->get('finicio_ss');
-        $ftermino_ss1 = $request->get('ftermino_ss');
-        $finicio_ss = empty($finicio_ss1) ? null : $finicio_ss1;
-        $ftermino_ss = empty($ftermino_ss1) ? null : $ftermino_ss1;
-        $finicio_vac = $request->get('finicio_vac');
-        $ftermino_vac = $request->get('ftermino_vac');
-        $finicio_cap = $request->get('finicio_cap');
-        $ftermino_cap = $request->get('ftermino_cap');
-        $finicio_est = $request->get('finicio_est');
-        $ftermino_est = $request->get('ftermino_est');
-        $horarios = $request->get('horarios');
-        $seleccion = $request->get('seleccion');
-        PeriodoEscolar::where('periodo', $periodo)
-            ->update([
-                'fecha_inicio' => $finicio,
-                'fecha_termino' => $ftermino,
-                'inicio_vacacional_ss' => $finicio_ss,
-                'fin_vacacional_ss' => $ftermino_ss,
-                'cierre_horarios' => $horarios,
-                'cierre_seleccion' => $seleccion,
-                'inicio_sele_alumnos' => $finicio_est,
-                'fin_sele_alumnos' => $ftermino_est,
-                'inicio_vacacional' => $finicio_vac,
-                'termino_vacacional' => $ftermino_vac,
-                'inicio_cal_docentes' => $finicio_cap,
-                'ccarrera' => $ccarrera,
-                'fin_cal_docentes' => $ftermino_cap
-            ]);
-        $encabezado="Actualización de período";
-        $mensaje="Se actualizó la información del período en la base de datos ";
-        return view('escolares.si')->with(compact('encabezado','mensaje'));
-    }
-    public function reinscripcion(){
-        $encabezado="Parámetros para reinscripción";
-        $periodo_actual = (new AccionesController)->periodo();
-        $periodos = PeriodoEscolar::orderBy('periodo','desc')->get();
-        $carreras = Carrera::distinct('carrera')->orderBy('carrera', 'ASC')
-            ->get();
-        return view('escolares.prereinscripcion')->with(compact('periodos',
-            'periodo_actual', 'carreras','encabezado'));
-    }
-    public function listado_reinscripcion($periodo,$carrera)
-    {
-        $avisos = DB::table('avisos_reinscripcion as AR')
-            ->where('periodo', $periodo)
-            ->join('alumnos as A', 'A.no_de_control', '=', 'AR.no_de_control')
-            ->where('A.estatus_alumno', 'ACT')
-            ->where('carrera', $carrera)
-            ->whereNotNull('AR.fecha_hora_seleccion')
-            ->select('AR.no_de_control', 'A.apellido_paterno', 'A.apellido_materno', 'A.nombre_alumno', 'A.semestre', 'AR.fecha_hora_seleccion')
-            ->orderBy('A.semestre', 'ASC')
-            ->orderBy('A.apellido_paterno', 'ASC')
-            ->orderBy('A.apellido_materno', 'ASC')
-            ->orderBy('A.no_de_control', 'ASC')
-            ->get();
-        $nperiodo = PeriodoEscolar::where('periodo', $periodo)->select('identificacion_corta')->first();
-        $ncarrera = Carrera::where('carrera', $carrera)->select('nombre_reducido')->first();
-        $data = [
-            'alumnos' => $avisos,
-            'nperiodo' => $nperiodo,
-            'ncarrera' => $ncarrera
-        ];
-        $pdf = PDF::loadView('escolares.pdf_listado', $data)
-            ->setPaper('Letter');
-        return $pdf->download('listado.pdf');
-    }
-    public function altaf_re(Request $request)
-    {
-        request()->validate([
-            'dia' => 'required',
-            'horaini' => 'required',
-            'horafin' => 'required'
-        ], [
-            'dia.required' => 'Debe indicar el día para la reinscripción de la carrera',
-            'horaini.required' => 'Debe indicar la hora en la que inicia la reinscripción de la carrera',
-            'horafin.required' => 'Debe indicar la hora en la que termina la reinscripción de la carrera'
-        ]);
-        $carrera = $request->get('carrera');
-        $periodo = $request->get('periodo');
-        $dia = $request->get('dia');
-        $horaini = $request->get('horaini');
-        $horafin = $request->get('horafin');
-        $intervalo = $request->get('intervalo');
-        $personas = $request->get('personas');
-        $fecha=new FechasCarrera();
-        $fecha->carrera=$carrera;
-        $fecha->fecha_inscripcion=$dia;
-        $fecha->fecha_inicio=$horaini;
-        $fecha->fecha_fin=$horafin;
-        $fecha->intervalo=$intervalo;
-        $fecha->personas=$personas;
-        $fecha->periodo=$periodo;
-        $fecha->puntero=0;
-        $fecha->save();
-        return redirect('/escolares/periodos/reinscripcion');
-    }
-    public function cierre(){
-        $encabezado="Parámetros para cierre de semestre";
-        $periodo_actual = (new AccionesController)->periodo();
-        $periodos = PeriodoEscolar::orderBy('periodo','desc')->get();
-        return view('escolares.cierre_index')->with(compact('periodo_actual',
-            'periodos','encabezado'));
-    }
+
     public function periodoactas1()
     {
         $encabezado="Entrega de actas del período por el docente a Escolares";
@@ -455,45 +97,6 @@ class EscolaresController extends Controller
         $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
         $encabezado="Entrega de actas del período por el docente a Escolares";
         return view('escolares.periodo_actas3')->with(compact('periodo',
-            'docente', 'nperiodo', 'grupos', 'ndocente','encabezado'));
-    }
-    public function periodoactas_m1()
-    {
-        $periodo_actual = (new AccionesController)->periodo();
-        $periodos = PeriodoEscolar::orderBy('periodo','desc')->get();
-        $encabezado="Actas del período";
-        return view('escolares.periodo_actas_1')->with(compact('periodo_actual',
-            'periodos','encabezado'));
-    }
-    public function periodoactas_m2(Request $request)
-    {
-        $periodo = $request->get('periodo');
-        $docentes = Grupo::where('periodo', $periodo)
-            ->join('personal', 'personal.rfc', '=', 'grupos.rfc')
-            ->select('grupos.rfc', 'apellidos_empleado', 'nombre_empleado')
-            ->distinct()
-            ->orderBy('apellidos_empleado', 'ASC')
-            ->orderBy('nombre_empleado', 'ASC')
-            ->get();
-        $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
-        $encabezado="Actas del período";
-        return view('escolares.periodo_actas_2')->with(compact('periodo', 'docentes',
-            'nperiodo','encabezado'));
-    }
-    public function periodoactas_m3(Request $request)
-    {
-        $periodo = $request->get('periodo');
-        $docente = $request->get('docente');
-        $grupos = Grupo::where('periodo', $periodo)
-            ->where('rfc', $docente)
-            ->join('materias', 'materias.materia', '=', 'grupos.materia')
-            ->select('grupos.materia', 'grupo', 'nombre_abreviado_materia')
-            ->orderBy('nombre_abreviado_materia', 'ASC')
-            ->get();
-        $ndocente = Personal::where('rfc', $docente)->first();
-        $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
-        $encabezado="Actas del período";
-        return view('escolares.periodo_actas_3')->with(compact('periodo',
             'docente', 'nperiodo', 'grupos', 'ndocente','encabezado'));
     }
     public function periodoactas_m4(Request $request)

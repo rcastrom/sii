@@ -32,13 +32,10 @@ use PDF;
 
 class EscolaresAlumnosController extends Controller
 {
-
-
     public function __construct(Dispatcher $events)
     {
         new MenuEscolaresController($events);
     }
-
 
     public function buscar(){
         $encabezado="Búsqueda de Estudiante";
@@ -64,8 +61,8 @@ class EscolaresAlumnosController extends Controller
                 $mensaje="El número de control ".$control." no fue localizado";
                 return view('escolares.no')->with(compact('encabezado','mensaje'));
             }
-            $datos = Datos::datos_alumno($control);
-            if(empty($datos)){
+            $datos_alumno = AlumnosGeneral::where('no_de_control',$control)->first();
+            if(empty($datos_alumno)){
                 $info=collect(
                     [
                         'domicilio_calle',
@@ -74,7 +71,7 @@ class EscolaresAlumnosController extends Controller
                         'telefono'
                     ]
                 );
-                $datos=$info->combine(
+                $datos_alumno=$info->combine(
                     [
                         '',
                         '',
@@ -96,7 +93,7 @@ class EscolaresAlumnosController extends Controller
                 ->first();
             $especialidad=empty($espe)?"POR ASIGNAR":$espe->nombre_especialidad;
             return view('escolares.datos')
-                ->with(compact('alumno', 'ncarrera', 'datos', 'control', 'periodo',
+                ->with(compact('alumno', 'ncarrera', 'datos_alumno', 'control', 'periodo',
                     'periodos', 'estatus', 'especialidad', 'ingreso','bandera','encabezado'));
         }else{
             $arroja = Alumno::where('apellido_paterno', strtoupper($control))
@@ -575,19 +572,6 @@ class EscolaresAlumnosController extends Controller
             $pdf = PDF::loadView('escolares.pdf_nuevo', $data)
                 ->setPaper('Letter');
             return $pdf->download('alta.pdf');
-        }
-    }
-    public function accion_re(Request $request)
-    {
-        $periodo = $request->get('periodo');
-        $carrera = $request->get('carrera');
-        $accion = $request->get('accion');
-        if ($accion == 1) {
-            $this->fechas_reinscripcion($carrera,$periodo);
-        } elseif ($accion == 2) {
-            $this->crear_reinscripcion($periodo,$carrera);
-        } else {
-            $this->listado_reinscripcion($periodo,$carrera);
         }
     }
 }

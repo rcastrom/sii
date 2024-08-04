@@ -22,13 +22,13 @@
         @slot('header','Datos Generales')
         <div class="row">
             <div class="col-sm-12 col-md-6">Domicilio</div>
-            <div class="col-sm-12 col-md-6">Calle {{ $bandera==1?$datos->domicilio_calle:''}} Colonia
-                {{ $bandera==1?$datos->domicilio_colonia:''}} C.P. {{ $bandera==1?$datos->codigo_postal:'' }}
+            <div class="col-sm-12 col-md-6">Calle {{ $bandera==1?$datos_alumno->domicilio_calle:''}} Colonia
+                {{ $bandera==1?$datos_alumno->domicilio_colonia:''}} C.P. {{ $bandera==1?$datos_alumno->codigo_postal:'' }}
             </div>
         </div>
         <div class="row">
             <div class="col-sm-12 col-md-6">Teléfono</div>
-            <div class="col-sm-12 col-md-6">{{ $bandera==1?$datos->telefono:'' }} </div>
+            <div class="col-sm-12 col-md-6">{{ $bandera==1?$datos_alumno->telefono:'' }} </div>
         </div>
         <div class="row">
             <div class="col-sm-12 col-md-6">Correo</div>

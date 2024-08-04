@@ -8,7 +8,7 @@
 
 @section('content')
     <x-information :encabezado="$encabezado">
-        <form action="{{route('escolares.periodo_mod1')}}" method="post" class="form-inline" role="form">
+        <form action="{{route('escolares.modificar_periodo')}}" method="post" class="form-inline" role="form">
             @csrf
             <div class="form-group">
                 <label for="periodo" class="col-form-label">Período</label>

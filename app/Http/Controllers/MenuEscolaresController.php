@@ -38,12 +38,12 @@ class MenuEscolaresController extends Controller
                 'submenu' => [
                     [
                         'text' => 'Creación',
-                        'url'  => 'escolares/periodos/alta',
+                        'url'  => 'escolares/periodos/periodo_escolar/create',
                         'icon' => 'far fa-circle',
                     ],
                     [
                         'text' => 'Modificación',
-                        'url'  => 'escolares/periodos/modifica',
+                        'url'  => 'escolares/periodos/modificar',
                         'icon' => 'far fa-circle',
                     ],
                     [
