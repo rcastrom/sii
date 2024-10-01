@@ -2,20 +2,12 @@
 
 namespace App\Http\Controllers\Escolares;
 
-use App\Models\Alumno;
 use App\Models\Carrera;
-use App\Models\Grupo;
-use App\Models\Idioma;
-use App\Models\IdiomasGrupo;
-use App\Models\IdiomasLiberacion;
 use App\Models\Materia;
 use App\Models\MateriaCarrera;
 use App\Models\Organigrama;
 use App\Models\PeriodoEscolar;
 use App\Models\Especialidad;
-use App\Models\Personal;
-use App\Models\TipoEvaluacion;
-use App\Models\HistoriaAlumno;
 use App\Models\SeleccionMateria;
 use App\Http\Controllers\Controller;
 use App\Models\User;
@@ -28,8 +20,6 @@ use App\Http\Controllers\MenuEscolaresController;
 use Illuminate\Contracts\Events\Dispatcher;
 use App\Http\Controllers\Acciones\AccionesController;
 use Illuminate\Support\Facades\Auth;
-use PDF;
-
 
 class EscolaresController extends Controller
 {
@@ -60,257 +50,14 @@ class EscolaresController extends Controller
             ->with(compact('periodo', 'encabezado'));
     }
 
-    public function periodoactas1()
-    {
-        $encabezado="Entrega de actas del período por el docente a Escolares";
-        $periodo_actual = (new AccionesController)->periodo();
-        $periodos = PeriodoEscolar::orderBy('periodo','desc')->get();
-        return view('escolares.periodo_actas1')->with(compact('periodo_actual',
-            'periodos','encabezado'));
-    }
-    public function periodoactas2(Request $request)
-    {
-        $periodo = $request->get('periodo');
-        $docentes = Grupo::where('periodo', $periodo)
-            ->join('personal', 'personal.rfc', '=', 'grupos.rfc')
-            ->select('grupos.rfc', 'apellidos_empleado', 'nombre_empleado')
-            ->distinct()
-            ->orderBy('apellidos_empleado', 'ASC')
-            ->orderBy('nombre_empleado', 'ASC')
-            ->get();
-        $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
-        $encabezado="Entrega de actas del período por el docente a Escolares";
-        return view('escolares.periodo_actas2')->with(compact('periodo', 'docentes',
-            'nperiodo','encabezado'));
-    }
-    public function periodoactas3(Request $request)
-    {
-        $periodo = $request->get('periodo');
-        $docente = $request->get('docente');
-        $grupos = Grupo::where('periodo', $periodo)
-            ->where('rfc', $docente)
-            ->join('materias', 'materias.materia', '=', 'grupos.materia')
-            ->select('grupos.materia', 'grupo', 'nombre_abreviado_materia','entrego')
-            ->orderBy('nombre_abreviado_materia', 'ASC')
-            ->get();
-        $ndocente = Personal::where('rfc', $docente)->first();
-        $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
-        $encabezado="Entrega de actas del período por el docente a Escolares";
-        return view('escolares.periodo_actas3')->with(compact('periodo',
-            'docente', 'nperiodo', 'grupos', 'ndocente','encabezado'));
-    }
-    public function periodoactas_m4(Request $request)
-    {
-        $periodo = $request->get('periodo');
-        $docente = $request->get('docente');
-        foreach ($request->all() as $key => $value) {
-            if (($key != "periodo") && ($key != "docente") && ($key != "_token")) {
-                $info = explode("_", $key);
-                $materia = $info[0];
-                $gpo = $info[1];
-                $asignar= $value==1;
-                Grupo::where([
-                    'periodo'=>$periodo,
-                    'rfc'=>$docente,
-                    'materia'=>$materia,
-                    'grupo'=>$gpo
-                ])->update([
-                    'entrego' => $asignar
-                ]);
-            }
-        }
-        $encabezado="Actas del período";
-        $mensaje="Se registró en el sistemas las actas que fueron entregas al Departamento de Escolares";
-        return view('escolares.si')->with(compact('encabezado','mensaje'));
-    }
-    public function modificaracta($per, $rfc, $mat, $gpo)
-    {
-        $periodo=base64_decode($per); $docente=base64_decode($rfc);
-        $materia=base64_decode($mat); $grupo=base64_decode($gpo);
-        $alumnos = SeleccionMateria::where('periodo', $periodo)
-            ->where('materia', $materia)
-            ->where('grupo', $grupo)
-            ->join('alumnos', 'alumnos.no_de_control', '=', 'seleccion_materias.no_de_control')
-            ->distinct()
-            ->select('seleccion_materias.no_de_control', 'apellido_paterno', 'apellido_materno', 'nombre_alumno', 'calificacion', 'tipo_evaluacion', 'plan_de_estudios')
-            ->orderBy('apellido_paterno', 'ASC')
-            ->orderBy('apellido_materno', 'ASC')
-            ->orderBy('nombre_alumno', 'ASC')
-            ->get();
-        $ndocente = Personal::where('rfc', $docente)->first();
-        $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
-        $nmateria = Materia::where('materia', $materia)->first();
-        $tipo_3 = TipoEvaluacion::where('plan_de_estudios', '3')
-            ->where('tipo_evaluacion', '!=', 'AC')
-            ->get();
-        $tipo_4 = TipoEvaluacion::where('plan_de_estudios', '4')
-            ->where('tipo_evaluacion', '!=', 'AC')
-            ->get();
-        $encabezado="Actualización de calificaciones en acta";
-        return view('escolares.actas_modificar')
-            ->with(compact('periodo', 'nperiodo', 'alumnos',
-                'ndocente', 'nmateria', 'materia', 'grupo', 'tipo_3', 'tipo_4','encabezado'));
-    }
-    public function actasupdate(Request $request)
-    {
-        $materia = $request->get('materia');
-        $grupo = $request->get('grupo');
-        $periodo = $request->get('periodo');
-        $inscritos = SeleccionMateria::where([
-            'periodo'=>$periodo,
-            'materia'=>$materia,
-            'grupo'=>$grupo
-        ])->select('no_de_control')->get();
-        foreach ($inscritos as $alumnos) {
-            $control = $alumnos->no_de_control;
-            $obtener = $materia . "_" . $grupo . "_" . $control;
-            $op = "op_" . $control;
-            $cal = $request->get($obtener);
-            $oport = $request->get($op);
-            SeleccionMateria::where([
-                'periodo'=>$periodo,
-                'materia'=>$materia,
-                'grupo'=>$grupo,
-                'no_de_control'=> $control
-            ])->update([
-                    'calificacion' => $cal,
-                    'tipo_evaluacion' => $oport,
-                    'updated_at' => Carbon::now()
-                ]);
-            if (HistoriaAlumno::where([
-                    'periodo'=>$periodo,
-                    'materia'=>$materia,
-                    'grupo'=>$grupo,
-                    'no_de_control'=> $control
-                ])->count() > 0
-            ) {
-                HistoriaAlumno::where([
-                    'periodo'=>$periodo,
-                    'materia'=>$materia,
-                    'grupo'=>$grupo,
-                    'no_de_control'=> $control
-                ])->update([
-                    'calificacion' => $cal,
-                    'tipo_evaluacion' => $oport,
-                    'updated_at' => Carbon::now()
-                ]);
-            }
-        }
-        $encabezado="Actualización de calificaciones en acta";
-        $mensaje="Se actualizó la información de la materia ".$materia." del grupo ".$grupo;
-        return view('escolares.si')->with(compact('encabezado','mensaje'));
-    }
-    public function imprimiracta($periodo, $doc, $materia, $grupo)
-    {
-        if (SeleccionMateria::where('periodo', $periodo)
-                ->where('materia', $materia)
-                ->where('grupo', $grupo)
-                ->count() > 0) {
-            if (SeleccionMateria::where('periodo', $periodo)
-                    ->where('materia', $materia)
-                    ->where('grupo', $grupo)
-                    ->whereNotNull('calificacion')
-                    ->count() > 0) {
-                $inscritos = SeleccionMateria::where('periodo', $periodo)
-                    ->where('materia', $materia)
-                    ->where('grupo', $grupo)
-                    ->join('alumnos', 'seleccion_materias.no_de_control', '=', 'alumnos.no_de_control')
-                    ->join('tipos_evaluacion', function ($join) {
-                        $join->on('alumnos.plan_de_estudios', '=', 'tipos_evaluacion.plan_de_estudios')
-                            ->on('tipos_evaluacion.tipo_evaluacion', '=', 'seleccion_materias.tipo_evaluacion');
-                    })
-                    ->orderBy('apellido_paterno', 'ASC')
-                    ->orderBy('apellido_materno', 'ASC')
-                    ->orderBy('nombre_alumno', 'ASC')
-                    ->get();
-                $datos_grupo = Grupo::where('periodo', $periodo)
-                    ->where('materia', $materia)
-                    ->where('grupo', $grupo)
-                    ->first();
-                $nombre_mat = Materia::where('materia', $materia)->first();
-                $ndocente = Personal::where('rfc', $doc)->select('apellidos_empleado', 'nombre_empleado')->first();
-                $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
-                $data = [
-                    'alumnos' => $inscritos,
-                    'docente' => $ndocente,
-                    'nombre_periodo' => $nperiodo,
-                    'datos' => $datos_grupo,
-                    'nmateria' => $nombre_mat,
-                    'materia' => $materia,
-                    'grupo' => $grupo
-                ];
-                $pdf = PDF::loadView('escolares.pdf_acta', $data);
-            } else {
-                $inscritos = SeleccionMateria::where('periodo', $periodo)
-                    ->where('materia', $materia)
-                    ->where('grupo', $grupo)
-                    ->join('alumnos', 'seleccion_materias.no_de_control', '=', 'alumnos.no_de_control')
-                    ->orderBy('apellido_paterno', 'ASC')
-                    ->orderBy('apellido_materno', 'ASC')
-                    ->orderBy('nombre_alumno', 'ASC')
-                    ->get();
-                $datos_grupo= Grupo::where('periodo', $periodo)
-                    ->where('materia', $materia)
-                    ->where('grupo', $grupo)
-                    ->first();
-                $nombre_mat = Materia::where('materia', $materia)->first();
-                $ndocente = Personal::where('rfc', $doc)->select('apellidos_empleado', 'nombre_empleado')->first();
-                $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
-                $data = [
-                    'alumnos' => $inscritos,
-                    'docente' => $ndocente,
-                    'nombre_periodo' => $nperiodo,
-                    'datos' => $datos_grupo,
-                    'nmateria' => $nombre_mat,
-                    'materia' => $materia,
-                    'grupo' => $grupo
-                ];
-                $pdf = PDF::loadView('escolares.pdf_acta2', $data)
-                    ->setPaper('Letter');
-            }
-            return $pdf->download('acta.pdf');
-        } else {
-            $encabezado="Error para impresión de acta";
-            $mensaje = "No cuenta con alumnos inscritos en la materia";
-            return view('personal.no')->with(compact('mensaje','encabezado'));
-        }
-    }
-    public function actas_mantenimiento()
-    {
-        $periodo_actual = (new AccionesController)->periodo();
-        $periodos = PeriodoEscolar::orderBy('periodo','desc')->get();
-        $encabezado="Estatus de actas";
-        return view('escolares.actas_mantenimiento1')->with(compact('periodo_actual',
-            'periodos','encabezado'));
-    }
-    public function actas_estatus(Request $request)
-    {
-        $periodo = $request->get('periodo');
-        $accion = $request->get('accion');
-        $resultado=NULL;
-        $encabezado=NULL;
-        if ($accion == 1) {
-            $resultado = (new AccionesController)->sin_evaluar($periodo);
-            $encabezado = "Materias sin ser evaluadas";
-        }elseif ($accion == 2) {
-            $resultado = (new AccionesController)->evaluadas($periodo);
-            $encabezado = "Materias evaluadas";
-        }elseif ($accion == 3) {
-            $resultado = (new AccionesController)->actas_faltantes($periodo);
-            $encabezado = "Actas faltantes por entregar en Escolares";
-        }
-        $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
-        return view('escolares.actas_estatus')->with(compact('nperiodo',
-            'resultado', 'encabezado'));
-    }
-    public function carrerasalta()
+    public function carreraAlta()
     {
         $cant = Carrera::where('nivel_escolar', 'L')->select('carrera')
             ->distinct('carrera')->count();
         $encabezado="Alta de carrera";
         return view('escolares.carrera_alta')->with(compact('cant','encabezado'));
     }
-    public function carreranueva(Request $request)
+    public function carreraNueva(Request $request)
     {
         request()->validate([
             'carrera' => 'required',
@@ -372,14 +119,14 @@ class EscolaresController extends Controller
             return view('escolares.si')->with(compact('encabezado', 'mensaje'));
         }
     }
-    public function especialidadesalta()
+    public function especialidadAlta()
     {
         $carreras = Carrera::select('carrera', 'reticula', 'nombre_reducido')->orderBy('carrera')
             ->orderBy('reticula')->get();
         $encabezado="Alta de especialidades";
         return view('escolares.especialidad_alta')->with(compact('carreras','encabezado'));
     }
-    public function especialidadnueva(Request $request)
+    public function especialidadNueva(Request $request)
     {
         request()->validate([
             'espe' => 'required',
@@ -400,7 +147,8 @@ class EscolaresController extends Controller
             $encabezado="Error de alta en especialidad";
             $mensaje = "Ya existe una especialidad con esa clave, por lo que no
             es posible duplicar la información";
-            return view('escolares.no')->with(compact('mensaje','encabezado'));
+            return view('escolares.no')
+                ->with(compact('mensaje','encabezado'));
         } else {
             $espe= new Especialidad();
             $espe->especialidad=$info["espe"];
@@ -414,56 +162,55 @@ class EscolaresController extends Controller
             return view('escolares.si');
         }
     }
-    public function materianueva()
+    public function materiaNueva()
     {
-        $carreras = Carrera::select('carrera', 'reticula', 'nombre_reducido')->orderBy('carrera')
+        $carreras = Carrera::select('carrera', 'reticula', 'nombre_reducido')
+            ->orderBy('carrera')
             ->orderBy('reticula')->get();
         $encabezado="Materias - Carreras";
-        return view('escolares.materias_alta')->with(compact('carreras','encabezado'));
+        return view('escolares.materias_alta')
+            ->with(compact('carreras','encabezado'));
     }
-    public function materiasacciones(Request $request)
+    public function materiasAcciones(Request $request)
     {
         $accion = $request->get('accion');
         $carr = $request->get('carrera');
         $datos = explode("_", $carr);
         $carrera = trim($datos[0]);
         $reticula = $datos[1];
+        $materias = MateriaCarrera::where('carrera', $carrera)->where('reticula', $reticula)
+            ->join('materias', 'materias_carreras.materia', '=', 'materias.materia')
+            ->whereNull('especialidad')
+            ->select('materias_carreras.materia as materia', 'nombre_abreviado_materia',
+                'creditos_materia', 'horas_teoricas', 'horas_practicas', 'semestre_reticula', 'renglon')
+            ->orderBy('nombre_abreviado_materia')
+            ->get();
+        $acad = Organigrama::where('area_depende', 'like', '110%')
+            ->where('clave_area', 'like', '%00')
+            ->get();
+        $espe = Especialidad::where('carrera', $carrera)
+            ->where('reticula', $reticula)
+            ->get();
+        $ncarrera = Carrera::where('carrera', $carrera)
+            ->where('reticula', $reticula)
+            ->first();
         if ($accion == 1) {
             $encabezado="Alta de materia en carrera";
-            $acad = Organigrama::where('area_depende', 'like', '110%')
-                ->where('clave_area', 'like', '%00')
-                ->get();
-            $espe = Especialidad::where('carrera', $carrera)
-                ->where('reticula', $reticula)
-                ->get();
-            $materias = MateriaCarrera::where('carrera', $carrera)->where('reticula', $reticula)
-                ->join('materias', 'materias_carreras.materia', '=', 'materias.materia')
-                ->whereNull('especialidad')
-                ->select('materias_carreras.materia as matteria', 'nombre_abreviado_materia',
-                    'creditos_materia', 'horas_teoricas', 'horas_practicas', 'semestre_reticula', 'renglon')
-                ->get();
-            $ncarrera = Carrera::where('carrera', $carrera)
-                ->where('reticula', $reticula)
-                ->first();
             return view('escolares.materia_nueva')->with(compact('carrera',
                 'reticula', 'acad', 'espe', 'materias', 'ncarrera','encabezado'));
         }elseif ($accion==2){
-            $accion="FALTA POR PROGRAMAR";
+            $encabezado="Modificar datos de materia";
+            return view('escolares.materia_seleccionar')
+                ->with(compact('carrera', 'materias','reticula', 'ncarrera','encabezado'));
         }else {
             $encabezado="Vista retícula de la carrera con especialidad";
-            $espe = Especialidad::where('carrera', $carrera)
-                ->where('reticula', $reticula)
-                ->get();
-            $ncarrera = Carrera::where('carrera', $carrera)
-                ->where('reticula', $reticula)
-                ->first();
             return view('escolares.reticulas')
                 ->with(compact(
                     'carrera', 'reticula', 'espe',
                     'ncarrera','encabezado'));
         }
     }
-    public function materiaalta(Request $request)
+    public function materiaAlta(Request $request)
     {
         request()->validate([
             'cve' => 'required',
@@ -514,11 +261,13 @@ class EscolaresController extends Controller
         $acad = Organigrama::where('area_depende', 'like', '110%')
             ->where('clave_area', 'like', '%00')
             ->get();
-        $espe = Especialidad::where('carrera', $info["carrera"])->where('reticula', $info["reticula"])->get();
+        $espe = Especialidad::where('carrera', $info["carrera"])
+            ->where('reticula', $info["reticula"])
+            ->get();
         $materias = MateriaCarrera::where('carrera', $info["carrera"])->where('reticula', $info["reticula"])
             ->join('materias', 'materias_carreras.materia', '=', 'materias.materia')
             ->whereNull('especialidad')
-            ->select('materias_carreras.materia as matteria', 'nombre_abreviado_materia', 'creditos_materia',
+            ->select('materias_carreras.materia as materia', 'nombre_abreviado_materia', 'creditos_materia',
                 'horas_teoricas', 'horas_practicas', 'semestre_reticula', 'renglon')
             ->get();
         $carrera = $info["carrera"];
@@ -527,7 +276,84 @@ class EscolaresController extends Controller
         return view('escolares.materia_nueva')->with(compact('carrera',
             'reticula', 'acad', 'espe', 'materias', 'ncarrera'));
     }
-    public function vistareticula(Request $request)
+    public function materiaEditar(Request $request)
+    {
+        $encabezado="Actualización de materia";
+        $materia=$request->get('materia');
+        $carrera=$request->get('carrera');
+        $reticula=$request->get('reticula');
+        $datos=MateriaCarrera::where('materias_carreras.materia', $materia)
+            ->where('carrera', $request->get('carrera'))
+            ->where('reticula', $request->get('reticula'))
+            ->join('materias', 'materias_carreras.materia', '=', 'materias.materia')
+            ->select('materias_carreras.creditos_materia', 'materias_carreras.horas_teoricas',
+                'materias_carreras.horas_practicas', 'materias_carreras.orden_certificado',
+                'materias_carreras.semestre_reticula', 'materias_carreras.creditos_prerrequisito',
+                'materias_carreras.especialidad', 'materias_carreras.clave_oficial_materia',
+                'materias_carreras.renglon', 'materias.nivel_escolar',
+                'materias.clave_area', 'materias.nombre_completo_materia',
+                'materias.nombre_abreviado_materia','materias.caracterizacion',
+                'materias.generales')
+            ->first();
+        $acad = Organigrama::where('area_depende', 'like', '110%')
+            ->where('clave_area', 'like', '%00')
+            ->get();
+        $espe = Especialidad::where('carrera', $carrera)
+            ->where('reticula', $reticula)
+            ->get();
+        return view('escolares.materia_modificar')
+            ->with(compact('encabezado','datos','materia','carrera',
+                'reticula','acad','espe'));
+    }
+    public function materiaActualizar(Request $request)
+    {
+        request()->validate([
+            'cve_of' => 'required',
+            'nombre_completo' => 'required',
+            'nombre_abrev' => 'required',
+            'horas_teoricas' => 'required',
+            'horas_practicas' => 'required',
+            'creditos' => 'required',
+            'certificado' => 'required'
+
+        ], [
+            'cve_of.required' => 'Debe escribir la clave oficial de la materia',
+            'nombre_completo.required' => 'Debe indicar el nombre completo para la materia',
+            'nombre_abrev.required' => 'Debe indicar el nombre corto para la materia',
+            'horas_teoricas.required' => 'Debe indicar el número de horas teóricas de la materia',
+            'horas_practicas.required' => 'Debe indicar el número de horas prácticas de la materia',
+            'creditos.required' => 'Indique la cantidad de créditos para la materia',
+            'certificado.required' => 'Indique la ubicación de la materia en el certificado'
+        ]);
+        $materia=$request->get('materia');
+        $carrera=$request->get('carrera');
+        $reticula=$request->get('reticula');
+        MateriaCarrera::where('materia', $materia)
+            ->where('carrera', $carrera)
+            ->where('reticula', $reticula)
+            ->update([
+                'creditos_materia' => $request->get('creditos'),
+                'horas_teoricas' => $request->get('horas_teoricas'),
+                'horas_practicas' => $request->get('horas_practicas'),
+                'orden_certificado' => $request->get('certificado'),
+                'semestre_reticula' => $request->get('semestre'),
+                'especialidad' => $request->get('especialidad')==0?null:$request->get('especialidad'),
+                'clave_oficial_materia' => $request->get('cve_of'),
+                'renglon' => $request->get('renglon')
+            ]);
+        Materia::where('materia', $materia)->update([
+            'nivel_escolar' => $request->get('nivel'),
+            'clave_area' => $request->get('area'),
+            'nombre_completo_materia' => $request->get('nombre_completo'),
+            'nombre_abreviado_materia' => $request->get('nombre_abrev'),
+            'caracterizacion' => $request->get('caracterizacion'),
+            'generales' => $request->get('generales')
+        ]);
+        $encabezado="Actualización de materia";
+        $mensaje="Se llevó la actualización de los datos de la materia ".$materia;
+        return view('escolares.si')->with(compact('encabezado','mensaje'));
+    }
+    public function vistaReticula(Request $request)
     {
         $carrera = $request->get('carrera');
         $reticula = $request->get('reticula');
@@ -558,89 +384,7 @@ class EscolaresController extends Controller
         return view('escolares.reticula_vista')->with(compact('espe',
             'array_reticula', 'ncarrera'));
     }
-    public function idiomas_lib1(){
-        $idiomas=Idioma::all();
-        $encabezado="Idiomas";
-        return view('escolares.liberacion1_idiomas')->with(compact('idiomas','encabezado'));
-    }
-    public function idiomas_lib2(Request $request){
-        request()->validate([
-            'control' => 'required'
-        ], [
-            'control.required' => 'Debe indicar el número de control'
-        ]);
-        $control=$request->get('control');
-        $alumno = Alumno::findOrfail($control);
-        $idioma=$request->get('idioma');
-        if(IdiomasLiberacion::where('control',$control)->count()>0){
-            $encabezado="Error de liberación en idioma extranjero";
-            $mensaje="No es posible continuar porque el estudiante ya cuenta con la liberación del idioma";
-            return view('escolares.no')->with(compact('mensaje','encabezado'));
-        }else{
-            $encabezado="Liberación de Idioma Extranjero";
-            $lengua_extranjera=Idioma::where('id',$idioma)->first();
-            return view('escolares.liberar_idioma')->with(compact('control',
-                'idioma','alumno','lengua_extranjera','encabezado'));
-        }
-    }
-    public function idiomas_lib3(Request $request){
-        $alumno = Alumno::findOrfail($request->get('control'));
-        $lib=new IdiomasLiberacion();
-        $lib->periodo=null;
-        $lib->control=$request->get('control');
-        $lib->calif=null;
-        $lib->liberacion=null;
-        $lib->idioma=$request->get('idioma');
-        $lib->opcion=$request->get('opcion');
-        $lib->save();
-        $encabezado="Liberación de Idioma Extranjero";
-        return view('escolares.prelibidiomas')->with(compact('alumno','encabezado'));
-    }
-    public function idiomas_impre(){
-        $encabezado="Impresión de liberación de idioma extranjero";
-        return view('escolares.idiomas_imprimir')->with(compact('encabezado'));
-    }
-    public function idiomas_impre2(Request $request){
-        request()->validate([
-            'control' => 'required'
-        ], [
-            'control.required' => 'Debe indicar el número de control'
-        ]);
-        $control=$request->get('control');
-        if(IdiomasLiberacion::where('control',$control)->count()==0){
-            $encabezado="Error para imprimir liberación de IE";
-            $mensaje="No es posible continuar porque el estudiante no cuenta con la liberación del idioma";
-            return view('escolares.no')->with(compact('mensaje','encabezado'));
-        }else{
-            $alumno = Alumno::findOrfail($control);
-            $encabezado="Impresión de liberación de idioma extranjero";
-            return view('escolares.prelibidiomas')->with(compact('alumno','encabezado'));
-        }
-    }
-    public function idiomas_consulta(){
-        $periodo_actual = (new AccionesController)->periodo();
-        $periodos = PeriodoEscolar::orderBy('periodo','desc')->get();
-        $idiomas=Idioma::all();
-        $encabezado="Idioma Extranjero";
-        return view('escolares.idiomas_consulta1')->with(compact('periodo_actual',
-            'periodos','idiomas','encabezado'));
-    }
-    public function idiomas_consulta2(Request $request){
-        $periodo=$request->get('periodo');
-        $idioma=$request->get('idioma');
-        if(IdiomasGrupo::where('periodo',$periodo)->where('idioma',$idioma)->count()>0){
-            $nperiodo=PeriodoEscolar::where('periodo',$periodo)->first();
-            $nidioma=Idioma::where('id',$idioma)->first();
-            $info=(new AccionesController)->consulta_idiomas($periodo,$idioma);
-            $encabezado="Idioma Extranjero";
-            return view('escolares.idiomas_consulta2')->with(compact('nperiodo',
-                'nidioma','info','encabezado'));
-        }else{
-            $encabezado="Error en consulta de grupos de idioma extranjero";
-            $mensaje="No hay grupos registrados para el periodo solicitado";
-            return view('escolares.no')->with(compact('mensaje','encabezado'));
-        }
-    }
+
     public function prepoblacion(){
         $periodo_actual = (new AccionesController)->periodo();
         $periodos = PeriodoEscolar::orderBy('periodo','desc')->get();

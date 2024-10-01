@@ -15,4 +15,8 @@ class Materia extends Model
 {
     use HasFactory;
     protected $primaryKey="materia";
+
+    protected $casts=[
+        'materia'=>'string',
+    ];
 }

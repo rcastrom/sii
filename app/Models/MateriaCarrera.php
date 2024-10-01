@@ -17,4 +17,7 @@ class MateriaCarrera extends Model
     use HasFactory;
     protected $table="materias_carreras";
     protected $primaryKey='materia';
+    protected $casts=[
+        'materia'=>'string',
+    ];
 }
