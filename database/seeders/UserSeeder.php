@@ -21,6 +21,7 @@ class UserSeeder extends Seeder
         $role_personal = Role::where('name', 'personal')->first();
         $role_humanos = Role::where('name', 'rechumanos')->first();
         $role_desarrollo = Role::where('name','desacad')->first();
+        $role_academico = Role::where('name','academico')->first();
 
         /*$user = new User();
         $user->name = 'Ricardo Castro';
@@ -48,7 +49,7 @@ class UserSeeder extends Seeder
         $user->email = 'computo_rh@ite.edu.mx';
         $user->password =bcrypt('Gatha6e9');
         $user->save();
-        $user->roles()->attach($role_humanos);*/
+        $user->roles()->attach($role_humanos);
 
         $user = new User();
         $user->name = 'Ricardo Castro M';
@@ -56,7 +57,12 @@ class UserSeeder extends Seeder
         $user->password =bcrypt('Gatha6e9');
         $user->save();
         $user->roles()->attach($role_desarrollo);
-
-
+*/
+        $user = new User();
+        $user->name = 'Ricardo Castro M';
+        $user->email = 'computo_acad@ite.edu.mx';
+        $user->password =bcrypt('Gatha6e9');
+        $user->save();
+        $user->roles()->attach($role_academico);
     }
 }

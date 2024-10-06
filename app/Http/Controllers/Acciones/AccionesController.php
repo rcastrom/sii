@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Acciones;
 use App\Http\Controllers\Controller;
 use App\Models\AlumnosGeneral;
 use App\Models\PeriodoFicha;
+use App\Models\PermisosCarrera;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 use App\Models\Carrera;
 use App\Models\HistoriaAlumno;
@@ -296,5 +298,23 @@ class AccionesController extends Controller
     public function periodo_entrega_fichas(){
         $periodo_ficha = PeriodoFicha::where('activo',1)->first();
         return PeriodoEscolar::where('periodo',$periodo_ficha->fichas)->first();
+    }
+
+    /*
+     * Indicar los permisos sobre la carrera que tenga el usuario
+     *
+     * @param string correo
+     * @return mixed
+     */
+    public function permisos_carreras($correo){
+        $carreras=PermisosCarrera::where('email',$correo)
+            ->join('carreras',function(JoinClause $join){
+                $join->on('carreras.carrera','=','permisos_carreras.carrera')
+                    ->on('carreras.reticula','=','permisos_carreras.reticula');
+            })->select('carreras.carrera','carreras.reticula','carreras.nombre_reducido')
+            ->orderBy('nombre_reducido','ASC')
+            ->orderBy('reticula','ASC')
+            ->get();
+        return $carreras;
     }
 }

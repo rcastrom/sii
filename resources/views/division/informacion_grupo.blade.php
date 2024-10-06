@@ -10,7 +10,7 @@
     <x-information :encabezado="$encabezado">
         <h4 class="card-title">Materia: {{$nmateria->nombre_completo_materia}} Grupo: {{$grupo}}</h4><br>
         <h5>Clave: {{$materia}}</h5><br>
-        <h4 class="card-title">{{$docente}}</h4><br>
+        <h4 class="card-title">Docente {{$docente}}</h4><br>
         <table class="table table-responsive">
             <thead class="thead-light">
             <tr>

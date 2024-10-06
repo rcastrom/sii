@@ -14,6 +14,7 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
+
         $role=new Role();
         $role->name='admin';
         $role->description='Administrador';
@@ -42,6 +43,11 @@ class RoleSeeder extends Seeder
         $role=new Role();
         $role->name='desacad';
         $role->description='Desarrollo Académico';
+        $role->save();
+
+        $role=new Role();
+        $role->name='academico';
+        $role->description='Jefaturas Académicas';
         $role->save();
 
 

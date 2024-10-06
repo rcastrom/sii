@@ -22,7 +22,7 @@ use App\Models\Personal;
 use App\Models\SeleccionMateria;
 use App\Models\User;
 use Carbon\Carbon;
-use FontLib\TrueType\Collection;
+use Illuminate\Database\Query\JoinClause;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -41,9 +41,7 @@ class DivisionController extends Controller
     }
     public function altagrupo(){
         $data=Auth::user()->email;
-        $carreras=PermisosCarrera::where('email',$data)
-            ->orderBy('nombre_carrera','ASC')
-            ->orderBy('reticula','ASC')->get();
+        $carreras = (new AccionesController)->permisos_carreras($data);
         $periodos=PeriodoEscolar::orderBy('periodo','desc')->get();
         $periodo_actual = (new AccionesController)->periodo();
         $encabezado="Creación de grupo";
@@ -76,10 +74,17 @@ class DivisionController extends Controller
             ->where('materias_carreras.materia',$materia)
             ->join('materias','materias_carreras.materia','=','materias.materia')
             ->select('nombre_abreviado_materia','creditos_materia')->first();
-        $aulas=Aula::where('estatus','A')->get();
+        $aulas=Aula::where('estatus','=',True)->get();
         $encabezado="Creación de grupo";
         return view('division.crear_grupo')->with(compact('materia',
             'carrera','ncarrera','ret','nmateria','aulas','periodo','encabezado'));
+    }
+    public function borrado($periodo,$materia,$grupo)
+    {
+        Horario::where('periodo',$periodo)
+            ->where('materia',$materia)
+            ->where('grupo',$grupo)
+            ->delete();
     }
     public function creargrupo2(Request $request){
         request()->validate([
@@ -150,7 +155,7 @@ class DivisionController extends Controller
                     try{
                         $alta=new Horario();
                         $alta->periodo=$periodo;
-                        $alta->rfc=null;
+                        $alta->docente=null;
                         $alta->tipo_horario='D';
                         $alta->dia_semana=2;
                         $alta->hora_inicial=$elunes;
@@ -167,6 +172,7 @@ class DivisionController extends Controller
                         $alta->save();
                         $bandera++;
                     }catch (QueryException){
+                        $this->borrado($periodo,$materia,$grupo);
                         $encabezado="Error de alta de grupo";
                         $mensaje="El aula se encuentra ocupada el día lunes";
                         return view('division.no')->with(compact('mensaje','encabezado'));
@@ -176,7 +182,7 @@ class DivisionController extends Controller
                     try{
                         $alta=new Horario();
                         $alta->periodo=$periodo;
-                        $alta->rfc=null;
+                        $alta->docente=null;
                         $alta->tipo_horario='D';
                         $alta->dia_semana=3;
                         $alta->hora_inicial=$emartes;
@@ -193,6 +199,7 @@ class DivisionController extends Controller
                         $alta->save();
                         $bandera++;
                     }catch (QueryException){
+                        $this->borrado($periodo,$materia,$grupo);
                         $encabezado="Error de alta de grupo";
                         $mensaje="El aula se encuentra ocupada el día martes";
                         return view('division.no')->with(compact('mensaje','encabezado'));
@@ -202,7 +209,7 @@ class DivisionController extends Controller
                     try{
                         $alta=new Horario();
                         $alta->periodo=$periodo;
-                        $alta->rfc=null;
+                        $alta->docente=null;
                         $alta->tipo_horario='D';
                         $alta->dia_semana=4;
                         $alta->hora_inicial=$emiercoles;
@@ -219,6 +226,7 @@ class DivisionController extends Controller
                         $alta->save();
                         $bandera++;
                     }catch(QueryException){
+                        $this->borrado($periodo,$materia,$grupo);
                         $encabezado="Error de alta de grupo";
                         $mensaje="El aula se encuentra ocupada el día miércoles";
                         return view('division.no')->with(compact('mensaje','encabezado'));
@@ -228,7 +236,7 @@ class DivisionController extends Controller
                     try{
                         $alta=new Horario();
                         $alta->periodo=$periodo;
-                        $alta->rfc=null;
+                        $alta->docente=null;
                         $alta->tipo_horario='D';
                         $alta->dia_semana=5;
                         $alta->hora_inicial=$ejueves;
@@ -245,6 +253,7 @@ class DivisionController extends Controller
                         $alta->save();
                         $bandera++;
                     }catch (QueryException){
+                        $this->borrado($periodo,$materia,$grupo);
                         $encabezado="Error de alta de grupo";
                         $mensaje="El aula se encuentra ocupada el día jueves";
                         return view('division.no')->with(compact('mensaje','encabezado'));
@@ -254,7 +263,7 @@ class DivisionController extends Controller
                     try{
                         $alta=new Horario();
                         $alta->periodo=$periodo;
-                        $alta->rfc=null;
+                        $alta->docente=null;
                         $alta->tipo_horario='D';
                         $alta->dia_semana=6;
                         $alta->hora_inicial=$eviernes;
@@ -271,6 +280,7 @@ class DivisionController extends Controller
                         $alta->save();
                         $bandera++;
                     }catch(QueryException){
+                        $this->borrado($periodo,$materia,$grupo);
                         $encabezado="Error de alta de grupo";
                         $mensaje="El aula se encuentra ocupada el día viernes";
                         return view('division.no')->with(compact('mensaje','encabezado'));
@@ -280,7 +290,7 @@ class DivisionController extends Controller
                     try{
                         $alta=new Horario();
                         $alta->periodo=$periodo;
-                        $alta->rfc=null;
+                        $alta->docente=null;
                         $alta->tipo_horario='D';
                         $alta->dia_semana=7;
                         $alta->hora_inicial=$esabado;
@@ -297,10 +307,12 @@ class DivisionController extends Controller
                         $alta->save();
                         $bandera++;
                     }catch (QueryException){
+                        $this->borrado($periodo,$materia,$grupo);
                         $encabezado="Error de alta de grupo";
                         $mensaje="El aula se encuentra ocupada el día sábado";
                         return view('division.no')->with(compact('mensaje','encabezado'));
                     }
+
                 }
                 if($bandera>0){
                     $grupo_nuevo=new Grupo();
@@ -312,9 +324,9 @@ class DivisionController extends Controller
                     $grupo_nuevo->alumnos_inscritos=0;
                     $grupo_nuevo->folio_acta=null;
                     $grupo_nuevo->paralelo_de=null;
-                    $grupo_nuevo->exclusivo_carrera=$carrera;
-                    $grupo_nuevo->exclusivo_reticula=$ret;
-                    $grupo_nuevo->rfc=null;
+                    $grupo_nuevo->carrera=$carrera;
+                    $grupo_nuevo->reticula=$ret;
+                    $grupo_nuevo->docente=null;
                     $grupo_nuevo->tipo_personal='B';
                     $grupo_nuevo->exclusivo='no';
                     $grupo_nuevo->entrego=0;
@@ -343,9 +355,7 @@ class DivisionController extends Controller
     }
     public function paralelo1(){
         $data=Auth::user()->email;
-        $carrera_origen=PermisosCarrera::where('email',$data)
-            ->orderBy('nombre_carrera','ASC')
-            ->orderBy('reticula','ASC')->get();
+        $carrera_origen=(new AccionesController)->permisos_carreras($data);;
         $periodos=PeriodoEscolar::orderBy('periodo','desc')->get();
         $periodo_actual=(new AccionesController)->periodo();
         $periodo=$periodo_actual[0]->periodo;
@@ -364,8 +374,8 @@ class DivisionController extends Controller
         $carrera_o=$datos_o[0]; $ret_o=$datos_o[1];
         $datos_p=explode("_",$destino);
         $carrera_p=$datos_p[0]; $ret_p=$datos_p[1];
-        $listado_o=MateriaCarrera::where('carrera',$carrera_o)
-            ->where('reticula',$ret_o)
+        $listado_o=MateriaCarrera::where('materias_carreras.carrera',$carrera_o)
+            ->where('materias_carreras.reticula',$ret_o)
             ->join('grupos','materias_carreras.materia','=','grupos.materia')
             ->where('grupos.periodo',$periodo)
             ->whereNull('grupos.paralelo_de')
@@ -374,8 +384,8 @@ class DivisionController extends Controller
             ->orderBy('semestre_reticula','ASC')
             ->orderBy('nombre_completo_materia','ASC')
             ->get();
-        $listado_p=MateriaCarrera::where('carrera',$carrera_p)
-            ->where('reticula',$ret_p)
+        $listado_p=MateriaCarrera::where('materias_carreras.carrera',$carrera_p)
+            ->where('materias_carreras.reticula',$ret_p)
             ->join('materias','materias_carreras.materia','=','materias.materia')
             ->where('nombre_completo_materia','not like','%RESIDENCIA%')
             ->where('nombre_completo_materia','not like','%SERVICIO SOC%')
@@ -424,9 +434,9 @@ class DivisionController extends Controller
             $alta->alumnos_inscritos=0;
             $alta->folio_acta=null;
             $alta->paralelo_de=$mat_o.$gpo_o;
-            $alta->exclusivo_carrera=$car_p;
-            $alta->exclusivo_reticula=$ret_p;
-            $alta->rfc=$rfc;
+            $alta->carrera=$car_p;
+            $alta->reticula=$ret_p;
+            $alta->docente='';
             $alta->tipo_personal='B';
             $alta->exclusivo='no';
             $alta->entrego=0;
@@ -479,9 +489,11 @@ class DivisionController extends Controller
         $carr=$request->get('carrera');
         $data=explode('_',$carr);
         $carrera=$data[0]; $ret=$data[1];
-        $ncarrera=Carrera::where('carrera',$carrera)->where('reticula',$ret)->first();
-        $listado=MateriaCarrera::where('carrera',$carrera)
+        $ncarrera=Carrera::where('carrera',$carrera)
             ->where('reticula',$ret)
+            ->first();
+        $listado=MateriaCarrera::where('materias_carreras.carrera',$carrera)
+            ->where('materias_carreras.reticula',$ret)
             ->join('grupos','materias_carreras.materia','=','grupos.materia')
             ->where('grupos.periodo',$periodo)
             ->join('materias','materias_carreras.materia','=','materias.materia')
@@ -494,13 +506,13 @@ class DivisionController extends Controller
         return view('division.listado2')->with(compact('listado','ncarrera','periodo','encabezado'));
     }
     public function info($periodo,$materia,$grupo){
-        $personal=Grupo::select('rfc')->where('periodo',$periodo)
+        $personal=Grupo::select('docente')->where('periodo',$periodo)
             ->where('materia',$materia)->where('grupo',$grupo)->first();
-        if(is_null($personal->rfc)){
+        if(is_null($personal->docente)){
             $docente="Pendiente por asignar";
         }else{
-            $datos_doc=Personal::where('rfc',$personal->rfc)->first();
-            $docente=$datos_doc->apellidos_empleado." ".$datos_doc->nombre_empleado;
+            $datos_doc=Personal::where('id',$personal->rfc)->first();
+            $docente=isset($datos_doc)?$datos_doc->apellidos_empleado." ".$datos_doc->nombre_empleado:"Por ser asignado";
         }
         $nmateria=Materia::where('materia',$materia)->first();
         $alumnos=SeleccionMateria::where('periodo',$periodo)

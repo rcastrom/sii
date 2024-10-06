@@ -15,4 +15,9 @@ class PermisosCarrera extends Model
 {
     use HasFactory;
     protected $primaryKey="email";
+    protected $casts=[
+        'carrera' => 'string',
+        'reticula' => 'integer',
+        'email' => 'string',
+    ];
 }
