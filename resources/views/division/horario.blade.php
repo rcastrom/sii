@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Alumnos')
+@section('title', 'Hprario Alumnos')
 
 @section('content_header')
     <h1>División de Estudios Profesionales</h1>
