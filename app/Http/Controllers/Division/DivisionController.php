@@ -416,12 +416,15 @@ class DivisionController extends Controller
         $gpo_o=$datos_o[1];
         $mat_p=$request->get('matp');
         //Se checa si existe el docente
-        $doc=Grupo::where('periodo',$periodo)->where('materia',$mat_o)->where('grupo',$gpo_o)
-            ->select('rfc')->first();
+        $doc=Grupo::where('periodo',$periodo)
+            ->where('materia',$mat_o)
+            ->where('grupo',$gpo_o)
+            ->select('docente')
+            ->first();
         if(!empty($doc)){
-            $rfc=$doc->rfc;
+            $docente=$doc->docente;
         }else{
-            $rfc=null;
+            $docente=null;
         }
         //
         try{
@@ -436,7 +439,7 @@ class DivisionController extends Controller
             $alta->paralelo_de=$mat_o.$gpo_o;
             $alta->carrera=$car_p;
             $alta->reticula=$ret_p;
-            $alta->docente='';
+            $alta->docente=$docente;
             $alta->tipo_personal='B';
             $alta->exclusivo='no';
             $alta->entrego=0;
@@ -448,12 +451,15 @@ class DivisionController extends Controller
         }
         //Ahora, el horario
         for($i=2;$i<=7;$i++){
-            $info=Horario::where('periodo',$periodo)->where('materia',$mat_o)
-                ->where('grupo',$gpo_o)->where('dia_semana',$i)->first();
+            $info=Horario::where('periodo',$periodo)
+                ->where('materia',$mat_o)
+                ->where('grupo',$gpo_o)
+                ->where('dia_semana',$i)
+                ->first();
             if(!empty($info->hora_inicial)){
                 $horario=new Horario();
                 $horario->periodo=$periodo;
-                $horario->rfc=$rfc;
+                $horario->docente=$docente;
                 $horario->tipo_horario='D';
                 $horario->dia_semana=$i;
                 $horario->hora_inicial=$info->hora_inicial;
@@ -1242,7 +1248,7 @@ class DivisionController extends Controller
         $periodos=PeriodoEscolar::orderBy('periodo','desc')->get();
         $periodo_actual=(new AccionesController)->periodo();
         $periodo=$periodo_actual[0]->periodo;
-        $aulas=Aula::where('estatus','A')->get();
+        $aulas=Aula::where('estatus','=', True)->get();
         $encabezado="Uso de aulas";
         return view('division.aulas')->with(compact('aulas',
             'periodos','periodo','encabezado'));
@@ -1256,7 +1262,7 @@ class DivisionController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','rfc')
+            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
             ->distinct()
             ->get();
         $martes=Horario::where('periodo',$periodo)->where('dia_semana',3)
@@ -1264,7 +1270,7 @@ class DivisionController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','rfc')
+            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
             ->distinct()
             ->get();
         $miercoles=Horario::where('periodo',$periodo)->where('dia_semana',4)
@@ -1272,7 +1278,7 @@ class DivisionController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','rfc')
+            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
             ->distinct()
             ->get();
         $jueves=Horario::where('periodo',$periodo)->where('dia_semana',5)
@@ -1280,7 +1286,7 @@ class DivisionController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','rfc')
+            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
             ->distinct()
             ->get();
         $viernes=Horario::where('periodo',$periodo)->where('dia_semana',6)
@@ -1288,7 +1294,7 @@ class DivisionController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','rfc')
+            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
             ->distinct()
             ->get();
         $sabado=Horario::where('periodo',$periodo)->where('dia_semana',7)
@@ -1296,7 +1302,7 @@ class DivisionController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','rfc')
+            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
             ->distinct()
             ->get();
         $encabezado="Uso de aulas";

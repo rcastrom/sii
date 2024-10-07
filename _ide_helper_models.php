@@ -13,7 +13,7 @@
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $periodo
  * @property string $no_de_control
@@ -58,7 +58,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property string $no_de_control
  * @property string|null $carrera
@@ -141,7 +141,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property string $no_de_control
  * @property string|null $domicilio_calle
@@ -168,7 +168,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $aula
@@ -193,7 +193,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $periodo
@@ -220,7 +220,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property string $periodo
  * @property string $no_de_control
@@ -291,7 +291,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property string $carrera
  * @property string $reticula
@@ -332,7 +332,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $categoria
@@ -359,7 +359,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int|null $entidad_federativa
  * @property string|null $nombre_entidad
@@ -376,7 +376,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property string $especialidad
  * @property int $carrera
@@ -407,7 +407,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property string $estatus
  * @property string $descripcion
@@ -422,7 +422,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property string $periodo
  * @property string $no_de_control
@@ -455,7 +455,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $periodo
@@ -480,7 +480,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int|null $carrera
  * @property string|null $fecha_inscripcion
@@ -511,7 +511,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property int|null $folio
@@ -542,7 +542,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property string $no_de_control
  * @property string|null $apellido_paterno
@@ -571,7 +571,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $periodo
  * @property string $materia
@@ -614,7 +614,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property string $periodo
  * @property string $no_de_control
@@ -655,10 +655,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $periodo
- * @property string|null $rfc
+ * @property string|null $docente
  * @property string $tipo_horario
  * @property int $dia_semana
  * @property string $hora_inicial
@@ -700,7 +700,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property string|null $idiomas
@@ -717,7 +717,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property int $periodo
@@ -742,7 +742,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property string|null $periodo
  * @property string $control
@@ -765,7 +765,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $clave_area
@@ -790,7 +790,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $materia
  * @property string|null $nivel_escolar
@@ -821,7 +821,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property string $carrera
  * @property string $reticula
@@ -860,7 +860,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $motivo
@@ -881,7 +881,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property int $id_estado
@@ -904,7 +904,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property string $clave_area
  * @property string|null $descripcion_area
@@ -923,7 +923,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $ciudad
@@ -940,7 +940,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $periodo
  * @property string $identificacion_larga
@@ -991,7 +991,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property int $fichas
@@ -1020,7 +1020,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property string|null $carrera
  * @property string|null $reticula
@@ -1041,7 +1041,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $rfc
@@ -1104,7 +1104,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $carrera
@@ -1129,7 +1129,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $campo
@@ -1152,7 +1152,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property string $estatus
  * @property string|null $descripcion
@@ -1167,7 +1167,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property int $id_docente
@@ -1196,7 +1196,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property int $id_escuela
@@ -1221,7 +1221,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $caracter
@@ -1242,7 +1242,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $letra
@@ -1263,7 +1263,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property int $id_personal
@@ -1300,7 +1300,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $plan_de_estudio
  * @property string $descripcion
@@ -1315,7 +1315,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $name
@@ -1336,7 +1336,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property string $periodo
  * @property string $no_de_control
@@ -1373,7 +1373,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $plan_de_estudios
  * @property string $tipo_evaluacion
@@ -1400,7 +1400,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $descripcion
@@ -1415,7 +1415,7 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * 
+ *
  *
  * @property int $id
  * @property string $name

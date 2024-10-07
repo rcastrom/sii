@@ -735,11 +735,11 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
                     $rfc=Horario::where('periodo',$periodo)
                         ->where('materia',$mat->materia)
                         ->where('grupo',$mat->grupo)
-                        ->select('rfc')
+                        ->select('docente')
                         ->first();
                     if(!empty($rfc)){
                         $doc=Personal::select('apellidos_empleado','nombre_empleado')
-                            ->where('rfc',$rfc->rfc)->first();
+                            ->where('rfc',$rfc->docente)->first();
                         $profesor=trim($doc->apellidos_empleado).' '.trim($doc->nombre_empleado);
                     }else{
                         $profesor='POR ASIGNAR';
