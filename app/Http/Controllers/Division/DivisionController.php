@@ -571,35 +571,36 @@ class DivisionController extends Controller
                 $lunes=Horario::where('periodo',$periodo)
                     ->where('materia',$materia)->where('grupo',$grupo)
                     ->where('dia_semana',2)->select('hora_inicial','hora_final','aula')
-                    ->get();
+                    ->first();
+
                 $martes=Horario::where('periodo',$periodo)
                     ->where('materia',$materia)->where('grupo',$grupo)
                     ->where('dia_semana',3)->select('hora_inicial','hora_final','aula')
-                    ->get();
+                    ->first();
                 $miercoles=Horario::where('periodo',$periodo)
                     ->where('materia',$materia)->where('grupo',$grupo)
                     ->where('dia_semana',4)->select('hora_inicial','hora_final','aula')
-                    ->get();
+                    ->first();
                 $jueves=Horario::where('periodo',$periodo)
                     ->where('materia',$materia)->where('grupo',$grupo)
                     ->where('dia_semana',5)->select('hora_inicial','hora_final','aula')
-                    ->get();
+                    ->first();
                 $viernes=Horario::where('periodo',$periodo)
                     ->where('materia',$materia)->where('grupo',$grupo)
                     ->where('dia_semana',6)->select('hora_inicial','hora_final','aula')
-                    ->get();
+                    ->first();
                 $sabado=Horario::where('periodo',$periodo)
                     ->where('materia',$materia)->where('grupo',$grupo)
                     ->where('dia_semana',7)->select('hora_inicial','hora_final','aula')
-                    ->get();
+                    ->first();
                 $grupo_existente=Grupo::where('periodo',$periodo)
                     ->where('materia',$materia)->where('grupo',$grupo)->get();
-                $aulas=Aula::where('estatus','A')->get();
+                $aulas=Aula::where('estatus','=',True)->get();
                 $mater=Grupo::where('periodo',$periodo)
                     ->where('grupos.materia',$materia)->where('grupo',$grupo)
                     ->join('materias_carreras as a1','grupos.materia','=','a1.materia')
-                    ->join('materias_carreras as a2','grupos.exclusivo_carrera','=','a2.carrera')
-                    ->join('materias_carreras as a3','grupos.exclusivo_reticula','=','a3.reticula')
+                    ->join('materias_carreras as a2','grupos.carrera','=','a2.carrera')
+                    ->join('materias_carreras as a3','grupos.reticula','=','a3.reticula')
                     ->join('materias','materias.materia','=','grupos.materia')
                     ->select('nombre_abreviado_materia','a1.creditos_materia')
                     ->first();
@@ -811,7 +812,6 @@ class DivisionController extends Controller
     }
     public function updatehorario(Request $request){
         request()->validate([
-            'grupo'=>'required',
             'capacidad'=>'required',
             'slunes'=>'required_with:elunes',
             'smartes'=>'required_with:emartes',
@@ -820,7 +820,6 @@ class DivisionController extends Controller
             'sviernes'=>'required_with:eviernes',
             'ssabado'=>'required_with:esabado',
         ],[
-            'grupo.required'=>'Debe indicar la clave del grupo',
             'capacidad.required'=>'Debe indicar la capacidad del grupo',
             'slunes.required_with'=>'Debe indicar la hora de salida para el lunes',
             'smartes.required_with'=>'Debe indicar la hora de salida para el martes',
@@ -863,11 +862,26 @@ class DivisionController extends Controller
             'periodo'=>$periodo,
             'materia'=>$materia,
             'grupo'=>$grupo
-        ])->select('rfc')->first();
-        if(!empty($docente->rfc)){
-            $bandera=1;
+        ])->select('docente')->first();
+        if(!empty($docente->docente)){
+            $bandera = 1;
         }else {
             $bandera = 0;
+        }
+        //Verificar si tiene alguna paralela
+        $parelela=$materia.$grupo;
+        if(Grupo::where('periodo',$periodo)
+            ->where('paralelo_de',$parelela)
+            ->count()>0
+        ){
+            $bandera2=1;
+            $datos_paralelo=Grupo::where('periodo',$periodo)
+                ->where('paralelo_de',$parelela)
+                ->first();
+            $materia_parelela=$datos_paralelo->materia;
+            $grupo_paralelo=$datos_paralelo->grupo;
+        }else{
+            $bandera2=0;
         }
         //Después, que el salón esté libre (eso lo hace el trigger)
         $total_horas=$hl+$hm+$hmm+$hj+$hv+$hs;
@@ -891,7 +905,19 @@ class DivisionController extends Controller
                     $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día lunes";
                     return view('division.no')->with(compact('mensaje','encabezado'));
                 }
-                //Si tiene paralela, también se actualiza
+                if($bandera2){
+                    Horario::where([
+                        'periodo'=>$periodo,
+                        'materia'=>$materia_parelela,
+                        'grupo'=>$grupo_paralelo,
+                        'dia_semana'=>2
+                    ])->update([
+                        'hora_inicial'=>$elunes,
+                        'hora_final'=>$slunes,
+                        'aula'=>$aula_l,
+                        'updated_at'=>Carbon::now()
+                    ]);
+                }
             }
             if(!empty($emartes)){
                 try{
@@ -911,7 +937,19 @@ class DivisionController extends Controller
                     $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día martes";
                     return view('division.no')->with(compact('mensaje','encabezado'));
                 }
-                //Si tiene paralela, también se actualiza
+                if($bandera2){
+                    Horario::where([
+                        'periodo'=>$periodo,
+                        'materia'=>$materia_parelela,
+                        'grupo'=>$grupo_paralelo,
+                        'dia_semana'=>3
+                    ])->update([
+                        'hora_inicial'=>$emartes,
+                        'hora_final'=>$smartes,
+                        'aula'=>$aula_m,
+                        'updated_at'=>Carbon::now()
+                    ]);
+                }
             }
             if(!empty($emiercoles)){
                 try{
@@ -931,7 +969,19 @@ class DivisionController extends Controller
                     $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día miercoles";
                     return view('division.no')->with(compact('mensaje','encabezado'));
                 }
-                //Si tiene paralela, también se actualiza
+                if($bandera2){
+                    Horario::where([
+                        'periodo'=>$periodo,
+                        'materia'=>$materia_parelela,
+                        'grupo'=>$grupo_paralelo,
+                        'dia_semana'=>4
+                    ])->update([
+                        'hora_inicial'=>$emiercoles,
+                        'hora_final'=>$smiercoles,
+                        'aula'=>$aula_mm,
+                        'updated_at'=>Carbon::now()
+                    ]);
+                }
             }
             if(!empty($ejueves)){
                 try{
@@ -951,7 +1001,19 @@ class DivisionController extends Controller
                     $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día jueves";
                     return view('division.no')->with(compact('mensaje','encabezado'));
                 }
-                //Si tiene paralela, también se actualiza
+                if($bandera2){
+                    Horario::where([
+                        'periodo'=>$periodo,
+                        'materia'=>$materia_parelela,
+                        'grupo'=>$grupo_paralelo,
+                        'dia_semana'=>5
+                    ])->update([
+                        'hora_inicial'=>$ejueves,
+                        'hora_final'=>$sjueves,
+                        'aula'=>$aula_j,
+                        'updated_at'=>Carbon::now()
+                    ]);
+                }
             }
             if(!empty($eviernes)){
                 try{
@@ -971,7 +1033,19 @@ class DivisionController extends Controller
                     $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día viernes";
                     return view('division.no')->with(compact('mensaje','encabezado'));
                 }
-                //Si tiene paralela, también se actualiza
+                if($bandera2){
+                    Horario::where([
+                        'periodo'=>$periodo,
+                        'materia'=>$materia_parelela,
+                        'grupo'=>$grupo_paralelo,
+                        'dia_semana'=>6
+                    ])->update([
+                        'hora_inicial'=>$eviernes,
+                        'hora_final'=>$sviernes,
+                        'aula'=>$aula_v,
+                        'updated_at'=>Carbon::now()
+                    ]);
+                }
             }
             if(!empty($esabado)){
                 try{
@@ -991,7 +1065,19 @@ class DivisionController extends Controller
                     $mensaje=$bandera==1?"El docente tiene materia a la hora señalada":"El aula se encuentra ocupada el día sabado";
                     return view('division.no')->with(compact('mensaje','encabezado'));
                 }
-                //Si tiene paralela, también se actualiza
+                if($bandera2){
+                    Horario::where([
+                        'periodo'=>$periodo,
+                        'materia'=>$materia_parelela,
+                        'grupo'=>$grupo_paralelo,
+                        'dia_semana'=>7
+                    ])->update([
+                        'hora_inicial'=>$esabado,
+                        'hora_final'=>$ssabado,
+                        'aula'=>$aula_s,
+                        'updated_at'=>Carbon::now()
+                    ]);
+                }
             }
             Grupo::where([
                 'periodo'=>$periodo,
@@ -1136,7 +1222,7 @@ class DivisionController extends Controller
                 $nombre_periodo = PeriodoEscolar::where('periodo', $periodo)->first();
                 $encabezado="Horario del estudiante";
                 return view('division.horario')->with(compact('alumno','datos_horario',
-                    'nombre_periodo','periodo_actual','encabezado'));
+                    'nombre_periodo','periodo_actual','encabezado','periodo'));
             }else{
                 $encabezado="Error de período para horario";
                 $mensaje="NO CUENTA CON CARGA ACADÉMICA ASIGNADA";

@@ -19,7 +19,8 @@ Route::group(['prefix'=>'division','middleware'=>['auth','role:division']],funct
         Route::get('/existentes', 'existentes');
         Route::post('/listado/', 'listado')
             ->name('dep_lista');
-        Route::get('/info/{periodo}/{materia}/{gpo}', 'info')->name('dep_info');
+        Route::get('/info/{periodo}/{materia}/{gpo}', 'info')
+            ->name('dep_info');
         Route::post('/acciones/', 'acciones')
             ->name('dep_acciones');
         Route::post('/altagrupo/', 'altacontrol')

@@ -73,7 +73,7 @@
                     {{$alumno->no_de_control}}
                 </div>
                 <div class="col-md-7">
-                    {{$alumno->apellido_paterno}} {{$alumno->apellido_materno}} {{$alumno->nombre_alumno}}
+                    {{$alumno->apellido_paterno.' '.$alumno->apellido_materno.' '.$alumno->nombre_alumno}}
                 </div>
                 <div class="col-md-2">
                     {{$alumno->repeticion}}
@@ -83,6 +83,9 @@
              $i++;
             @endphp
         @endforeach
+    </x-additional>
+    <x-additional>
+        @slot('header','Acciones adicionales')
         <form action="{{route('dep_acciones')}}" method="post" role="form" class="form-inline">
             @csrf
             <div class="form-group">
