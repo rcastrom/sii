@@ -31,6 +31,7 @@
                 <label for="fexpedicion">Fecha de expedición</label>
                 <input type="date" value="{{date('Y-m-d')}}" name="fexpedicion" class="form-control">
             </div>
+
             <input type="hidden" name="control" value="{{$alumno->no_de_control}}">
             <input type="hidden" name="periodo" value="{{$periodo}}">
             <button type="submit" class="btn btn-primary">Continuar</button>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Acciones;
 
 use App\Http\Controllers\Controller;
 use App\Models\AlumnosGeneral;
+use App\Models\MateriaCarrera;
 use App\Models\PeriodoFicha;
 use App\Models\PermisosCarrera;
 use Illuminate\Database\Query\JoinClause;
@@ -316,5 +317,24 @@ class AccionesController extends Controller
             ->orderBy('reticula','ASC')
             ->get();
         return $carreras;
+    }
+
+    /*
+     * Devolver el listado de materias que se ofertan en el semestre
+     *
+     * @param string carrera
+     * @param int reticula
+     * @param string periodo
+     * @return mixed
+     */
+    public function listado_materias($carrera, $reticula, $periodo){
+        return MateriaCarrera::where('materias_carreras.carrera',$carrera)
+            ->where('materias_carreras.reticula',$reticula)
+            ->join('grupos','materias_carreras.materia','=','grupos.materia')
+            ->where('grupos.periodo',$periodo)
+            ->join('materias','materias_carreras.materia','=','materias.materia')
+            ->orderBy('semestre_reticula','ASC')
+            ->orderBy('nombre_completo_materia','ASC')
+            ->get();
     }
 }

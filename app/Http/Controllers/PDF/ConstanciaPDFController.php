@@ -25,7 +25,6 @@ class ConstanciaPDFController extends Controller
     }
     public function mes_espanol($mes)
     {
-        $valor='';
         switch ($mes)
         {
             case '01': $valor= 'enero'; break;
@@ -40,6 +39,7 @@ class ConstanciaPDFController extends Controller
             case '10': $valor= 'octubre'; break;
             case '11': $valor= 'noviembre'; break;
             case '12': $valor= 'diciembre'; break;
+            default: $valor=''; break;
         }
         return $valor;
     }/*
@@ -461,6 +461,7 @@ class ConstanciaPDFController extends Controller
     }
 
     public function crearPDF(Request $request){
+
         $periodo=$request->get('periodo');
         $control=$request->get('control');
         $alumno=Alumno::findOrfail($control);
@@ -635,7 +636,7 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
             $egreso = "el pasado ".trim($ultimo_periodo);
         }
         $cierre = "\n\nA petición ".$interesado." interesad".$genero_a." ".$otro_cierre.", se extiende la presente en la ciudad de ".$this->fecha_completa($fexpedicion).".".$nota;
-        $jefe=$jefatura->nombre_empleado.' '.$jefatura->apellidos_empleado."\n".$genero_j." DEL DEPARTAMENTO DE SERVICIOS ESCOLARES";
+        //$jefe=$jefatura->nombre_empleado.' '.$jefatura->apellidos_empleado."\n".$genero_j." DEL DEPARTAMENTO DE SERVICIOS ESCOLARES";
         $cuerpo = $comun;
         $periodo_estudios = "durante el periodo comprendido de ".$ide_periodo_inicial." a ".$ide_periodo_final;
         $creditos = $egreso.", cubriendo un total de ".$creditos_aprobados." créditos de ".$ncarrera->creditos_totales;
@@ -681,7 +682,7 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
                     if(is_null($lunes)){
                         $dl='';
                     }else{
-                        $dl=$lunes->hora_inicial.' '.$lunes->hora_final.'<br>'.$lunes->aula;
+                        $dl=date("H:i",strtotime($lunes->hora_inicial)).' '.date("H:i",strtotime($lunes->hora_final)).'<br>'.$lunes->aula;
                     }
                     $martes=Horario::where('periodo',$periodo)
                         ->where('materia',$mat->materia)
@@ -691,7 +692,7 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
                     if(is_null($martes)){
                         $dm='';
                     }else{
-                        $dm=$martes->hora_inicial.' '.$martes->hora_final.'<br>'.$martes->aula;
+                        $dm=date("H:i",strtotime($martes->hora_inicial)).' '.date("H:i",strtotime($martes->hora_final)).'<br>'.$martes->aula;
                     }
                     $miercoles=Horario::where('periodo',$periodo)
                         ->where('materia',$mat->materia)
@@ -701,7 +702,7 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
                     if(is_null($miercoles)){
                         $dmm='';
                     }else{
-                        $dmm=$miercoles->hora_inicial.' '.$miercoles->hora_final.'<br>'.$miercoles->aula;
+                        $dmm=date("H:i",strtotime($miercoles->hora_inicial)).' '.date("H:i",strtotime($miercoles->hora_final)).'<br>'.$miercoles->aula;
                     }
                     $jueves=Horario::where('periodo',$periodo)
                         ->where('materia',$mat->materia)
@@ -711,7 +712,7 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
                     if(is_null($jueves)){
                         $dj='';
                     }else{
-                        $dj=$jueves->hora_inicial.' '.$jueves->hora_final.'<br>'.$jueves->aula;
+                        $dj=date("H:i",strtotime($jueves->hora_inicial)).' '.date("H:i",strtotime($jueves->hora_final)).'<br>'.$jueves->aula;
                     }
                     $viernes=Horario::where('periodo',$periodo)
                         ->where('materia',$mat->materia)
@@ -721,7 +722,7 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
                     if(is_null($viernes)){
                         $dv='';
                     }else{
-                        $dv=$viernes->hora_inicial.' '.$viernes->hora_final.'<br>'.$viernes->aula;
+                        $dv=date("H:i",strtotime($viernes->hora_inicial)).' '.date("H:i",strtotime($viernes->hora_final)).'<br>'.$viernes->aula;
                     }
                     $sabado=Horario::where('periodo',$periodo)
                         ->where('materia',$mat->materia)
@@ -730,16 +731,16 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
                     if(is_null($sabado)){
                         $ds='';
                     }else{
-                        $ds=$sabado->hora_inicial.' '.$sabado->hora_final.'<br>'.$sabado->aula;
+                        $ds=date("H:i",strtotime($sabado->hora_inicial)).' '.date("H:i",strtotime($sabado->hora_final)).'<br>'.$sabado->aula;
                     }
                     $rfc=Horario::where('periodo',$periodo)
                         ->where('materia',$mat->materia)
                         ->where('grupo',$mat->grupo)
                         ->select('docente')
                         ->first();
-                    if(!empty($rfc)){
+                    if(!is_null($rfc->docente)){
                         $doc=Personal::select('apellidos_empleado','nombre_empleado')
-                            ->where('rfc',$rfc->docente)->first();
+                            ->where('id',$rfc->docente)->first();
                         $profesor=trim($doc->apellidos_empleado).' '.trim($doc->nombre_empleado);
                     }else{
                         $profesor='POR ASIGNAR';
@@ -806,12 +807,13 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
         $fpdf =new Fpdf('P','mm','Letter');
         $fpdf->AddPage();
         $fpdf->SetAutoPageBreak(0);
+        //define('FPDF_FONTFILE',dirname(__FILE__).'/../../../../public/fuentes/');
         $fpdf->AddFont('MM','','Montserrat-Medium.php');
         $fpdf->AddFont('MM','B','Montserrat-Bold.php');
         $fpdf->AddFont("Montserrat2",'','Montserrat-ExtraLight.php');
-        $fpdf->AddFont("Montserrat2",'I','Montserrat-ExtraLightItalic.php');
+        $fpdf->AddFont("Montserrat2",'I','Montserrat-Thin.php');
         $fpdf->AddFont("Montserrat2",'B','Montserrat-Light.php');
-        $fpdf->AddFont("Montserrat2",'BI','Montserrat-SemiBoldItalic.php');
+        $fpdf->AddFont("Montserrat2",'BI','Montserrat-SemiBold.php');
         $depto="120600";
         $x = 15;
         $y = 80; //Original 120
@@ -1062,13 +1064,13 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
             $fpdf->Cell($w,$h,utf8_decode($lema),0,1,'L');
             //$pdf->AddFont("SoberanaSans_Bold",'','soberanasans_bold.php');
             $fpdf->SetFont("MM",'B',9);
-            $jefe2g=$jefe->descripcion_area;
+
             $fpdf->SetX($x);
             $fpdf->Cell(80,9," ",0,1,'L');
             $fpdf->SetX($x);
-            $fpdf->Cell($w,$h,$jefe2g,0,1,'L');
+            $fpdf->Cell($w,$h,trim($jefatura->nombre_empleado).' '.trim($jefatura->apellidos_empleado),0,1,'L');
             $fpdf->SetX($x);
-            $fpdf->Cell($w,$h,$jefe2g,0,1,'L');
+            $fpdf->Cell($w,$h,$jefe->descripcion_area,0,1,'L');
             //$pdf->MultiCell($w, $h, "ATENTAMENTE,\n".$CFG->lema."\n\n\n\n".$jefe, 0, 'J');
         }
         if($tipo == 'R'){

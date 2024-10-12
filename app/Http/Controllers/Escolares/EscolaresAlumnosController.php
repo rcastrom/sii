@@ -122,7 +122,8 @@ class EscolaresAlumnosController extends Controller
             if (SeleccionMateria::where('periodo', $periodo)
                     ->where('no_de_control', $control)->count() > 0) {
                 $encabezado="Constancia para estudiante";
-                return view('escolares.preconstancia')->with(compact('alumno', 'periodo','encabezado'));
+                return view('escolares.preconstancia')
+                    ->with(compact('alumno', 'periodo','encabezado'));
             } else {
                 $encabezado="Error de período para constancia";
                 $mensaje = "No se puede generar la constancia porque el estudiante no cuenta con carga académica";

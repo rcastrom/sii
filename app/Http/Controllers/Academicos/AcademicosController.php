@@ -37,17 +37,8 @@ class AcademicosController extends Controller
         $carr=$request->get('carrera');
         $data=explode('_',$carr);
         $carrera=$data[0]; $ret=$data[1];
-        $ncarrera=Carrera::where('carrera',$carrera)
-            ->where('reticula',$ret)
-            ->first();
-        $listado=MateriaCarrera::where('carrera',$carrera)
-            ->where('reticula',$ret)
-            ->join('grupos','materias_carreras.materia','=','grupos.materia')
-            ->where('grupos.periodo',$periodo)
-            ->join('materias','materias_carreras.materia','=','materias.materia')
-            ->orderBy('semestre','asc')
-            ->orderBy('nombre_completo_materia','asc')
-            ->get();
+        $ncarrera=(new AccionesController)->ncarrera($carrera, $ret);
+        $listado=(new AccionesController)->listado_materias($carrera, $ret, $request->get('periodo'));
         $encabezado="Grupos del período";
         return view('academicos.listado2')
             ->with(compact('listado','ncarrera','periodo','encabezado'));

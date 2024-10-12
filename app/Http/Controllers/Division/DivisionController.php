@@ -17,12 +17,10 @@ use App\Models\Horario;
 use App\Models\Materia;
 use App\Models\MateriaCarrera;
 use App\Models\PeriodoEscolar;
-use App\Models\PermisosCarrera;
 use App\Models\Personal;
 use App\Models\SeleccionMateria;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Database\Query\JoinClause;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -53,24 +51,16 @@ class DivisionController extends Controller
         $carr=$request->get('carrera');
         $data=explode('_',$carr);
         $carrera=$data[0]; $ret=$data[1];
-        $ncarrera=Carrera::where('carrera',$carrera)->where('reticula',$ret)->first();
-        $listado=MateriaCarrera::where('carrera',$carrera)
-            ->where('reticula',$ret)
-            ->join('materias','materias_carreras.materia','=','materias.materia')
-            ->where('nombre_completo_materia','not like','%RESIDENCIA%')
-            ->where('nombre_completo_materia','not like','%SERVICIO SOC%')
-            ->where('nombre_completo_materia','not like','%COMPLEMENT%')
-            ->orderBy('semestre_reticula','ASC')
-            ->orderBy('nombre_completo_materia','ASC')
-            ->select('semestre_reticula','materias.materia as mater','nombre_abreviado_materia')
-            ->get();
+        $ncarrera=(new AccionesController)->ncarrera($carrera, $ret);
+        $listado=(new AccionesController)->listado_materias($carrera, $ret, $request->get('periodo'));
         $encabezado="Creación de grupo";
         return view('division.listado3')->with(compact('listado',
             'ncarrera','carrera','ret','periodo','encabezado'));
     }
     public function creargrupo1($periodo,$materia,$carrera,$ret){
         $ncarrera=Carrera::where('carrera',$carrera)->where('reticula',$ret)->first();
-        $nmateria=MateriaCarrera::where('carrera',$carrera)->where('reticula',$ret)
+        $nmateria=MateriaCarrera::where('carrera',$carrera)
+            ->where('reticula',$ret)
             ->where('materias_carreras.materia',$materia)
             ->join('materias','materias_carreras.materia','=','materias.materia')
             ->select('nombre_abreviado_materia','creditos_materia')->first();
