@@ -14,7 +14,7 @@ de datos con la estructura en PostgreSQL (sin valores) así como las definicione
 tablas y procedimientos que, hasta el momento, cuenta el sistema.
 
 Los módulos que se han migrado son:
-* Servicios Escolares.
+* Servicios Escolares (100%).
 * Estudiantes (90%).
 * División de Estudios Profesionales.
 * Jefaturas Académicas (90%).
@@ -187,6 +187,12 @@ ello, desde consola (y estando en la raíz del proyecto; por ejemplo,
 De encontrarse algún error, el sistema le indicará el dato; caso contrario, el sistema
 estará listo para ser empleado. Posteriormente y por seguridad, se le recomienda
 borrar la información de los usuarios creados.
+
+## Posterior a la instalación
+Dentro de la carpeta public, encontrará una sub - carpeta llamada fuentes, que son necesarias
+para la generación de las constancias de estudios.
+Copie por favor dichos archivos hacia la ruta vendor/codedge/laravel-fpdf/src/Fpdf/font para
+que el sistema emplee las fuentes oficiales (hasta el momento)
 
 ## Construido con 🛠️
 
