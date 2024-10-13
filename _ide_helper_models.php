@@ -13,8 +13,25 @@
 
 namespace App\Models{
 /**
+ * 
  *
+ * @property string|null $actividad
+ * @property string|null $descripcion_actividad
+ * @method static \Illuminate\Database\Eloquent\Builder|ActividadesApoyo newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ActividadesApoyo newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ActividadesApoyo query()
+ * @method static \Illuminate\Database\Eloquent\Builder|ActividadesApoyo whereActividad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ActividadesApoyo whereDescripcionActividad($value)
+ */
+	class ActividadesApoyo extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Class AcumuladoHistorico
  *
+ * @package App
+ * @mixin Builder
  * @property int $periodo
  * @property string $no_de_control
  * @property string|null $estatus_periodo_alumno
@@ -58,8 +75,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class Alumno
  *
- *
+ * @package App
+ * @mixin Builder
  * @property string $no_de_control
  * @property string|null $carrera
  * @property string|null $reticula
@@ -141,8 +160,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class AlumnosGeneral
  *
- *
+ * @package App
+ * @mixin Builder
  * @property string $no_de_control
  * @property string|null $domicilio_calle
  * @property string|null $domicilio_colonia
@@ -168,8 +189,35 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * 
  *
+ * @property string $periodo
+ * @property int $docente
+ * @property string $actividad
+ * @property int $consecutivo
+ * @property string|null $especifica_actividad
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia query()
+ * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia whereActividad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia whereConsecutivo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia whereDocente($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia whereEspecificaActividad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia whereUpdatedAt($value)
+ */
+	class ApoyoDocencia extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Class Aula
  *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property string $aula
  * @property string $ubicacion
@@ -193,8 +241,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class AulaAspirante
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property string $periodo
  * @property int $aula
@@ -220,8 +270,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class AvisoReinscripcion
  *
- *
+ * @package App
+ * @mixin Builder
  * @property string $periodo
  * @property string $no_de_control
  * @property string|null $autoriza_escolar
@@ -291,8 +343,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class Carrera
  *
- *
+ * @package App
+ * @mixin Builder
  * @property string $carrera
  * @property string $reticula
  * @property string $nivel_escolar
@@ -332,8 +386,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class Categoria
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property string $categoria
  * @property string $descripcion
@@ -359,8 +415,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class EntidadesFederativos
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int|null $entidad_federativa
  * @property string|null $nombre_entidad
  * @property string|null $clave_entidad
@@ -376,8 +434,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class Especialidad
  *
- *
+ * @package App
+ * @mixin Builder
  * @property string $especialidad
  * @property int $carrera
  * @property string $reticula
@@ -407,8 +467,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class EstatusAlumno
  *
- *
+ * @package App
+ * @mixin Builder
  * @property string $estatus
  * @property string $descripcion
  * @method static \Illuminate\Database\Eloquent\Builder|EstatusAlumno newModelQuery()
@@ -422,8 +484,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class EvaluacionAlumno
  *
- *
+ * @package App
+ * @mixin Builder
  * @property string $periodo
  * @property string $no_de_control
  * @property string $materia
@@ -455,8 +519,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class FechaEvaluacion
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property string $periodo
  * @property string $encuesta
@@ -480,8 +546,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class FechasCarrera
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int|null $carrera
  * @property string|null $fecha_inscripcion
  * @property string|null $fecha_inicio
@@ -511,8 +579,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class FolioConstancia
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property int|null $folio
  * @property string|null $periodo
@@ -542,8 +612,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class GenerarListasTemporal
  *
- *
+ * @package App
+ * @mixin Builder
  * @property string $no_de_control
  * @property string|null $apellido_paterno
  * @property string|null $apellido_materno
@@ -571,19 +643,21 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class Grupo
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $periodo
  * @property string $materia
  * @property string $grupo
  * @property string|null $estatus_grupo
- * @property int $capacidad_grupo
+ * @property int|null $capacidad_grupo
  * @property int|null $alumnos_inscritos
  * @property string|null $folio_acta
  * @property string|null $paralelo_de
- * @property string|null $exclusivo_carrera
- * @property string|null $exclusivo_reticula
- * @property string|null $rfc
+ * @property string|null $carrera
+ * @property string|null $reticula
+ * @property int|null $docente
  * @property string|null $tipo_personal
  * @property string|null $exclusivo
  * @property bool|null $entrego
@@ -594,18 +668,18 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Grupo query()
  * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereAlumnosInscritos($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereCapacidadGrupo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereCarrera($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereDocente($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereEntrego($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereEstatusGrupo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereExclusivo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereExclusivoCarrera($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereExclusivoReticula($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereFolioActa($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereGrupo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereMateria($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereParaleloDe($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Grupo wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereRfc($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereReticula($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereTipoPersonal($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereUpdatedAt($value)
  */
@@ -614,15 +688,17 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class HistoriaAlumno
  *
- *
+ * @package App
+ * @mixin Builder
+ * @property int $id
  * @property string $periodo
  * @property string $no_de_control
  * @property string $materia
  * @property string|null $grupo
- * @property string|null $calificacion
- * @property string $tipo_evaluacion
- * @property string|null $fecha_calificacion
+ * @property int|null $calificacion
+ * @property string|null $tipo_evaluacion
  * @property string|null $plan_de_estudios
  * @property string|null $estatus_materia
  * @property string|null $nopresento
@@ -630,16 +706,14 @@ namespace App\Models{
  * @property string|null $periodo_acredita_materia
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property string|null $fecha_actualizacion
  * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno query()
  * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereCalificacion($value)
  * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereEstatusMateria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereFechaActualizacion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereFechaCalificacion($value)
  * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereGrupo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereMateria($value)
  * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereNoDeControl($value)
  * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereNopresento($value)
@@ -655,21 +729,23 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class Horario
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $periodo
- * @property string|null $docente
+ * @property int|null $docente
  * @property string $tipo_horario
  * @property int $dia_semana
- * @property string $hora_inicial
- * @property string|null $hora_final
+ * @property \Illuminate\Support\Carbon $hora_inicial
+ * @property \Illuminate\Support\Carbon|null $hora_final
  * @property string|null $materia
  * @property string|null $grupo
  * @property string|null $aula
  * @property string|null $actividad
  * @property int|null $consecutivo
- * @property string|null $vigencia_inicio
- * @property string|null $vigencia_fin
+ * @property \Illuminate\Support\Carbon|null $vigencia_inicio
+ * @property \Illuminate\Support\Carbon|null $vigencia_fin
  * @property int|null $consecutivo_admvo
  * @property string|null $tipo_personal
  * @property \Illuminate\Support\Carbon|null $created_at
@@ -683,12 +759,12 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Horario whereConsecutivoAdmvo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Horario whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Horario whereDiaSemana($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Horario whereDocente($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Horario whereGrupo($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Horario whereHoraFinal($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Horario whereHoraInicial($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Horario whereMateria($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Horario wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Horario whereRfc($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Horario whereTipoHorario($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Horario whereTipoPersonal($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Horario whereUpdatedAt($value)
@@ -700,8 +776,58 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * 
  *
+ * @property string $periodo
+ * @property int $docente
+ * @property int $consecutivo_admvo
+ * @property int $descripcion_horario
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo query()
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo whereConsecutivoAdmvo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo whereDescripcionHorario($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo whereDocente($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo whereUpdatedAt($value)
+ */
+	class HorarioAdministrativo extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
  *
+ * @property int $id
+ * @property string $periodo
+ * @property int $docente
+ * @property string $observaciones
+ * @property string|null $depto
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion query()
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion whereDepto($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion whereDocente($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion whereObservaciones($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion whereUpdatedAt($value)
+ */
+	class HorarioObservacion extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Class Idioma
+ *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property string|null $idiomas
  * @property string|null $abrev
@@ -717,8 +843,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class IdiomasGrupo
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property int $periodo
  * @property int $idioma
@@ -742,8 +870,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class IdiomasLiberacion
  *
- *
+ * @package App
+ * @mixin Builder
  * @property string|null $periodo
  * @property string $control
  * @property string|null $calif
@@ -765,8 +895,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class Jefe
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property string $clave_area
  * @property string $descripcion_area
@@ -790,9 +922,11 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class Materia
  *
- *
- * @property int $materia
+ * @package App
+ * @mixin Builder
+ * @property string $materia
  * @property string|null $nivel_escolar
  * @property int|null $tipo_materia
  * @property string|null $clave_area
@@ -821,11 +955,13 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class MateriaCarrera
  *
- *
+ * @package App
+ * @mixin Builder
  * @property string $carrera
  * @property string $reticula
- * @property int $materia
+ * @property string $materia
  * @property int|null $creditos_materia
  * @property int $horas_teoricas
  * @property int $horas_practicas
@@ -860,8 +996,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class Motivo
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property string $motivo
  * @property string $descripcion
@@ -881,8 +1019,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class Municipio
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property int $id_estado
  * @property int $id_municipio
@@ -904,8 +1044,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class Organigrama
  *
- *
+ * @package App
+ * @mixin Builder
  * @property string $clave_area
  * @property string|null $descripcion_area
  * @property string|null $area_depende
@@ -923,14 +1065,18 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class Parametro
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property string $ciudad
  * @property string $tec
+ * @property string|null $cct
  * @method static \Illuminate\Database\Eloquent\Builder|Parametro newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Parametro newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Parametro query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Parametro whereCct($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Parametro whereCiudad($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Parametro whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Parametro whereTec($value)
@@ -940,9 +1086,12 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class PeriodoEscolar
  *
- *
- * @property int $periodo
+ * @package App
+ * @mixin Builder
+ * @property int $id
+ * @property string $periodo
  * @property string $identificacion_larga
  * @property string|null $identificacion_corta
  * @property string|null $fecha_inicio
@@ -959,13 +1108,13 @@ namespace App\Models{
  * @property string|null $termino_vacacional
  * @property string|null $inicio_cal_docentes
  * @property string|null $fin_cal_docentes
+ * @property bool|null $cambio_carrera
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property int|null $ccarrera
  * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar query()
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereCcarrera($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereCambioCarrera($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereCierreHorarios($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereCierreSeleccion($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereCreatedAt($value)
@@ -975,6 +1124,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereFinEspecial($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereFinSeleAlumnos($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereFinVacacionalSs($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereIdentificacionCorta($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereIdentificacionLarga($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereInicioCalDocentes($value)
@@ -991,8 +1141,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class PeriodoFicha
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property int $fichas
  * @property bool $activo
@@ -1020,29 +1172,35 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class PermisosCarrera
  *
- *
- * @property string|null $carrera
- * @property string|null $reticula
- * @property string|null $nombre_carrera
- * @property string|null $nombre_reducido
- * @property int|null $email
+ * @package App
+ * @mixin Builder
+ * @property int $id
+ * @property string $carrera
+ * @property int $reticula
+ * @property string $email
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera query()
  * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera whereCarrera($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera whereNombreCarrera($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera whereNombreReducido($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera whereReticula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera whereUpdatedAt($value)
  */
 	class PermisosCarrera extends \Eloquent {}
 }
 
 namespace App\Models{
 /**
+ * Class Personal
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property string $rfc
  * @property string|null $clave_area
@@ -1104,8 +1262,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class PersonalCarrera
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property string $carrera
  * @property string $nombre_corto
@@ -1129,8 +1289,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class PersonalDato
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property string $campo
  * @property string $lectura
@@ -1152,8 +1314,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class PersonalEstatus
  *
- *
+ * @package App
+ * @mixin Builder
  * @property string $estatus
  * @property string|null $descripcion
  * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstatus newModelQuery()
@@ -1167,8 +1331,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class PersonalEstudio
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property int $id_docente
  * @property string|null $fecha_inicio
@@ -1196,8 +1362,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class PersonalInstitEstudio
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property int $id_escuela
  * @property int $id_estado
@@ -1221,8 +1389,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class PersonalNivelEstudio
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property string $caracter
  * @property string $descripcion
@@ -1242,8 +1412,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class PersonalNombramiento
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property string $letra
  * @property string $descripcion
@@ -1263,8 +1435,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class PersonalPlaza
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property int $id_personal
  * @property string $unidad
@@ -1300,8 +1474,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class PlanDeEstudio
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $plan_de_estudio
  * @property string $descripcion
  * @method static \Illuminate\Database\Eloquent\Builder|PlanDeEstudio newModelQuery()
@@ -1315,8 +1491,25 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * 
  *
+ * @property int|null $clave_puesto
+ * @property string|null $descripcion_puesto
+ * @method static \Illuminate\Database\Eloquent\Builder|Puesto newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Puesto newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Puesto query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Puesto whereClavePuesto($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Puesto whereDescripcionPuesto($value)
+ */
+	class Puesto extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * Class Role
  *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property string $name
  * @property string $description
@@ -1336,8 +1529,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class SeleccionMateria
  *
- *
+ * @package App
+ * @mixin Builder
  * @property string $periodo
  * @property string $no_de_control
  * @property string $materia
@@ -1373,8 +1568,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class TipoEvaluacion
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $plan_de_estudios
  * @property string $tipo_evaluacion
  * @property string|null $descripcion_evaluacion
@@ -1400,8 +1597,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class TiposIngreso
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property string $descripcion
  * @method static \Illuminate\Database\Eloquent\Builder|TiposIngreso newModelQuery()
@@ -1415,8 +1614,10 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * Class User
  *
- *
+ * @package App
+ * @mixin Builder
  * @property int $id
  * @property string $name
  * @property string $email

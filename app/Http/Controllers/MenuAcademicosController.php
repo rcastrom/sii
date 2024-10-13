@@ -46,6 +46,17 @@ class MenuAcademicosController extends Controller
                     ],
                 ]
             ]);
+            $event->menu->add([
+                'text' => 'Mantenimiento',
+                'icon' => 'fa fa-wrench',
+                'submenu' => [
+                    [
+                        'text' => 'Contraseña',
+                        'url'  => 'academicos/mantenimiento/contrasena',
+                        'icon' => 'far fa-circle',
+                    ]
+                ]
+            ]);
         });
     }
 }

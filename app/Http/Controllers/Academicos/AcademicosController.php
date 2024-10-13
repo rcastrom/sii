@@ -12,16 +12,19 @@ use App\Models\Carrera;
 use App\Models\Grupo;
 use App\Models\Horario;
 use App\Models\HorarioAdministrativo;
+use App\Models\HorarioObservacion;
 use App\Models\Materia;
 use App\Models\PeriodoEscolar;
 use App\Models\Personal;
 use App\Models\Puesto;
 use App\Models\SeleccionMateria;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+
 
 class AcademicosController extends Controller
 {
@@ -33,9 +36,27 @@ class AcademicosController extends Controller
         return view('academicos.index');
     }
 
+    public function borrado($periodo,$docente,$tipo,$consecutivo)
+    {
+        Horario::where('periodo',$periodo)
+            ->where('docente',$docente)
+            ->where('tipo_horario',$tipo)
+            ->where('consecutivo_admvo',$consecutivo)
+            ->delete();
+    }
+
+    public function borrado2($periodo,$docente,$tipo,$consecutivo)
+    {
+        Horario::where('periodo',$periodo)
+            ->where('docente',$docente)
+            ->where('tipo_horario',$tipo)
+            ->where('consecutivo',$consecutivo)
+            ->delete();
+    }
+
     public function existentes(){
         $encabezado="Grupos del período";
-        $carreras = Carrera::select('carrera', 'reticula', 'nombre_reducido')
+        $carreras = Carrera::select(['carrera', 'reticula', 'nombre_reducido'])
             ->orderBy('carrera')
             ->orderBy('reticula')->get();
         $periodo_semestre = (new AccionesController)->periodo();
@@ -149,7 +170,7 @@ class AcademicosController extends Controller
                         ->count()>0){
                     $datos=Grupo::where('periodo',$periodo)
                         ->where('paralelo_de',$materia_paralela)
-                        ->select('materia','grupo')
+                        ->select(['materia','grupo'])
                         ->get();
                     foreach ($datos as $dato){
                         $mat_p=$dato->materia;
@@ -249,7 +270,7 @@ class AcademicosController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
+            ->select(['hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente'])
             ->distinct()
             ->get();
         $martes=Horario::where('periodo',$periodo)->where('dia_semana',3)
@@ -257,7 +278,7 @@ class AcademicosController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
+            ->select(['hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente'])
             ->distinct()
             ->get();
         $miercoles=Horario::where('periodo',$periodo)->where('dia_semana',4)
@@ -265,7 +286,7 @@ class AcademicosController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
+            ->select(['hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente'])
             ->distinct()
             ->get();
         $jueves=Horario::where('periodo',$periodo)->where('dia_semana',5)
@@ -273,7 +294,7 @@ class AcademicosController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
+            ->select(['hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente'])
             ->distinct()
             ->get();
         $viernes=Horario::where('periodo',$periodo)->where('dia_semana',6)
@@ -281,7 +302,7 @@ class AcademicosController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
+            ->select(['hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente'])
             ->distinct()
             ->get();
         $sabado=Horario::where('periodo',$periodo)->where('dia_semana',7)
@@ -289,7 +310,7 @@ class AcademicosController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
+            ->select(['hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente'])
             ->distinct()
             ->get();
         $encabezado="Uso de aulas";
@@ -299,8 +320,9 @@ class AcademicosController extends Controller
     public function predocentes(){
         $maestros=Personal::where('nombramiento','D')
             ->where('status_empleado','2')
-            ->orderBy('apellidos_empleado','asc')->orderBy('nombre_empleado','asc')->get();
-        $periodos=PeriodoEscolar::orderBy('periodo','desc')->get();
+            ->orderBy('apellidos_empleado','ASC')
+            ->orderBy('nombre_empleado','ASC')->get();
+        $periodos=PeriodoEscolar::orderBy('periodo','DESC')->get();
         $periodo_actual=(new AccionesController)->periodo();
         $periodo=$periodo_actual[0]->periodo;
         $encabezado="Listado por docentes";
@@ -316,14 +338,14 @@ class AcademicosController extends Controller
             ->whereNull('paralelo_de')
             ->join('materias_carreras as mc','mc.materia','=','grupos.materia')
             ->join('materias','mc.materia','=','materias.materia')
-            ->select('grupos.materia','grupo','nombre_abreviado_materia')
+            ->select(['grupos.materia','grupo','nombre_abreviado_materia'])
             ->distinct('grupos.materia')
             ->get();
         $admin=HorarioAdministrativo::where('periodo',$request->get('periodo'))
             ->where('docente',$request->get('docente'))
             ->join('puestos','horarios_administrativos.descripcion_horario','=','puestos.clave_puesto')
             ->distinct('consecutivo_admvo')
-            ->select('consecutivo_admvo','descripcion_puesto')
+            ->select(['consecutivo_admvo','descripcion_puesto'])
             ->get();
         $apoyo=ApoyoDocencia::where('periodo',$request->get('periodo'))
             ->where('docente',$request->get('docente'))
@@ -342,7 +364,7 @@ class AcademicosController extends Controller
         $accion=$request->get('accion');
         $docente=$request->get('docente');
         $personal=Personal::where('id',$docente)
-            ->select('apellidos_empleado','nombre_empleado')
+            ->select(['apellidos_empleado','nombre_empleado'])
             ->first();
         $puestos=Puesto::get();
         $nperiodo=PeriodoEscolar::where('periodo',$periodo)
@@ -353,14 +375,14 @@ class AcademicosController extends Controller
             ->whereNull('paralelo_de')
             ->join('materias_carreras as mc','mc.materia','=','grupos.materia')
             ->join('materias','mc.materia','=','materias.materia')
-            ->select('grupos.materia','grupo','nombre_abreviado_materia')
+            ->select(['grupos.materia','grupo','nombre_abreviado_materia'])
             ->distinct('grupos.materia')
             ->get();
         $admin=HorarioAdministrativo::where('periodo',$periodo)
             ->where('docente',$docente)
             ->join('puestos','horarios_administrativos.descripcion_horario','=','puestos.clave_puesto')
-            ->distinct('consecutivo_admvo')
-            ->select('consecutivo_admvo','descripcion_puesto')
+            ->distinct(['consecutivo_admvo'])
+            ->select(['consecutivo_admvo','descripcion_puesto'])
             ->get();
         $apoyo=ApoyoDocencia::where('periodo',$periodo)
             ->where('docente',$docente)
@@ -377,23 +399,37 @@ class AcademicosController extends Controller
             return view('academicos.modificar_hadmvo')
                 ->with(compact('periodo','puestos','docente','nperiodo',
                     'admin','encabezado'));
-        }/*elseif($accion==3){
+        }elseif($accion==3){
+            $encabezado="Alta apoyo administrativo para docentes";
             $apoyos=ActividadesApoyo::get();
-            return view('acad.alta_apoyo')->with(compact('periodo','puestos','rfc','nperiodo','admin','apoyos','info'));
+            return view('academicos.alta_apoyo')
+                ->with(compact('periodo','puestos','docente',
+                    'nperiodo','admin','apoyos','info','encabezado'));
         }elseif($accion==4){
-            return view('acad.modificar_hapoyo')->with(compact('periodo','rfc','nperiodo','apoyo'));
+            $encabezado="Modificar horario de apoyo administrativo para docentes";
+            return view('academicos.modificar_hapoyo')
+                ->with(compact('periodo','docente',
+                    'nperiodo','apoyo','encabezado'));
         }elseif ($accion==5){
-            return view('acad.alta_obs')->with(compact('periodo','rfc','personal'));
+            $encabezado="Observaciones para el horario del docente";
+            return view('academicos.alta_obs')
+                ->with(compact('periodo','docente','personal','encabezado'));
         }elseif ($accion==6){
-            if(DB::table('horario_observaciones')->where('periodo',$periodo)->where('rfc',$rfc)->count()>0){
-                $obs=DB::table('horario_observaciones')->where('periodo',$periodo)->where('rfc',$rfc)
-                    ->select('observaciones')->first();
-                return view('acad.modificar_obs')->with(compact('periodo','rfc','personal','obs'));
+            if(HorarioObservacion::where('periodo',$periodo)
+                    ->where('docente',$docente)->count()>0){
+                $obs=HorarioObservacion::where('periodo',$periodo)
+                    ->where('docente',$docente)
+                    ->select(['observaciones','id'])->first();
+                $encabezado="Actualización de modificaciones para horario";
+                return view('academicos.modificar_obs')
+                    ->with(compact('periodo','docente',
+                        'personal','obs','encabezado'));
             }else{
+                $encabezado="Error de modificación de observaciones en horario docente";
                 $mensaje="El docente no cuenta con observaciones en el horario, por lo que no es posible modificar nada";
-                return view('acad.no')->with(compact('mensaje'));
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
-        }*/
+        }
     }
     public function procesaadmvoalta(Request $request){
         request()->validate([
@@ -501,6 +537,7 @@ class AcademicosController extends Controller
                     'tipo_personal'=>null
                 ]);
             }catch (QueryException){
+                $this->borrado($periodo,$docente,'A',$cant+1);
                 $mensaje="La persona se encuentra ocupada en ese horario el lunes";
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
@@ -525,6 +562,7 @@ class AcademicosController extends Controller
                     'tipo_personal'=>null
                 ]);
             }catch (QueryException){
+                $this->borrado($periodo,$docente,'A',$cant+1);
                 $mensaje="La persona se encuentra ocupada en ese horario el martes";
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
@@ -549,6 +587,7 @@ class AcademicosController extends Controller
                     'tipo_personal'=>null
                 ]);
             }catch (QueryException){
+                $this->borrado($periodo,$docente,'A',$cant+1);
                 $mensaje="La persona se encuentra ocupada en ese horario el miércoles";
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
@@ -573,6 +612,7 @@ class AcademicosController extends Controller
                     'tipo_personal'=>null
                 ]);
             }catch (QueryException){
+                $this->borrado($periodo,$docente,'A',$cant+1);
                 $mensaje="La persona se encuentra ocupada en ese horario el jueves";
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
@@ -597,6 +637,7 @@ class AcademicosController extends Controller
                     'tipo_personal'=>null
                 ]);
             }catch (QueryException){
+                $this->borrado($periodo,$docente,'A',$cant+1);
                 $mensaje="La persona se encuentra ocupada en ese horario el viernes";
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
@@ -622,6 +663,7 @@ class AcademicosController extends Controller
                     'created_at'=>Carbon::now()
                 ]);
             }catch (QueryException){
+                $this->borrado($periodo,$docente,'A',$cant+1);
                 $mensaje="La persona se encuentra ocupada en ese horario el sábado";
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
@@ -643,7 +685,7 @@ class AcademicosController extends Controller
             ->whereNull('paralelo_de')
             ->join('materias_carreras as mc','mc.materia','=','grupos.materia')
             ->join('materias','mc.materia','=','materias.materia')
-            ->select('grupos.materia','grupo','nombre_abreviado_materia')
+            ->select(['grupos.materia','grupo','nombre_abreviado_materia'])
             ->distinct('grupos.materia')
             ->get();
         $nperiodo=PeriodoEscolar::where('periodo',$periodo)->first();
@@ -848,5 +890,564 @@ class AcademicosController extends Controller
         $encabezado="Actualización de horario administrativo";
         $mensaje="Se modificó con éxito el horario administrativo del docente";
         return view('academicos.si')->with(compact('mensaje','encabezado'));
+    }
+    public function procesaapoyoalta(Request $request){
+        request()->validate([
+            'especificar'=>'required',
+            'slunes'=>'required_with:elunes',
+            'smartes'=>'required_with:emartes',
+            'smiercoles'=>'required_with:emiercoles',
+            'sjueves'=>'required_with:ejueves',
+            'sviernes'=>'required_with:eviernes',
+            'ssabado'=>'required_with:esabado',
+        ],[
+            'especificar.required'=>'Debe detallar la acción a realizar',
+            'slunes.required_with'=>'Debe indicar la hora de salida para el lunes',
+            'smartes.required_with'=>'Debe indicar la hora de salida para el martes',
+            'smiercoles.required_with'=>'Debe indicar la hora de salida para el miércoles',
+            'sjueves.required_with'=>'Debe indicar la hora de salida para el jueves',
+            'sviernes.required_with'=>'Debe indicar la hora de salida para el viernes',
+            'ssabado.required_with'=>'Debe indicar la hora de salida para el sabado',
+        ]);
+        $periodo=$request->get('periodo');
+        $actividad=$request->get('apoyo');
+        $especificar=$request->get('especificar');
+        $docente=$request->get('docente');
+        $lun=$request->get('hl');
+        $mar=$request->get('hm');
+        $mie=$request->get('hmm');
+        $jue=$request->get('hj');
+        $vie=$request->get('hv');
+        $sab=$request->get('hs');
+        $elunes=$request->get('elunes'); if(!empty($elunes)){$elunes=Carbon::parse($elunes);}
+        $emartes=$request->get('emartes'); if(!empty($emartes)){$emartes=Carbon::parse($emartes);}
+        $emiercoles=$request->get('emiercoles'); if(!empty($emiercoles)){$emiercoles=Carbon::parse($emiercoles);}
+        $ejueves=$request->get('ejueves'); if(!empty($ejueves)){$ejueves=Carbon::parse($ejueves);}
+        $eviernes=$request->get('eviernes'); if(!empty($eviernes)){$eviernes=Carbon::parse($eviernes);}
+        $esabado=$request->get('esabado'); if(!empty($esabado)){$esabado=Carbon::parse($esabado);}
+        $slunes=$request->get('slunes'); if(!empty($slunes)){$slunes=Carbon::parse($slunes);}
+        $smartes=$request->get('smartes'); if(!empty($smartes)){$smartes=Carbon::parse($smartes);}
+        $smiercoles=$request->get('smiercoles'); if(!empty($smiercoles)){$smiercoles=Carbon::parse($smiercoles);}
+        $sjueves=$request->get('sjueves'); if(!empty($sjueves)){$sjueves=Carbon::parse($sjueves);}
+        $sviernes=$request->get('sviernes'); if(!empty($sviernes)){$sviernes=Carbon::parse($sviernes);}
+        $ssabado=$request->get('ssabado'); if(!empty($ssabado)){$ssabado=Carbon::parse($ssabado);}
+
+        if(!empty($elunes)){$hl=$elunes->diff($slunes)->format('%h');}else{$hl=0;}
+        if(!empty($emartes)){$hm=$emartes->diff($smartes)->format('%h');}else{$hm=0;}
+        if(!empty($emiercoles)){$hmm=$emiercoles->diff($smiercoles)->format('%h');}else{$hmm=0;}
+        if(!empty($ejueves)){$hj=$ejueves->diff($sjueves)->format('%h');}else{$hj=0;}
+        if(!empty($eviernes)){$hv=$eviernes->diff($sviernes)->format('%h');}else{$hv=0;}
+        if(!empty($esabado)){$hs=$esabado->diff($ssabado)->format('%h');}else{$hs=0;}
+
+        //Primero, que no sobrepase las 8 hrs al dia
+        $encabezado="Error de alta de horas de apoyo para personal docente";
+        if($hl+$lun>8){
+            $mensaje="No fue posible procesar el horario ya que el lunes sobrepasa las 8 horas al día";
+            return view('academicos.no')->with(compact('mensaje','encabezado'));
+        }
+        if($hm+$mar>8){
+            $mensaje="No fue posible procesar el horario ya que el martes sobrepasa las 8 horas al día";
+            return view('academicos.no')->with(compact('mensaje','encabezado'));
+        }
+        if($hmm+$mie>8){
+            $mensaje="No fue posible procesar el horario ya que el miércoles sobrepasa las 8 horas al día";
+            return view('academicos.no')->with(compact('mensaje','encabezado'));
+        }
+        if($hj+$jue>8){
+            $mensaje="No fue posible procesar el horario ya que el jueves sobrepasa las 8 horas al día";
+            return view('academicos.no')->with(compact('mensaje','encabezado'));
+        }
+        if($hv+$vie>8){
+            $mensaje="No fue posible procesar el horario ya que el viernes sobrepasa las 8 horas al día";
+            return view('academicos.no')->with(compact('mensaje','encabezado'));
+        }
+        if($hs+$sab>8){
+            $mensaje="No fue posible procesar el horario ya que el sábado sobrepasa las 8 horas al día";
+            return view('academicos.no')->with(compact('mensaje','encabezado'));
+        }
+
+        //Sólo por si acaso, las horas no pueden ser negativas
+        if(($hl<0)||($hm<0)||($hmm<0)||($hj<0)||($hv<0)||($hs<0)){
+            $mensaje="La hora de salida no puede ser mayor a la de entrada";
+            return view('academicos.no')->with(compact('mensaje','encabezado'));
+        }
+        //Que no exista cruce
+        $cant=ApoyoDocencia::where('periodo',$periodo)
+            ->where('docente',$docente)->count();
+        ApoyoDocencia::insert([
+            'periodo'=>$periodo,
+            'docente'=>$docente,
+            'actividad'=>$actividad,
+            'consecutivo'=>$cant+1,
+            'especifica_actividad'=>$especificar
+        ]);
+        if(!empty($elunes)){
+            try{
+                Horario::insert([
+                    'periodo'=>$periodo,
+                    'docente'=>$docente,
+                    'tipo_horario'=>'Y',
+                    'dia_semana'=>2,
+                    'hora_inicial'=>$elunes,
+                    'hora_final'=>$slunes,
+                    'materia'=>null,
+                    'grupo'=>null,
+                    'aula'=>null,
+                    'actividad'=>null,
+                    'consecutivo'=>$cant+1,
+                    'vigencia_inicio'=>null,
+                    'vigencia_fin'=>null,
+                    'consecutivo_admvo'=>null,
+                    'tipo_personal'=>null,
+                    'created_at'=>Carbon::now()
+                ]);
+            }catch (QueryException){
+                $this->borrado2($periodo,$docente,'Y',$cant+1);
+                $mensaje="La persona se encuentra ocupada en ese horario el lunes";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if(!empty($emartes)){
+            try{
+                Horario::insert([
+                    'periodo'=>$periodo,
+                    'docente'=>$docente,
+                    'tipo_horario'=>'Y',
+                    'dia_semana'=>3,
+                    'hora_inicial'=>$emartes,
+                    'hora_final'=>$smartes,
+                    'materia'=>null,
+                    'grupo'=>null,
+                    'aula'=>null,
+                    'actividad'=>null,
+                    'consecutivo'=>$cant+1,
+                    'vigencia_inicio'=>null,
+                    'vigencia_fin'=>null,
+                    'consecutivo_admvo'=>null,
+                    'tipo_personal'=>null,
+                    'created_at'=>Carbon::now()
+                ]);
+            }catch (QueryException){
+                $this->borrado2($periodo,$docente,'Y',$cant+1);
+                $mensaje="La persona se encuentra ocupada en ese horario el martes";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if(!empty($emiercoles)){
+            try{
+                Horario::insert([
+                    'periodo'=>$periodo,
+                    'docente'=>$docente,
+                    'tipo_horario'=>'Y',
+                    'dia_semana'=>4,
+                    'hora_inicial'=>$emiercoles,
+                    'hora_final'=>$smiercoles,
+                    'materia'=>null,
+                    'grupo'=>null,
+                    'aula'=>null,
+                    'actividad'=>null,
+                    'consecutivo'=>$cant+1,
+                    'vigencia_inicio'=>null,
+                    'vigencia_fin'=>null,
+                    'consecutivo_admvo'=>null,
+                    'tipo_personal'=>null,
+                    'created_at'=>Carbon::now()
+                ]);
+            }catch (QueryException){
+                $this->borrado2($periodo,$docente,'Y',$cant+1);
+                $mensaje="La persona se encuentra ocupada en ese horario el miércoles";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if(!empty($ejueves)){
+            try{
+                Horario::insert([
+                    'periodo'=>$periodo,
+                    'docente'=>$docente,
+                    'tipo_horario'=>'Y',
+                    'dia_semana'=>5,
+                    'hora_inicial'=>$ejueves,
+                    'hora_final'=>$sjueves,
+                    'materia'=>null,
+                    'grupo'=>null,
+                    'aula'=>null,
+                    'actividad'=>null,
+                    'consecutivo'=>$cant+1,
+                    'vigencia_inicio'=>null,
+                    'vigencia_fin'=>null,
+                    'consecutivo_admvo'=>null,
+                    'tipo_personal'=>null,
+                    'created_at'=>Carbon::now()
+                ]);
+            }catch (QueryException){
+                $this->borrado2($periodo,$docente,'Y',$cant+1);
+                $mensaje="La persona se encuentra ocupada en ese horario el jueves";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if(!empty($eviernes)){
+            try{
+                Horario::insert([
+                    'periodo'=>$periodo,
+                    'docente'=>$docente,
+                    'tipo_horario'=>'Y',
+                    'dia_semana'=>6,
+                    'hora_inicial'=>$eviernes,
+                    'hora_final'=>$sviernes,
+                    'materia'=>null,
+                    'grupo'=>null,
+                    'aula'=>null,
+                    'actividad'=>null,
+                    'consecutivo'=>$cant+1,
+                    'vigencia_inicio'=>null,
+                    'vigencia_fin'=>null,
+                    'consecutivo_admvo'=>null,
+                    'tipo_personal'=>null,
+                    'created_at'=>Carbon::now()
+                ]);
+            }catch (QueryException){
+                $this->borrado2($periodo,$docente,'Y',$cant+1);
+                $mensaje="La persona se encuentra ocupada en ese horario el viernes";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if(!empty($esabado)){
+            try{
+                Horario::insert([
+                    'periodo'=>$periodo,
+                    'rfc'=>$docente,
+                    'tipo_horario'=>'Y',
+                    'dia_semana'=>7,
+                    'hora_inicial'=>$esabado,
+                    'hora_final'=>$ssabado,
+                    'materia'=>null,
+                    'grupo'=>null,
+                    'aula'=>null,
+                    'actividad'=>null,
+                    'consecutivo'=>$cant+1,
+                    'vigencia_inicio'=>null,
+                    'vigencia_fin'=>null,
+                    'consecutivo_admvo'=>null,
+                    'tipo_personal'=>null,
+                    'created_at'=>Carbon::now()
+                ]);
+            }catch (QueryException){
+                $this->borrado2($periodo,$docente,'Y',$cant+1);
+                $mensaje="La persona se encuentra ocupada en ese horario el sábado";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        $encabezado="Alta de horas de apoyo";
+        $mensaje="Se modificó con éxito el horario del docente";
+        return view('academicos.si')->with(compact('mensaje','encabezado'));
+    }
+    public function modificaapoyo($periodo,$docente,$consecutivo){
+        $consecutivo=(int)$consecutivo;
+        $puestos=ActividadesApoyo::get();
+        $puesto=ApoyoDocencia::where('periodo',$periodo)
+            ->where('docente',$docente)
+            ->where('consecutivo',$consecutivo)
+            ->select(['especifica_actividad','actividad'])->first();
+        $info=Grupo::where('periodo',$periodo)
+            ->where('docente',$docente)
+            ->whereNull('paralelo_de')
+            ->join('materias_carreras as mc','mc.materia','=','grupos.materia')
+            ->join('materias','mc.materia','=','materias.materia')
+            ->select(['grupos.materia','grupo','nombre_abreviado_materia'])
+            ->distinct('grupos.materia')
+            ->get();
+        $nperiodo=PeriodoEscolar::where('periodo',$periodo)->first();
+        $encabezado="Actualización de horario de apoyo para personal docente";
+        return view('academicos.mod_hapoyo')
+            ->with(compact('periodo','docente',
+                'consecutivo','puestos','puesto','info','nperiodo','encabezado'));
+    }
+    public function procesoapoyoupdate(Request $request){
+        request()->validate([
+            'especificar'=>'required',
+            'slunes'=>'required_with:elunes',
+            'smartes'=>'required_with:emartes',
+            'smiercoles'=>'required_with:emiercoles',
+            'sjueves'=>'required_with:ejueves',
+            'sviernes'=>'required_with:eviernes',
+            'ssabado'=>'required_with:esabado',
+        ],[
+            'especificar.required'=>'Debe detallar la acción a realizar',
+            'slunes.required_with'=>'Debe indicar la hora de salida para el lunes',
+            'smartes.required_with'=>'Debe indicar la hora de salida para el martes',
+            'smiercoles.required_with'=>'Debe indicar la hora de salida para el miércoles',
+            'sjueves.required_with'=>'Debe indicar la hora de salida para el jueves',
+            'sviernes.required_with'=>'Debe indicar la hora de salida para el viernes',
+            'ssabado.required_with'=>'Debe indicar la hora de salida para el sabado',
+        ]);
+        $periodo=$request->get('periodo');
+        $actividad=$request->get('puesto');
+        $especificar=$request->get('especificar');
+        $docente=$request->get('docente');
+        $cant=$request->get('consecutivo');
+        $lun=$request->get('hl');
+        $mar=$request->get('hm');
+        $mie=$request->get('hmm');
+        $jue=$request->get('hj');
+        $vie=$request->get('hv');
+        $sab=$request->get('hs');
+        $elunes=$request->get('elunes'); if(!empty($elunes)){$elunes=Carbon::parse($elunes);}
+        $emartes=$request->get('emartes'); if(!empty($emartes)){$emartes=Carbon::parse($emartes);}
+        $emiercoles=$request->get('emiercoles'); if(!empty($emiercoles)){$emiercoles=Carbon::parse($emiercoles);}
+        $ejueves=$request->get('ejueves'); if(!empty($ejueves)){$ejueves=Carbon::parse($ejueves);}
+        $eviernes=$request->get('eviernes'); if(!empty($eviernes)){$eviernes=Carbon::parse($eviernes);}
+        $esabado=$request->get('esabado'); if(!empty($esabado)){$esabado=Carbon::parse($esabado);}
+        $slunes=$request->get('slunes'); if(!empty($slunes)){$slunes=Carbon::parse($slunes);}
+        $smartes=$request->get('smartes'); if(!empty($smartes)){$smartes=Carbon::parse($smartes);}
+        $smiercoles=$request->get('smiercoles'); if(!empty($smiercoles)){$smiercoles=Carbon::parse($smiercoles);}
+        $sjueves=$request->get('sjueves'); if(!empty($sjueves)){$sjueves=Carbon::parse($sjueves);}
+        $sviernes=$request->get('sviernes'); if(!empty($sviernes)){$sviernes=Carbon::parse($sviernes);}
+        $ssabado=$request->get('ssabado'); if(!empty($ssabado)){$ssabado=Carbon::parse($ssabado);}
+
+        if(!empty($elunes)){$hl=$elunes->diff($slunes)->format('%h');}else{$hl=0;}
+        if(!empty($emartes)){$hm=$emartes->diff($smartes)->format('%h');}else{$hm=0;}
+        if(!empty($emiercoles)){$hmm=$emiercoles->diff($smiercoles)->format('%h');}else{$hmm=0;}
+        if(!empty($ejueves)){$hj=$ejueves->diff($sjueves)->format('%h');}else{$hj=0;}
+        if(!empty($eviernes)){$hv=$eviernes->diff($sviernes)->format('%h');}else{$hv=0;}
+        if(!empty($esabado)){$hs=$esabado->diff($ssabado)->format('%h');}else{$hs=0;}
+
+        //Primero, que no sobrepase las 8 hrs al dia
+        $encabezado="Error de actualización de horario de apoyo para el docente";
+        if($hl+$lun>8){
+            $mensaje="No fue posible procesar el horario ya que el lunes sobrepasa las 8 horas al día";
+            return view('academicos.no')->with(compact('mensaje','encabezado'));
+        }
+        if($hm+$mar>8){
+            $mensaje="No fue posible procesar el horario ya que el martes sobrepasa las 8 horas al día";
+            return view('academicos.no')->with(compact('mensaje','encabezado'));
+        }
+        if($hmm+$mie>8){
+            $mensaje="No fue posible procesar el horario ya que el miércoles sobrepasa las 8 horas al día";
+            return view('academicos.no')->with(compact('mensaje','encabezado'));
+        }
+        if($hj+$jue>8){
+            $mensaje="No fue posible procesar el horario ya que el jueves sobrepasa las 8 horas al día";
+            return view('academicos.no')->with(compact('mensaje','encabezado'));
+        }
+        if($hv+$vie>8){
+            $mensaje="No fue posible procesar el horario ya que el viernes sobrepasa las 8 horas al día";
+            return view('academicos.no')->with(compact('mensaje','encabezado'));
+        }
+        if($hs+$sab>8){
+            $mensaje="No fue posible procesar el horario ya que el sábado sobrepasa las 8 horas al día";
+            return view('academicos.no')->with(compact('mensaje','encabezado'));
+        }
+        //Sólo por si acaso, las horas no pueden ser negativas
+        if(($hl<0)||($hm<0)||($hmm<0)||($hj<0)||($hv<0)||($hs<0)){
+            $mensaje="La hora de salida no puede ser mayor a la de entrada";
+            return view('academicos.no')->with(compact('mensaje','encabezado'));
+        }
+        ApoyoDocencia::where('periodo',$periodo)
+            ->where('docente',$docente)
+            ->where('consecutivo',$cant)
+            ->update([
+                'actividad'=>$actividad,
+                'especifica_actividad'=>$especificar
+            ]);
+
+        //Que no exista cruce
+        if(!empty($elunes)){
+            try{
+                Horario::where('periodo',$periodo)
+                    ->where('docente',$docente)
+                    ->where('tipo_horario','Y')
+                    ->where('consecutivo',$cant)
+                    ->where('dia_semana',2)
+                    ->update([
+                        'hora_inicial'=>$elunes,
+                        'hora_final'=>$slunes,
+                        'updated_at'=>Carbon::now()
+                    ]);
+            }catch (QueryException){
+                $mensaje="La persona se encuentra ocupada en ese horario el lunes";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if(!empty($emartes)){
+            try{
+                Horario::where('periodo',$periodo)
+                    ->where('docente',$docente)
+                    ->where('tipo_horario','Y')
+                    ->where('consecutivo',$cant)
+                    ->where('dia_semana',3)
+                    ->update([
+                        'hora_inicial'=>$emartes,
+                        'hora_final'=>$smartes,
+                        'updated_at'=>Carbon::now()
+                    ]);
+            }catch (QueryException){
+                $mensaje="La persona se encuentra ocupada en ese horario el martes";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if(!empty($emiercoles)){
+            try{
+                Horario::where('periodo',$periodo)
+                    ->where('docente',$docente)
+                    ->where('tipo_horario','Y')
+                    ->where('consecutivo',$cant)
+                    ->where('dia_semana',4)
+                    ->update([
+                        'hora_inicial'=>$emiercoles,
+                        'hora_final'=>$smiercoles,
+                        'updated_at'=>Carbon::now()
+                    ]);
+            }catch (QueryException){
+                $mensaje="La persona se encuentra ocupada en ese horario el miércoles";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if(!empty($ejueves)){
+            try{
+                Horario::where('periodo',$periodo)
+                    ->where('docente',$docente)
+                    ->where('tipo_horario','Y')
+                    ->where('consecutivo',$cant)
+                    ->where('dia_semana',5)
+                    ->update([
+                        'hora_inicial'=>$ejueves,
+                        'hora_final'=>$sjueves,
+                        'updated_at'=>Carbon::now()
+                    ]);
+            }catch (QueryException){
+                $mensaje="La persona se encuentra ocupada en ese horario el jueves";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if(!empty($eviernes)){
+            try{
+                Horario::where('periodo',$periodo)
+                    ->where('docente',$docente)
+                    ->where('tipo_horario','Y')
+                    ->where('consecutivo',$cant)
+                    ->where('dia_semana',6)
+                    ->update([
+                        'hora_inicial'=>$eviernes,
+                        'hora_final'=>$sviernes,
+                        'updated_at'=>Carbon::now()
+                    ]);
+            }catch (QueryException){
+                $mensaje="La persona se encuentra ocupada en ese horario el viernes";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if(!empty($esabado)){
+            try{
+                Horario::where('periodo',$periodo)
+                    ->where('docente',$docente)
+                    ->where('tipo_horario','Y')
+                    ->where('consecutivo',$cant)
+                    ->where('dia_semana',7)
+                    ->update([
+                        'hora_inicial'=>$esabado,
+                        'hora_final'=>$ssabado,
+                        'updated_at'=>Carbon::now()
+                    ]);
+            }catch (QueryException){
+                $mensaje="La persona se encuentra ocupada en ese horario el sábado";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        $encabezado="Horario de apoyo para el docente";
+        $mensaje="Se actualizó el horario del docente";
+        return view('academicos.si')
+            ->with(compact('encabezado','mensaje'));
+    }
+    public function eliminaapoyo($periodo,$docente,$consecutivo){
+        ApoyoDocencia::where('periodo',$periodo)
+            ->where('docente',$docente)
+            ->where('consecutivo',$consecutivo)
+            ->delete();
+        Horario::where('periodo',$periodo)
+            ->where('docente',$docente)
+            ->where('tipo_horario','Y')
+            ->where('consecutivo',$consecutivo)
+            ->delete();
+        $encabezado="Horario de apoyo para el docente";
+        $mensaje="Se eliminó el horario de apoyo que tenia asignado el docente";
+        return view('academicos.si')->with(compact('encabezado','mensaje'));
+    }
+    public function altaobservacion(Request $request){
+        request()->validate([
+            'obs'=>'required'
+        ],[
+            'obs.required'=>'Debe indicar la observación correspondiente para el horario'
+        ]);
+        if(HorarioObservacion::where('periodo',$request->get('periodo'))
+        ->where('docente',$request->get('docente'))->count()>0){
+            $encabezado="Observaciones para el docente";
+            $mensaje="No se llevó a cabo la asignación, porque el docente ya cuenta con una leyenda";
+            return view('academicos.no')->with(compact('encabezado','mensaje'));
+        }else{
+            HorarioObservacion::insert([
+                'periodo'=>$request->get('periodo'),
+                'docente'=>$request->get('docente'),
+                'observaciones'=>$request->get('obs'),
+                'depto'=>null
+            ]);
+            $encabezado="Observaciones para el docente";
+            $mensaje="Se agregó una leyenda para el horario del docente";
+            return view('academicos.si')->with(compact('encabezado','mensaje'));
+        }
+    }
+    public function modificaobservaciones($periodo,$docente,$id){
+        $obs=HorarioObservacion::where('id',$id)
+            ->select('observaciones')
+            ->first();
+        $personal=Personal::where('id',$docente)
+            ->select(['apellidos_empleado','nombre_empleado'])
+            ->first();
+        $encabezado="Actualizar observaciones para el horario";
+        return view('academicos.mod_obs')
+            ->with(compact('periodo',
+                'personal','id','obs','docente','encabezado'));
+    }
+    public function observacionesupdate(Request $request){
+        request()->validate([
+            'obs'=>'required'
+        ],[
+            'obs.required'=>'Debe indicar la observación correspondiente para el horario'
+        ]);
+        HorarioObservacion::where('id',$request->get('id'))
+            ->update([
+                'observaciones'=>$request->get('obs'),
+                'depto'=>null
+            ]);
+        $encabezado="Observaciones para el horario docente";
+        $mensaje="Se modificó la leyenda para el horario del docente";
+        return view('academicos.si')->with(compact('encabezado','mensaje'));
+    }
+    public function eliminaobservaciones($id){
+        HorarioObservacion::where('id',$id)->delete();
+        $encabezado="Observaciones para el horario docente";
+        $mensaje="Se eliminó la leyenda para el horario del docente";
+        return view('academicos.si')->with(compact('encabezado','mensaje'));
+    }
+    public function contrasenia(){
+        $encabezado="Cambio de contraseña";
+        return view('academicos.contrasenia',['encabezado'=>$encabezado]);
+    }
+    public function ccontrasenia(Request $request){
+        request()->validate([
+            'contra'=>'required|required_with:verifica|same:verifica',
+            'verifica'=>'required'
+        ],[
+            'contra.required'=>'Debe escribir la nueva contraseña',
+            'contra.required_with'=>'Debe confirmar la contraseña',
+            'contra.same'=>'No concuerda con la verificacion',
+            'verifica.required'=>'Debe confirmar la nueva contraseña'
+        ]);
+        $ncontra=bcrypt($request->get('contra'));
+        $data=Auth::user()->email;
+        User::where('email',$data)->update([
+            'password'=>$ncontra,
+            'updated_at'=>Carbon::now()
+        ]);
+        return redirect()->route('academicos.index');
     }
 }

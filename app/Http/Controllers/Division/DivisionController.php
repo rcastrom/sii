@@ -1211,9 +1211,13 @@ class DivisionController extends Controller
                 return view('division.no')->with(compact('mensaje','encabezado'));
             }
         }elseif ($accion==4){
-            if(DB::table('avisos_reinscripcion')->where('periodo',$periodo)->where('no_de_control',$control)->count()>0){
-                DB::table('avisos_reinscripcion')->where('periodo',$periodo)
-                    ->where('no_de_control',$control)->update([
+            if(AvisoReinscripcion::where('periodo',$periodo)
+                    ->where('no_de_control',$control)
+                    ->count()>0){
+                AvisoReinscripcion::where('periodo',$periodo)
+                    ->where('no_de_control',$control)
+                    ->update(
+                        [
                         'autoriza_escolar'=>'S',
                         'recibo_pago'=>'1',
                         'fecha_hora_seleccion'=>Carbon::now(),
@@ -1221,7 +1225,7 @@ class DivisionController extends Controller
                         'updated_at'=>Carbon::now()
                     ]);
             }else{
-                DB::table('avisos_reinscripcion')->insert([
+                AvisoReinscripcion::insert([
                     'periodo'=>$periodo,
                     'no_de_control'=>$control,
                     'autoriza_escolar'=>'S',
@@ -1257,7 +1261,7 @@ class DivisionController extends Controller
         }
     }
     public function prepoblacion(){
-        $periodos=PeriodoEscolar::orderBy('periodo','desc')->get();
+        $periodos=PeriodoEscolar::orderBy('periodo','DESC')->get();
         $periodo_actual=(new AccionesController)->periodo();
         $periodo=$periodo_actual[0]->periodo;
         $encabezado="Población Escolar";
