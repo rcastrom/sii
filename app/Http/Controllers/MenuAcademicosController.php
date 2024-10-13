@@ -25,6 +25,27 @@ class MenuAcademicosController extends Controller
                     ]
                 ]
             ]);
+            $event->menu->add([
+                'text'=>'Estadística',
+                'icon'=>'fas fa-chart-pie',
+                'submenu'=>[
+                    [
+                        'text' => 'Población',
+                        'url'  => 'academicos/estadistica/prepoblacion',
+                        'icon' => 'far fa-circle',
+                    ],
+                    [
+                        'text' => 'Aulas',
+                        'url'  => 'academicos/estadistica/aulas',
+                        'icon' => 'far fa-circle',
+                    ],
+                    [
+                        'text' => 'Docentes',
+                        'url'  => 'academicos/estadistica/predocentes',
+                        'icon' => 'far fa-circle',
+                    ],
+                ]
+            ]);
         });
     }
 }

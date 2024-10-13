@@ -502,8 +502,7 @@ class DivisionController extends Controller
         return view('division.listado2')->with(compact('listado','ncarrera','periodo','encabezado'));
     }
     public function info($periodo,$materia,$grupo){
-        $personal=Grupo::select('docente')->where('periodo',$periodo)
-            ->where('materia',$materia)->where('grupo',$grupo)->first();
+        $personal=(new AccionesController)->nombre_docente($periodo,$materia,$grupo);
         if(is_null($personal->docente)){
             $docente="Pendiente por asignar";
         }else{
@@ -511,14 +510,7 @@ class DivisionController extends Controller
             $docente=isset($datos_doc)?$datos_doc->apellidos_empleado." ".$datos_doc->nombre_empleado:"Por ser asignado";
         }
         $nmateria=Materia::where('materia',$materia)->first();
-        $alumnos=SeleccionMateria::where('periodo',$periodo)
-            ->where('materia',$materia)
-            ->where('grupo',$grupo)
-            ->join('alumnos','seleccion_materias.no_de_control','=','alumnos.no_de_control')
-            ->orderBy('apellido_paterno','ASC')
-            ->orderBy('apellido_materno','ASC')
-            ->orderBy('nombre_alumno','ASC')
-            ->get();
+        $alumnos=(new AccionesController)->listado_alumnos($periodo,$materia,$grupo);
         $encabezado="Información sobre grupos existentes";
         return view('division.informacion_grupo')->with(compact('docente',
             'materia','grupo','nmateria','periodo','alumnos','encabezado'));

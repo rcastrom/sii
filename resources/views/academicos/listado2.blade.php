@@ -32,13 +32,12 @@
                 @foreach($listado as $grupos)
                     <tr>
                         <td>{{$grupos->semestre_reticula}}</td>
-                        <td>Materia: {{$grupos->nombre_abreviado_materia}} Cve: {{$grupos->mater}}</td>
+                        <td>Materia: {{$grupos->nombre_abreviado_materia}} Cve: {{$grupos->materia}}</td>
                         <td>{{$grupos->grupo}}</td>
                         <td>{{$grupos->paralelo_de}}</td>
                         <td>{{$grupos->alumnos_inscritos}}</td>
                         <td><i class="far fa-question-circle"></i>
-                            <a href="/division/grupos/info/{{$periodo}}/{{$grupos->mater}}/{{$grupos->grupo}}"
-                               title="Obtener información">Mayor información</a></td>
+                            <a href="{{route('academicos.info',['periodo'=>$periodo,'materia'=>$grupos->materia,'gpo'=>$grupos->grupo])}}">Mayor información</a></td>
                     </tr>
                 @endforeach
                 </tbody>

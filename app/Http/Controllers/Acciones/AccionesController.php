@@ -4,9 +4,11 @@ namespace App\Http\Controllers\Acciones;
 
 use App\Http\Controllers\Controller;
 use App\Models\AlumnosGeneral;
+use App\Models\Grupo;
 use App\Models\MateriaCarrera;
 use App\Models\PeriodoFicha;
 use App\Models\PermisosCarrera;
+use App\Models\SeleccionMateria;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 use App\Models\Carrera;
@@ -38,6 +40,13 @@ class AccionesController extends Controller
         return DB::Select('select periodo from pac_periodo_actual()');
     }
     /*
+     * Verifica si el docente tiene cruce de horario
+     */
+    public function cruce($periodo,$materia,$grupo,$docente,$dia){
+        return DB::select("select cruce from cruce_horario('$periodo','$materia','$grupo','$docente','$dia')");
+    }
+    /*
+     *
      * Devolver los datos del alumno
      * @return mixed
      */
@@ -308,7 +317,7 @@ class AccionesController extends Controller
      * @return mixed
      */
     public function permisos_carreras($correo){
-        $carreras=PermisosCarrera::where('email',$correo)
+        return PermisosCarrera::where('email',$correo)
             ->join('carreras',function(JoinClause $join){
                 $join->on('carreras.carrera','=','permisos_carreras.carrera')
                     ->on('carreras.reticula','=','permisos_carreras.reticula');
@@ -316,7 +325,6 @@ class AccionesController extends Controller
             ->orderBy('nombre_reducido','ASC')
             ->orderBy('reticula','ASC')
             ->get();
-        return $carreras;
     }
 
     /*
@@ -336,5 +344,40 @@ class AccionesController extends Controller
             ->orderBy('semestre_reticula','ASC')
             ->orderBy('nombre_completo_materia','ASC')
             ->get();
+    }
+
+    /*
+     * Devolver el listado de alumnos en base a la materia
+     *
+     * @param string periodo
+     * @param string materia
+     * @param string grupo
+     * @return mixed
+     */
+    public function listado_alumnos($periodo, $materia, $grupo){
+        return SeleccionMateria::where('periodo',$periodo)
+            ->where('materia',$materia)
+            ->where('grupo',$grupo)
+            ->join('alumnos','seleccion_materias.no_de_control','=','alumnos.no_de_control')
+            ->orderBy('apellido_paterno','ASC')
+            ->orderBy('apellido_materno','ASC')
+            ->orderBy('nombre_alumno','ASC')
+            ->get();
+    }
+
+    /*
+     * Devolver el nombre del docente de una materia
+     *
+     * @param string periodo
+     * @param string materia
+     * @param string grupo
+     * @return mixed
+     */
+    public function nombre_docente($periodo, $materia, $grupo){
+        return Grupo::select('docente')
+            ->where('periodo',$periodo)
+            ->where('materia',$materia)
+            ->where('grupo',$grupo)
+            ->first();
     }
 }
