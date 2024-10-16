@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Academicos\AcademicosController;
+use App\Http\Controllers\PDF\HorarioPDFController;
 
 
 Route::group(['prefix' => 'academicos','middleware' => ['auth','role:academico']], function () {
@@ -26,35 +27,39 @@ Route::group(['prefix' => 'academicos','middleware' => ['auth','role:academico']
        Route::get('/aulas',[AcademicosController::class, 'pobxaulas']);
        Route::post('/aula2',[AcademicosController::class, 'pobxaulas2'])
             ->name('academicos.aula');
-       Route::get('/predocentes',[AcademicosController::class,'predocentes']);
-       Route::post('/personal',[AcademicosController::class, 'docente'])
+    });
+    Route::group(['prefix'=>'docentes','middleware' => ['auth','role:academico']],function(){
+        Route::get('/index',[AcademicosController::class,'predocentes']);
+        Route::post('/personal',[AcademicosController::class, 'docente'])
             ->name('academicos.personal');
-       Route::post('/horarios/accion',[AcademicosController::class, 'otroshorariosaccion'])
+        Route::post('/horarios/accion',[AcademicosController::class, 'otroshorariosaccion'])
             ->name('academicos.otros_horarios');
-       Route::post('/horarios/alta_admin',[AcademicosController::class, 'procesaadmvoalta'])
+        Route::post('/horarios/alta_admin',[AcademicosController::class, 'procesaadmvoalta'])
             ->name('academicos.altaadmin');
-       Route::get('/modificar/admvo/{periodo}/{docente}/{numero}',[AcademicosController::class, 'modificaadmvo'])
+        Route::get('/modificar/admvo/{periodo}/{docente}/{numero}',[AcademicosController::class, 'modificaadmvo'])
             ->name('academicos.modhadmin');
-       Route::get('/eliminar/admvo/{periodo}/{docente}/{numero}',[AcademicosController::class, 'eliminaadmvo'])
+        Route::get('/eliminar/admvo/{periodo}/{docente}/{numero}',[AcademicosController::class, 'eliminaadmvo'])
             ->name('academicos.delhadmin');
-       Route::post('/actualizar/hadmvo',[AcademicosController::class, 'procesoadmvoupdate'])
+        Route::post('/actualizar/hadmvo',[AcademicosController::class, 'procesoadmvoupdate'])
             ->name('academicos.modadmin');
-       Route::post('/horarios/alta_apoyo',[AcademicosController::class, 'procesaapoyoalta'])
+        Route::post('/horarios/alta_apoyo',[AcademicosController::class, 'procesaapoyoalta'])
             ->name('academicos.altaapoyo');
-       Route::get('/modificar/apoyo/{periodo}/{docente}/{consecutivo}',[AcademicosController::class, 'modificaapoyo'])
+        Route::get('/modificar/apoyo/{periodo}/{docente}/{consecutivo}',[AcademicosController::class, 'modificaapoyo'])
             ->name('academicos.modhapoyo');
-       Route::post('/actualizar/hapoyo',[AcademicosController::class, 'procesoapoyoupdate'])
+        Route::post('/actualizar/hapoyo',[AcademicosController::class, 'procesoapoyoupdate'])
             ->name('academicos.modapoyo');
-       Route::get('/eliminar/apoyo/{periodo}/{docente}/{consecutivo}',[AcademicosController::class, 'eliminaapoyo'])
+        Route::get('/eliminar/apoyo/{periodo}/{docente}/{consecutivo}',[AcademicosController::class, 'eliminaapoyo'])
             ->name('academicos.delhapoyo');
-       Route::post('/horarios/alta_obs',[AcademicosController::class, 'altaobservacion'])
+        Route::post('/horarios/alta_obs',[AcademicosController::class, 'altaobservacion'])
             ->name('academicos.altaobs');
-       Route::get('/modificar/obs/{periodo}/{docente}/{id}',[AcademicosController::class, 'modificaobservaciones'])
+        Route::get('/modificar/obs/{periodo}/{docente}/{id}',[AcademicosController::class, 'modificaobservaciones'])
             ->name('academicos.modobs');
-       Route::post('/actualizar/observaciones',[AcademicosController::class, 'observacionesupdate'])
+        Route::post('/actualizar/observaciones',[AcademicosController::class, 'observacionesupdate'])
             ->name('academicos.modobservaciones');
         Route::get('/eliminar/obs/{id}',[AcademicosController::class, 'eliminaobservaciones'])
             ->name('academicos.delobs');
+        Route::post('/impresion',[HorarioPDFController::class,'crearPDF'])
+            ->name('academicos.imprimir_horario');
     });
     Route::controller(AcademicosController::class)->prefix('mantenimiento')->group(function (){
         Route::get('/contrasena','contrasenia');

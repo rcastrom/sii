@@ -39,11 +39,17 @@ class MenuAcademicosController extends Controller
                         'url'  => 'academicos/estadistica/aulas',
                         'icon' => 'far fa-circle',
                     ],
+                ]
+            ]);
+            $event->menu->add([
+                'text'=>'Docentes',
+                'icon'=>'fas fa-users',
+                'submenu'=>[
                     [
-                        'text' => 'Docentes',
-                        'url'  => 'academicos/estadistica/predocentes',
+                        'text'=>'Docentes',
+                        'url'  => 'academicos/docentes/index',
                         'icon' => 'far fa-circle',
-                    ],
+                    ]
                 ]
             ]);
             $event->menu->add([

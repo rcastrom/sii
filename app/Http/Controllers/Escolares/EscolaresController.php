@@ -33,7 +33,7 @@ class EscolaresController extends Controller
 
     public function modificar_periodo(): Factory|View|Application
     {
-        $periodos = PeriodoEscolar::select('periodo','identificacion_corta')
+        $periodos = PeriodoEscolar::select(['periodo','identificacion_corta'])
             ->orderBy('periodo','DESC')->get();
         $periodo_actual = (new AccionesController)->periodo();
         $encabezado="Modificar periodo escolar";
@@ -121,7 +121,7 @@ class EscolaresController extends Controller
     }
     public function especialidadAlta()
     {
-        $carreras = Carrera::select('carrera', 'reticula', 'nombre_reducido')->orderBy('carrera')
+        $carreras = Carrera::select(['carrera', 'reticula', 'nombre_reducido'])->orderBy('carrera')
             ->orderBy('reticula')->get();
         $encabezado="Alta de especialidades";
         return view('escolares.especialidad_alta')->with(compact('carreras','encabezado'));
@@ -164,7 +164,7 @@ class EscolaresController extends Controller
     }
     public function materiaNueva()
     {
-        $carreras = Carrera::select('carrera', 'reticula', 'nombre_reducido')
+        $carreras = Carrera::select(['carrera', 'reticula', 'nombre_reducido'])
             ->orderBy('carrera')
             ->orderBy('reticula')->get();
         $encabezado="Materias - Carreras";
@@ -181,8 +181,8 @@ class EscolaresController extends Controller
         $materias = MateriaCarrera::where('carrera', $carrera)->where('reticula', $reticula)
             ->join('materias', 'materias_carreras.materia', '=', 'materias.materia')
             ->whereNull('especialidad')
-            ->select('materias_carreras.materia as materia', 'nombre_abreviado_materia',
-                'creditos_materia', 'horas_teoricas', 'horas_practicas', 'semestre_reticula', 'renglon')
+            ->select(['materias_carreras.materia as materia', 'nombre_abreviado_materia',
+                'creditos_materia', 'horas_teoricas', 'horas_practicas', 'semestre_reticula', 'renglon'])
             ->orderBy('nombre_abreviado_materia')
             ->get();
         $acad = Organigrama::where('area_depende', 'like', '110%')
@@ -267,8 +267,8 @@ class EscolaresController extends Controller
         $materias = MateriaCarrera::where('carrera', $info["carrera"])->where('reticula', $info["reticula"])
             ->join('materias', 'materias_carreras.materia', '=', 'materias.materia')
             ->whereNull('especialidad')
-            ->select('materias_carreras.materia as materia', 'nombre_abreviado_materia', 'creditos_materia',
-                'horas_teoricas', 'horas_practicas', 'semestre_reticula', 'renglon')
+            ->select(['materias_carreras.materia as materia', 'nombre_abreviado_materia', 'creditos_materia',
+                'horas_teoricas', 'horas_practicas', 'semestre_reticula', 'renglon'])
             ->get();
         $carrera = $info["carrera"];
         $reticula = $info["reticula"];
@@ -286,14 +286,14 @@ class EscolaresController extends Controller
             ->where('carrera', $request->get('carrera'))
             ->where('reticula', $request->get('reticula'))
             ->join('materias', 'materias_carreras.materia', '=', 'materias.materia')
-            ->select('materias_carreras.creditos_materia', 'materias_carreras.horas_teoricas',
+            ->select(['materias_carreras.creditos_materia', 'materias_carreras.horas_teoricas',
                 'materias_carreras.horas_practicas', 'materias_carreras.orden_certificado',
                 'materias_carreras.semestre_reticula', 'materias_carreras.creditos_prerrequisito',
                 'materias_carreras.especialidad', 'materias_carreras.clave_oficial_materia',
                 'materias_carreras.renglon', 'materias.nivel_escolar',
                 'materias.clave_area', 'materias.nombre_completo_materia',
                 'materias.nombre_abreviado_materia','materias.caracterizacion',
-                'materias.generales')
+                'materias.generales'])
             ->first();
         $acad = Organigrama::where('area_depende', 'like', '110%')
             ->where('clave_area', 'like', '%00')
@@ -365,8 +365,8 @@ class EscolaresController extends Controller
                 $query->whereNull('especialidad')
                     ->orWhere('especialidad', '=', $especialidad);
             })
-            ->select('materias_carreras.materia as mate', 'nombre_abreviado_materia', 'creditos_materia',
-                'horas_teoricas', 'horas_practicas', 'semestre_reticula', 'renglon')
+            ->select(['materias_carreras.materia as mate', 'nombre_abreviado_materia', 'creditos_materia',
+                'horas_teoricas', 'horas_practicas', 'semestre_reticula', 'renglon'])
             ->get();
         foreach($materias_carrera as $mater){
             $semestre_reticula = $mater->semestre_reticula;
@@ -414,7 +414,7 @@ class EscolaresController extends Controller
             ->where('carrera', $carrera)
             ->where('reticula', $reticula)
             ->where('sexo', 'M')
-            ->select('seleccion_materias.no_de_control', 'periodo_ingreso_it')
+            ->select(['seleccion_materias.no_de_control', 'periodo_ingreso_it'])
             ->distinct()
             ->get();
         $pob_fem = SeleccionMateria::where('periodo', $periodo)
@@ -422,7 +422,7 @@ class EscolaresController extends Controller
             ->where('carrera', $carrera)
             ->where('reticula', $reticula)
             ->where('sexo', 'F')
-            ->select('seleccion_materias.no_de_control', 'periodo_ingreso_it')
+            ->select(['seleccion_materias.no_de_control', 'periodo_ingreso_it'])
             ->distinct()
             ->get();
         foreach ($pob_masc as $value) {

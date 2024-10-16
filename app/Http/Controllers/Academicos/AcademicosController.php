@@ -14,6 +14,7 @@ use App\Models\Horario;
 use App\Models\HorarioAdministrativo;
 use App\Models\HorarioObservacion;
 use App\Models\Materia;
+use App\Models\Organigrama;
 use App\Models\PeriodoEscolar;
 use App\Models\Personal;
 use App\Models\Puesto;
@@ -364,11 +365,10 @@ class AcademicosController extends Controller
         $accion=$request->get('accion');
         $docente=$request->get('docente');
         $personal=Personal::where('id',$docente)
-            ->select(['apellidos_empleado','nombre_empleado'])
             ->first();
         $puestos=Puesto::get();
         $nperiodo=PeriodoEscolar::where('periodo',$periodo)
-            ->select('identificacion_larga')
+            ->select(['identificacion_larga','identificacion_corta'])
             ->first();
         $info=Grupo::where('periodo',$periodo)
             ->where('docente',$docente)
@@ -429,6 +429,13 @@ class AcademicosController extends Controller
                 $mensaje="El docente no cuenta con observaciones en el horario, por lo que no es posible modificar nada";
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
+        }else{
+            $encabezado="Impresión de horario docente";
+            $descripcion_area=Organigrama::where('clave_area',$personal->clave_area)
+                ->first();
+            return view('academicos.imprimir_horario')
+                ->with(compact('encabezado',
+                    'personal','descripcion_area','periodo'));
         }
     }
     public function procesaadmvoalta(Request $request){

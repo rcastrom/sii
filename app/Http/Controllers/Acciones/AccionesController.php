@@ -380,4 +380,14 @@ class AccionesController extends Controller
             ->where('grupo',$grupo)
             ->first();
     }
+
+    /*
+     * Indica el nivel académico del docente para el horario
+     * @param int $docente
+     * @return array $data
+     */
+    public function nivel_academico_docente($id_docente)
+    {
+        return DB::select("select * from pac_nivel_academico($id_docente)");
+    }
 }

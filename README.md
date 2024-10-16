@@ -16,8 +16,8 @@ tablas y procedimientos que, hasta el momento, cuenta el sistema.
 Los módulos que se han migrado son:
 * Servicios Escolares (100%).
 * Estudiantes (90%).
-* División de Estudios Profesionales.
-* Jefaturas Académicas (90%).
+* División de Estudios Profesionales (99%).
+* Jefaturas Académicas (99%).
 * Planeación (40%).
 * Coordinación de Verano (90%).
 * Desarrollo Académico (20%).

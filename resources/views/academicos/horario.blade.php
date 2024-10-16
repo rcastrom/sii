@@ -257,6 +257,7 @@
                         <option value="4">Modificación horario apoyo</option>
                         <option value="5">Alta observaciones para horario</option>
                         <option value="6">Modificación observaciones para horario</option>
+                        <option value="7">Impresión de horario</option>
                     </select>
                 </div>
             </div>
