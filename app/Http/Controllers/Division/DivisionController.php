@@ -52,7 +52,7 @@ class DivisionController extends Controller
         $data=explode('_',$carr);
         $carrera=$data[0]; $ret=$data[1];
         $ncarrera=(new AccionesController)->ncarrera($carrera, $ret);
-        $listado=(new AccionesController)->listado_materias($carrera, $ret, $request->get('periodo'));
+        $listado=(new AccionesController)->listado_por_ofertar($carrera, $ret );
         $encabezado="Creación de grupo";
         return view('division.listado3')->with(compact('listado',
             'ncarrera','carrera','ret','periodo','encabezado'));

@@ -328,6 +328,24 @@ class AccionesController extends Controller
     }
 
     /*
+     * Devolver el listado de materias por ofertar
+     *
+     * @param string carrera
+     * @param int reticula
+     * @return mixed
+     */
+    public function listado_por_ofertar($carrera, $reticula){
+        return MateriaCarrera::where('carrera',$carrera)
+            ->where('reticula',$reticula)
+            ->leftjoin('materias','materias_carreras.materia','=','materias.materia')
+            ->select(['materias.materia as mater','materias.nombre_abreviado_materia',
+                'materias_carreras.semestre_reticula'])
+            ->orderBy('semestre_reticula','ASC')
+            ->orderBy('nombre_completo_materia','ASC')
+            ->get();
+    }
+
+    /*
      * Devolver el listado de materias que se ofertan en el semestre
      *
      * @param string carrera

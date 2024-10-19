@@ -381,7 +381,7 @@ class AcademicosController extends Controller
         $admin=HorarioAdministrativo::where('periodo',$periodo)
             ->where('docente',$docente)
             ->join('puestos','horarios_administrativos.descripcion_horario','=','puestos.clave_puesto')
-            ->distinct(['consecutivo_admvo'])
+            ->distinct('consecutivo_admvo')
             ->select(['consecutivo_admvo','descripcion_puesto'])
             ->get();
         $apoyo=ApoyoDocencia::where('periodo',$periodo)
