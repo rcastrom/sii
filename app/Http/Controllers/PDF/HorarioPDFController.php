@@ -10,9 +10,11 @@ use App\Models\Categoria;
 use App\Models\Grupo;
 use App\Models\Horario;
 use App\Models\HorarioAdministrativo;
+use App\Models\HorarioNoDocente;
 use App\Models\HorarioObservacion;
 use App\Models\Jefe;
 use App\Models\Motivo;
+use App\Models\Organigrama;
 use App\Models\PeriodoEscolar;
 use App\Models\Personal;
 use App\Models\PersonalPlaza;
@@ -47,6 +49,12 @@ class HorarioPDFController extends Controller
     public int $hacol4=0;
     public int $hacol5=0;
     public int $hacol6=0;
+    public int $hncol1=0;
+    public int $hncol2=0;
+    public int $hncol3=0;
+    public int $hncol4=0;
+    public int $hncol5=0;
+    public int $hncol6=0;
 
 
     public function __construct(){
@@ -604,11 +612,14 @@ class HorarioPDFController extends Controller
                 ->where('docente',$docente)
                 ->where('consecutivo_admvo',$administrativa->consecutivo_admvo)
                 ->join('puestos','puestos.clave_puesto','=','horarios_administrativos.descripcion_horario')
-                ->select('puestos.descripcion_puesto')
+                ->select(['puestos.descripcion_puesto','area_adscripcion'])
                 ->first();
             $this->fpdf->SetFont('Helvetica','','6.5');
             $this->fpdf->Text(5,155+$linea+$this->te-$this->py,$puesto->descripcion_puesto);
-            //$pdf->Text(94,155+$linea+$te-$py,$descripcion_area);
+            $area_adscripcion=Organigrama::where('clave_area',$puesto->area_adscripcion)
+                ->select('descripcion_area')
+                ->first();
+            $this->fpdf->Text(66,155+$linea+$this->te-$this->py,$area_adscripcion->descripcion_area);
             $linea+=3;
         }
         $this->fpdf->Text(153,169.5+$this->te-$this->py,$this->hacol1);
@@ -628,6 +639,7 @@ class HorarioPDFController extends Controller
         $this->fpdf->Text(273,172+$this->te-$this->py,($hats+$hyts+$total));
         return $hats;
     }
+
     public function carga_no_docente($docente)
     {
         $this->fpdf->SetFont('Helvetica','b','8');
@@ -688,6 +700,93 @@ class HorarioPDFController extends Controller
         $this->fpdf->Text(270,181+$this->te-$this->py,"TOTAL HRS");
         $this->fpdf->Text(270,184+$this->te-$this->py,"SEMANALES");
     }
+    public function mostrar_carga_nodocente($periodo,$docente,$total,$hyts,$hats)
+    {
+        //COMIENZA EL LLENADO DE HORARIO ADMINISTRATIVO
+        $horasNoDocentes=Horario::where('periodo',$periodo)
+            ->where('docente',$docente)
+            ->where('tipo_horario','Z')
+            ->select('consecutivo_admvo')
+            ->distinct()
+            ->get();
+        $linea=0;
+        $hafs_nodoc=0;
+        foreach ($horasNoDocentes as $nodocente) {
+            for ($i = 2; $i <= 7; $i++) {
+                $horas = Horario::where('periodo', $periodo)
+                    ->where('docente', $docente)
+                    ->where('tipo_horario', 'Z')
+                    ->where('consecutivo_admvo', $nodocente->consecutivo_admvo)
+                    ->where('dia_semana', $i)
+                    ->select(['hora_inicial', 'hora_final'])
+                    ->first();
+
+                if (isset($horas)) {
+                    $horario = date('H:i', strtotime($horas->hora_inicial)) . "-" . date('H:i',
+                            strtotime($horas->hora_final));
+                    $hora_salida = Carbon::parse($horas->hora_final);
+                    $hora_entrada = Carbon::parse($horas->hora_inicial);
+                    $hafr_nodoc = $hora_entrada->diffInHours($hora_salida);
+                    switch ($i) {
+                        case 2:
+                            $this->fpdf->Text(153, 187 + $linea + $this->te - $this->py, $horario);
+                            $this->hncol1 += $hora_entrada->diffInHours($hora_salida);
+                            break;
+                        case 3:
+                            $this->fpdf->Text(173, 187 + $linea + $this->te - $this->py, $horario);
+                            $this->hncol2 += $hora_entrada->diffInHours($hora_salida);
+                            break;
+                        case 4:
+                            $this->fpdf->Text(193, 187 + $linea + $this->te - $this->py, $horario);
+                            $this->hncol3 += $hora_entrada->diffInHours($hora_salida);
+                            break;
+                        case 5:
+                            $this->fpdf->Text(212, 187 + $linea + $this->te - $this->py, $horario);
+                            $this->hncol4 += $hora_entrada->diffInHours($hora_salida);
+                            break;
+                        case 6:
+                            $this->fpdf->Text(232, 187 + $linea + $this->te - $this->py, $horario);
+                            $this->hncol5 += $hora_entrada->diffInHours($hora_salida);
+                            break;
+                        case 7:
+                            $this->fpdf->Text(255, 187 + $linea + $this->te - $this->py, $horario);
+                            $this->hncol6 += $hora_entrada->diffInHours($hora_salida);
+                            break;
+                    }
+                    $hafs_nodoc += $hafr_nodoc;
+                }
+            }
+
+            $puesto=HorarioNoDocente::where('id',$nodocente->consecutivo_admvo)
+                ->join('puestos','puestos.clave_puesto','=','horario_no_docentes.descripcion_horario')
+                ->select(['puestos.descripcion_puesto','area_adscripcion'])
+                ->first();
+            $this->fpdf->SetFont('Helvetica','','6.5');
+            $this->fpdf->Text(5,187+$linea+$this->te-$this->py,$puesto->descripcion_puesto);
+            $area_adscripcion=Organigrama::where('clave_area',$puesto->area_adscripcion)
+                ->select('descripcion_area')
+                ->first();
+            $this->fpdf->Text(66,187+$linea+$this->te-$this->py,$area_adscripcion->descripcion_area);
+            //$hats += $hafs_nodoc;
+            $linea+=3;
+        }
+        $this->fpdf->Text(153,201.5+$this->te-$this->py,$this->hncol1);
+        $this->fpdf->Text(173,201.5+$this->te-$this->py,$this->hncol2);
+        $this->fpdf->Text(193,201.5+$this->te-$this->py,$this->hncol3);
+        $this->fpdf->Text(212,201.5+$this->te-$this->py,$this->hncol4);
+        $this->fpdf->Text(232,201.5+$this->te-$this->py,$this->hncol5);
+        $this->fpdf->Text(255,201.5+$this->te-$this->py,$this->hncol6);
+        $this->fpdf->Text(273,201.5+$this->te-$this->py,$hafs_nodoc);
+        //suma de horas de apoyo y académicas y administrativas
+        $this->fpdf->Text(153,204+$this->te-$this->py,($this->hacol1+$this->hncol1+$this->hycol1+$this->hcol));
+        $this->fpdf->Text(173,204+$this->te-$this->py,($this->hacol2+$this->hncol2+$this->hycol2+$this->hcolm));
+        $this->fpdf->Text(193,204+$this->te-$this->py,($this->hacol3+$this->hncol3+$this->hycol3+$this->hcolmi));
+        $this->fpdf->Text(212,204+$this->te-$this->py,($this->hacol4+$this->hncol4+$this->hycol4+$this->hcolj));
+        $this->fpdf->Text(232,204+$this->te-$this->py,($this->hacol5+$this->hncol5+$this->hycol5+$this->hcolvi));
+        $this->fpdf->Text(255,204+$this->te-$this->py,($this->hacol6+$this->hncol6+$this->hycol6+$this->hcols));
+        $this->fpdf->Text(273,204+$this->te-$this->py,($hats+$hyts+$total+$hafs_nodoc));
+        //return $hats;
+    }
 
     public function pie_pagina($periodo, $docente)
     {
@@ -702,6 +801,20 @@ class HorarioPDFController extends Controller
             $this->fpdf->SetXY(46, 205.5);
             $this->fpdf->MultiCell(215, 3,
                 mb_convert_encoding($observacion->observaciones, 'ISO-8859-1', 'UTF-8'),
+                0,'J');
+        }elseif (HorarioNoDocente::where('periodo',$periodo)
+                ->where('personal',$docente)
+                ->whereNotNull('observacion')
+                ->count()>0)
+        {
+            $observacion=HorarioNoDocente::where('periodo',$periodo)
+                ->where('personal',$docente)
+                ->whereNotNull('observacion')
+                ->select('observacion')
+                ->first();
+            $this->fpdf->SetXY(46, 205.5);
+            $this->fpdf->MultiCell(215, 3,
+                mb_convert_encoding($observacion->observacion, 'ISO-8859-1', 'UTF-8'),
                 0,'J');
         }else{
             $this->fpdf->Line(46,210+$this->te-$this->py,130,210+$this->te-$this->py);
@@ -778,21 +891,15 @@ class HorarioPDFController extends Controller
         }
         //No docente
         $this->carga_no_docente($docente);
+        if(Horario::where('periodo',$periodo)
+                ->where('docente',$docente)
+                ->where('tipo_horario','Z')
+                ->count()>0){
+            $this->mostrar_carga_nodocente($periodo,$docente,$total,$hyts,$hats);
+        }
 
         //Final del horario
         $this->pie_pagina($periodo, $docente);
-
-        $mov_mayor=0;
-        $hncol1=0;
-        $hncol2=0;
-        $hncol3=0;
-        $hncol4=0;
-        $hncol5=0;
-        $hncol6=0;
-        $hafs_nodoc=0;
-
-
-
 
         //Salida
         $this->fpdf->Output();

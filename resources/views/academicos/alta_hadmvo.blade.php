@@ -84,7 +84,7 @@
                 </div>
             </div>
         </div>
-        </div>
+
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-md-12">
@@ -194,6 +194,16 @@
                                             <option value="{{$puesto->clave_puesto}}">{{$puesto->descripcion_puesto}}</option>
                                         @endforeach
                                     </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="unidad">Indique el área de quien dependerá dicho puesto (unidad orgánica de adscripción)
+                                        <select name="unidad" id="unidad" required class="form-control">
+                                            <option value="" selected>--Seleccione--</option>
+                                            @foreach($areas as $area)
+                                                <option value="{{$area->clave_area}}">{{$area->descripcion_area}}</option>
+                                            @endforeach
+                                        </select>
+                                    </label>
                                 </div>
                             </div>
                             <div class="card-body">

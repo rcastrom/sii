@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Academicos\AcademicosController;
+use App\Http\Controllers\Academicos\HorarioNoDocenteController;
 use App\Http\Controllers\PDF\HorarioPDFController;
 
 
@@ -60,6 +61,11 @@ Route::group(['prefix' => 'academicos','middleware' => ['auth','role:academico']
             ->name('academicos.delobs');
         Route::post('/impresion',[HorarioPDFController::class,'crearPDF'])
             ->name('academicos.imprimir_horario');
+    });
+    Route::group(['prefix' => 'administrativos','middleware' => ['auth','role:academico']],function(){
+        Route::resource('/nodocente',HorarioNoDocenteController::class);
+        Route::post('/nodocente/alta',[HorarioNoDocenteController::class, 'alta'])
+            ->name('nodocente.alta');
     });
     Route::controller(AcademicosController::class)->prefix('mantenimiento')->group(function (){
         Route::get('/contrasena','contrasenia');

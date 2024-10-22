@@ -96,7 +96,7 @@ class AcademicosController extends Controller
         $grupo=$request->get('grupo');
         $periodo=$request->get('periodo');
         $nmateria=Materia::where('materia',$materia)->first();
-        $personal=Personal::where('nombramiento','D')
+        $personal=Personal::whereIn('nombramiento',['D','X'])
             ->where('status_empleado','2')
             ->orderBy('apellidos_empleado','ASC')
             ->orderBy('nombre_empleado','ASC')
@@ -319,7 +319,7 @@ class AcademicosController extends Controller
             'lunes','martes','miercoles','jueves','viernes','sabado','periodo','encabezado'));
     }
     public function predocentes(){
-        $maestros=Personal::where('nombramiento','D')
+        $maestros=Personal::whereIn('nombramiento',['D','X'])
             ->where('status_empleado','2')
             ->orderBy('apellidos_empleado','ASC')
             ->orderBy('nombre_empleado','ASC')->get();
@@ -389,11 +389,14 @@ class AcademicosController extends Controller
             ->join('actividades_apoyo','apoyo_docencia.actividad','=','actividades_apoyo.actividad')
             ->distinct('consecutivo')
             ->get();
+        $areas=Organigrama::select(['clave_area','descripcion_area'])
+            ->orderBy('descripcion_area','ASC')
+            ->get();
         if($accion==1){
             $encabezado="Alta acción administrativa para docentes";
             return view('academicos.alta_hadmvo')
                 ->with(compact('periodo','puestos',
-                    'docente','info','nperiodo','admin','encabezado'));
+                    'docente','info','nperiodo','admin','encabezado','areas'));
         }elseif($accion==2){
             $encabezado="Modificación de horario administrativo para docentes";
             return view('academicos.modificar_hadmvo')
@@ -457,6 +460,7 @@ class AcademicosController extends Controller
         $periodo=$request->get('periodo');
         $actividad=$request->get('puesto');
         $docente=$request->get('docente');
+        $area_adscripcion=$request->get('unidad');
         $lun=$request->get('hl');
         $mar=$request->get('hm');
         $mie=$request->get('hmm');
@@ -522,6 +526,7 @@ class AcademicosController extends Controller
             'periodo'=>$periodo,
             'docente'=>$docente,
             'consecutivo_admvo'=>$cant+1,
+            'area_adscripcion'=>$area_adscripcion,
             'descripcion_horario'=>$actividad
         ]);
         if(!empty($elunes)){
@@ -685,7 +690,7 @@ class AcademicosController extends Controller
         $puesto=HorarioAdministrativo::where('periodo',$periodo)
             ->where('docente',$docente)
             ->where('consecutivo_admvo',$consecutivo)
-            ->select('descripcion_horario')
+            ->select(['descripcion_horario','area_adscripcion'])
             ->first();
         $info=Grupo::where('periodo',$periodo)
             ->where('docente',$docente)
@@ -695,11 +700,14 @@ class AcademicosController extends Controller
             ->select(['grupos.materia','grupo','nombre_abreviado_materia'])
             ->distinct('grupos.materia')
             ->get();
+        $areas=Organigrama::select(['clave_area','descripcion_area'])
+            ->orderBy('descripcion_area','ASC')
+            ->get();
         $nperiodo=PeriodoEscolar::where('periodo',$periodo)->first();
         $encabezado="Actualización de horario administrativo docente";
         return view('academicos.mod_hadmvo')
             ->with(compact('periodo','docente','consecutivo',
-                'puestos','puesto','info','nperiodo','encabezado'));
+                'puestos','puesto','info','nperiodo','encabezado','areas'));
     }
     public function eliminaadmvo($periodo,$docente,$consecutivo){
         HorarioAdministrativo::where('periodo',$periodo)
@@ -733,6 +741,7 @@ class AcademicosController extends Controller
         ]);
         $periodo=$request->get('periodo');
         $actividad=$request->get('puesto');
+        $area=$request->get('unidad');
         $docente=$request->get('docente');
         $cant=$request->get('consecutivo');
         $lun=$request->get('hl');
@@ -795,7 +804,8 @@ class AcademicosController extends Controller
         HorarioAdministrativo::where('periodo',$periodo)
             ->where('docente',$docente)
             ->where('consecutivo_admvo',$cant)->update([
-                'descripcion_horario'=>$actividad
+                'descripcion_horario'=>$actividad,
+                'area_adscripcion'=>$area,
             ]);
         //Que no exista cruce
         if(!empty($elunes)){
@@ -1435,6 +1445,7 @@ class AcademicosController extends Controller
         $mensaje="Se eliminó la leyenda para el horario del docente";
         return view('academicos.si')->with(compact('encabezado','mensaje'));
     }
+
     public function contrasenia(){
         $encabezado="Cambio de contraseña";
         return view('academicos.contrasenia',['encabezado'=>$encabezado]);

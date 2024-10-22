@@ -8,7 +8,9 @@
 
 @section('content')
     <x-information :encabezado="$encabezado">
-        <p>Del siguiente listado, seleccione el aula que desea tener mayores detalles</p>
+        <p>Del siguiente listado, seleccione al docente a quien le asignará actividades de
+        apoyo a la administración, consulta de horario o alguna otra actividad</p>
+        <p>Emplee ésta sección si desea llevar a cabo su impresión de horarios</p>
         <form action="{{route('academicos.personal')}}" method="post" class="form-inline" role="form">
             @csrf
             <div class="form-group">
@@ -33,4 +35,10 @@
             </div>
         </form>
     </x-information>
+    <x-alert>
+        @php
+            $mensaje="Si desea llevar a cabo la asignación de carga académica, debe emplear la sección de periodos -> grupos existentes";
+        @endphp
+        @slot('mensaje',$mensaje)
+    </x-alert>
 @stop

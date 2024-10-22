@@ -42,15 +42,20 @@ class MenuAcademicosController extends Controller
                 ]
             ]);
             $event->menu->add([
-                'text'=>'Docentes',
+                'text'=>'Horarios',
                 'icon'=>'fas fa-users',
                 'submenu'=>[
                     [
                         'text'=>'Docentes',
                         'url'  => 'academicos/docentes/index',
                         'icon' => 'far fa-circle',
-                    ]
-                ]
+                    ],
+                    [
+                        'text'=>'Administrativos',
+                        'url'  => 'academicos/administrativos/nodocente',
+                        'icon' => 'far fa-circle',
+                    ],
+                ],
             ]);
             $event->menu->add([
                 'text' => 'Mantenimiento',

@@ -22,7 +22,7 @@ Los módulos que se han migrado son:
 * Coordinación de Verano (90%).
 * Desarrollo Académico (20%).
 * Personal docente (90%).
-* Recursos Humanos (100%)
+* Recursos Humanos (99%)
 
 ### Pre-requisitos 📋
 
