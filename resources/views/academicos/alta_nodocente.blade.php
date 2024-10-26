@@ -125,7 +125,7 @@
                                 <div class="form-group">
 
                                     <input type="hidden" name="periodo" value="{{$periodo}}">
-                                    <input type="hidden" name="personal" value="{{$personal}}">
+                                    <input type="hidden" name="personal" value="{{$noDocente}}">
                                     <button type="submit" class="btn btn-primary">Continuar</button>
                                 </div>
                             </div>

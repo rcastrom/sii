@@ -19,6 +19,7 @@ use App\Models\MateriaCarrera;
 use App\Models\PeriodoEscolar;
 use App\Models\Personal;
 use App\Models\SeleccionMateria;
+use App\Models\SeleccionMateriaLog;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\QueryException;
@@ -26,7 +27,6 @@ use Illuminate\Http\Request;
 use Illuminate\Contracts\Events\Dispatcher;
 use App\Http\Controllers\MenuDivisionController;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class DivisionController extends Controller
 {
@@ -63,7 +63,7 @@ class DivisionController extends Controller
             ->where('reticula',$ret)
             ->where('materias_carreras.materia',$materia)
             ->join('materias','materias_carreras.materia','=','materias.materia')
-            ->select('nombre_abreviado_materia','creditos_materia')->first();
+            ->select(['nombre_abreviado_materia','creditos_materia'])->first();
         $aulas=Aula::where('estatus','=',True)->get();
         $encabezado="Creación de grupo";
         return view('division.crear_grupo')->with(compact('materia',
@@ -103,30 +103,34 @@ class DivisionController extends Controller
         $grupo=$request->get('grupo');
         $creditos=$request->get('creditos');
         $capacidad=$request->get('capacidad');
-        $elunes=$request->get('elunes'); if(!empty($elunes)){$elunes=Carbon::parse($elunes);}
-        $emartes=$request->get('emartes'); if(!empty($emartes)){$emartes=Carbon::parse($emartes);}
-        $emiercoles=$request->get('emiercoles'); if(!empty($emiercoles)){$emiercoles=Carbon::parse($emiercoles);}
-        $ejueves=$request->get('ejueves'); if(!empty($ejueves)){$ejueves=Carbon::parse($ejueves);}
-        $eviernes=$request->get('eviernes'); if(!empty($eviernes)){$eviernes=Carbon::parse($eviernes);}
-        $esabado=$request->get('esabado'); if(!empty($esabado)){$esabado=Carbon::parse($esabado);}
-        $slunes=$request->get('slunes'); if(!empty($slunes)){$slunes=Carbon::parse($slunes);}
-        $smartes=$request->get('smartes'); if(!empty($smartes)){$smartes=Carbon::parse($smartes);}
-        $smiercoles=$request->get('smiercoles'); if(!empty($smiercoles)){$smiercoles=Carbon::parse($smiercoles);}
-        $sjueves=$request->get('sjueves'); if(!empty($sjueves)){$sjueves=Carbon::parse($sjueves);}
-        $sviernes=$request->get('sviernes'); if(!empty($sviernes)){$sviernes=Carbon::parse($sviernes);}
-        $ssabado=$request->get('ssabado'); if(!empty($ssabado)){$ssabado=Carbon::parse($ssabado);}
+        $entradas=array('elunes','emartes','emiercoles','ejueves','eviernes','esabado');
+        foreach ($entradas as $key){
+            if(!empty($request->get($key))){
+                $$key=Carbon::parse($request->get($key));
+            }else{
+                $$key=NULL;
+            }
+        }
+        $salidas=array('slunes','smartes','smiercoles','sjueves','sviernes','ssabado');
+        foreach ($salidas as $key){
+            if(!empty($request[$key])){
+                $$key=Carbon::parse($request[$key]);
+            }else{
+                $$key=NULL;
+            }
+        }
         $aula_l=$request->get('aula_l');
         $aula_m=$request->get('aula_m');
         $aula_mm=$request->get('aula_mm');
         $aula_j=$request->get('aula_j');
         $aula_v=$request->get('aula_v');
         $aula_s=$request->get('aula_s');
-        if(!empty($elunes)){$hl=$elunes->diff($slunes)->format('%h');}else{$hl=0;}
-        if(!empty($emartes)){$hm=$emartes->diff($smartes)->format('%h');}else{$hm=0;}
-        if(!empty($emiercoles)){$hmm=$emiercoles->diff($smiercoles)->format('%h');}else{$hmm=0;}
-        if(!empty($ejueves)){$hj=$ejueves->diff($sjueves)->format('%h');}else{$hj=0;}
-        if(!empty($eviernes)){$hv=$eviernes->diff($sviernes)->format('%h');}else{$hv=0;}
-        if(!empty($esabado)){$hs=$esabado->diff($ssabado)->format('%h');}else{$hs=0;}
+        $hl=!is_null($elunes)?$elunes->diff($slunes)->format('%h'):0;
+        $hm=!is_null($emartes)?$emartes->diff($smartes)->format('%h'):0;
+        $hmm=!is_null($emiercoles)?$emiercoles->diff($smiercoles)->format('%h'):0;
+        $hj=!is_null($ejueves)?$ejueves->diff($sjueves)->format('%h'):0;
+        $hv=!is_null($eviernes)?$eviernes->diff($sviernes)->format('%h'):0;
+        $hs=!is_null($esabado)?$esabado->diff($ssabado)->format('%h'):0;
         $total_horas=$hl+$hm+$hmm+$hj+$hv+$hs;
         $bandera=0;
         if($total_horas==$creditos){
@@ -141,7 +145,7 @@ class DivisionController extends Controller
                 por lo que no se volvió a crear el grupo";
                 return view('division.no')->with(compact('mensaje','encabezado'));
             }else{
-                if(!empty($elunes)){
+                if(!is_null($elunes)){
                     try{
                         $alta=new Horario();
                         $alta->periodo=$periodo;
@@ -168,7 +172,7 @@ class DivisionController extends Controller
                         return view('division.no')->with(compact('mensaje','encabezado'));
                     }
                 }
-                if(!empty($emartes)){
+                if(!is_null($emartes)){
                     try{
                         $alta=new Horario();
                         $alta->periodo=$periodo;
@@ -195,7 +199,7 @@ class DivisionController extends Controller
                         return view('division.no')->with(compact('mensaje','encabezado'));
                     }
                 }
-                if(!empty($emiercoles)){
+                if(!is_null($emiercoles)){
                     try{
                         $alta=new Horario();
                         $alta->periodo=$periodo;
@@ -222,7 +226,7 @@ class DivisionController extends Controller
                         return view('division.no')->with(compact('mensaje','encabezado'));
                     }
                 }
-                if(!empty($ejueves)){
+                if(!is_null($ejueves)){
                     try{
                         $alta=new Horario();
                         $alta->periodo=$periodo;
@@ -249,7 +253,7 @@ class DivisionController extends Controller
                         return view('division.no')->with(compact('mensaje','encabezado'));
                     }
                 }
-                if(!empty($eviernes)){
+                if(!is_null($eviernes)){
                     try{
                         $alta=new Horario();
                         $alta->periodo=$periodo;
@@ -276,7 +280,7 @@ class DivisionController extends Controller
                         return view('division.no')->with(compact('mensaje','encabezado'));
                     }
                 }
-                if(!empty($esabado)){
+                if(!is_null($esabado)){
                     try{
                         $alta=new Horario();
                         $alta->periodo=$periodo;
@@ -325,7 +329,7 @@ class DivisionController extends Controller
                     $nmateria=MateriaCarrera::where('carrera',$carrera)->where('reticula',$ret)
                         ->where('materias_carreras.materia',$materia)
                         ->join('materias','materias_carreras.materia','=','materias.materia')
-                        ->select('nombre_abreviado_materia','creditos_materia')->first();
+                        ->select(['nombre_abreviado_materia','creditos_materia'])->first();
                     $encabezado="Alta de grupo";
                     $mensaje="Se dió de alta la materia ".$nmateria->nombre_abreviado_materia." para la
                     carrera ".$ncarrera->nombre_reducido." retícula ".$ret;
@@ -345,7 +349,7 @@ class DivisionController extends Controller
     }
     public function paralelo1(){
         $data=Auth::user()->email;
-        $carrera_origen=(new AccionesController)->permisos_carreras($data);;
+        $carrera_origen=(new AccionesController)->permisos_carreras($data);
         $periodos=PeriodoEscolar::orderBy('periodo','desc')->get();
         $periodo_actual=(new AccionesController)->periodo();
         $periodo=$periodo_actual[0]->periodo;
@@ -370,7 +374,8 @@ class DivisionController extends Controller
             ->where('grupos.periodo',$periodo)
             ->whereNull('grupos.paralelo_de')
             ->join('materias','materias_carreras.materia','=','materias.materia')
-            ->select('materias_carreras.materia as mater','semestre_reticula','nombre_abreviado_materia','nombre_completo_materia','grupo')
+            ->select(['materias_carreras.materia as mater','semestre_reticula',
+                'nombre_abreviado_materia','nombre_completo_materia','grupo'])
             ->orderBy('semestre_reticula','ASC')
             ->orderBy('nombre_completo_materia','ASC')
             ->get();
@@ -380,7 +385,8 @@ class DivisionController extends Controller
             ->where('nombre_completo_materia','not like','%RESIDENCIA%')
             ->where('nombre_completo_materia','not like','%SERVICIO SOC%')
             ->where('nombre_completo_materia','not like','%COMPLEMENT%')
-            ->select('materias_carreras.materia as mater','semestre_reticula','nombre_abreviado_materia','nombre_abreviado_materia')
+            ->select(['materias_carreras.materia as mater','semestre_reticula',
+                'nombre_abreviado_materia','nombre_abreviado_materia'])
             ->orderBy('nombre_completo_materia','ASC')
             ->get();
         $encabezado="Creación de Grupos Paralelos";
@@ -493,8 +499,8 @@ class DivisionController extends Controller
             ->join('grupos','materias_carreras.materia','=','grupos.materia')
             ->where('grupos.periodo',$periodo)
             ->join('materias','materias_carreras.materia','=','materias.materia')
-            ->select('materias_carreras.materia as mater','semestre_reticula',
-                'nombre_abreviado_materia','nombre_completo_materia','grupo','paralelo_de','alumnos_inscritos')
+            ->select(['materias_carreras.materia as mater','semestre_reticula',
+                'nombre_abreviado_materia','nombre_completo_materia','grupo','paralelo_de','alumnos_inscritos'])
             ->orderBy('semestre_reticula','ASC')
             ->orderBy('nombre_completo_materia','ASC')
             ->get();
@@ -552,28 +558,33 @@ class DivisionController extends Controller
             }else{
                 $lunes=Horario::where('periodo',$periodo)
                     ->where('materia',$materia)->where('grupo',$grupo)
-                    ->where('dia_semana',2)->select('hora_inicial','hora_final','aula')
+                    ->where('dia_semana',2)
+                    ->select(['hora_inicial','hora_final','aula'])
                     ->first();
-
                 $martes=Horario::where('periodo',$periodo)
                     ->where('materia',$materia)->where('grupo',$grupo)
-                    ->where('dia_semana',3)->select('hora_inicial','hora_final','aula')
+                    ->where('dia_semana',3)
+                    ->select(['hora_inicial','hora_final','aula'])
                     ->first();
                 $miercoles=Horario::where('periodo',$periodo)
                     ->where('materia',$materia)->where('grupo',$grupo)
-                    ->where('dia_semana',4)->select('hora_inicial','hora_final','aula')
+                    ->where('dia_semana',4)
+                    ->select(['hora_inicial','hora_final','aula'])
                     ->first();
                 $jueves=Horario::where('periodo',$periodo)
                     ->where('materia',$materia)->where('grupo',$grupo)
-                    ->where('dia_semana',5)->select('hora_inicial','hora_final','aula')
+                    ->where('dia_semana',5)
+                    ->select(['hora_inicial','hora_final','aula'])
                     ->first();
                 $viernes=Horario::where('periodo',$periodo)
                     ->where('materia',$materia)->where('grupo',$grupo)
-                    ->where('dia_semana',6)->select('hora_inicial','hora_final','aula')
+                    ->where('dia_semana',6)
+                    ->select(['hora_inicial','hora_final','aula'])
                     ->first();
                 $sabado=Horario::where('periodo',$periodo)
                     ->where('materia',$materia)->where('grupo',$grupo)
-                    ->where('dia_semana',7)->select('hora_inicial','hora_final','aula')
+                    ->where('dia_semana',7)
+                    ->select(['hora_inicial','hora_final','aula'])
                     ->first();
                 $grupo_existente=Grupo::where('periodo',$periodo)
                     ->where('materia',$materia)->where('grupo',$grupo)->get();
@@ -584,7 +595,7 @@ class DivisionController extends Controller
                     ->join('materias_carreras as a2','grupos.carrera','=','a2.carrera')
                     ->join('materias_carreras as a3','grupos.reticula','=','a3.reticula')
                     ->join('materias','materias.materia','=','grupos.materia')
-                    ->select('nombre_abreviado_materia','a1.creditos_materia')
+                    ->select(['nombre_abreviado_materia','a1.creditos_materia'])
                     ->first();
                 $encabezado="Actualización de horario";
                 return view('division.modificar_grupo')
@@ -607,7 +618,7 @@ class DivisionController extends Controller
                 borrar el grupo";
                 return view('division.no')->with(compact('mensaje','encabezado'));
             }else{
-                //Si tiene grupos paralelas en la misma, no se puede
+                //Si tiene grupos paralelos en la misma, no se puede
                 $pos_paralela=$materia.$grupo;
                 if(Grupo::where('periodo',$periodo)->where('paralelo_de',$pos_paralela)->count()>0){
                     if(SeleccionMateria::where('periodo',$periodo)->where('materia',$pos_paralela)
@@ -694,14 +705,14 @@ class DivisionController extends Controller
                             $mensaje="No se llevó a cabo el alta: ".$e->getMessage();
                             return view('division.no')->with(compact('mensaje','encabezado'));
                         }
-                        $quien=Auth::id();
-                        DB::table('seleccion_materias_log')->insert([
+                        $quien=Auth::user()->email;
+                        SeleccionMateriaLog::insert([
                             'periodo'=>$periodo,
                             'no_de_control'=>$control,
                             'materia'=>$materia,
                             'grupo'=>$grupo,
                             'movimiento'=>'A',
-                            'cuando'=>Carbon::now(),
+                            'created_at'=>Carbon::now(),
                             'responsable'=>$quien
                         ]);
                         //Cantidad de inscritos
@@ -709,7 +720,7 @@ class DivisionController extends Controller
                             'periodo'=>$periodo,
                             'materia'=>$materia,
                             'grupo'=>$grupo
-                        ])->select('alumnos_inscritos','capacidad_grupo')->first();
+                        ])->select(['alumnos_inscritos','capacidad_grupo'])->first();
                         $inscritos=$cant->alumnos_inscritos+1;
                         $capacidad=$cant->capacidad_grupo-1;
                         Grupo::where([
@@ -757,7 +768,7 @@ class DivisionController extends Controller
             'no_de_control'=>$control
         ])->delete();
         $quien=Auth::user()->email;
-        DB::table('seleccion_materias_log')->insert([
+        SeleccionMateriaLog::insert([
             'periodo'=>$periodo,
             'no_de_control'=>$control,
             'materia'=>$materia,
@@ -771,7 +782,7 @@ class DivisionController extends Controller
             'periodo'=>$periodo,
             'materia'=>$materia,
             'grupo'=>$grupo
-        ])->select('alumnos_inscritos','capacidad_grupo')->first();
+        ])->select(['alumnos_inscritos','capacidad_grupo'])->first();
         $inscritos=$cant->alumnos_inscritos-1;
         $capacidad=$cant->capacidad_grupo+1;
         Grupo::where([
@@ -815,30 +826,34 @@ class DivisionController extends Controller
         $grupo=$request->get('grupo');
         $creditos=$request->get('creditos');
         $capacidad=$request->get('capacidad');
-        $elunes=$request->get('elunes'); if(!empty($elunes)){$elunes=Carbon::parse($elunes);}
-        $emartes=$request->get('emartes'); if(!empty($emartes)){$emartes=Carbon::parse($emartes);}
-        $emiercoles=$request->get('emiercoles'); if(!empty($emiercoles)){$emiercoles=Carbon::parse($emiercoles);}
-        $ejueves=$request->get('ejueves'); if(!empty($ejueves)){$ejueves=Carbon::parse($ejueves);}
-        $eviernes=$request->get('eviernes'); if(!empty($eviernes)){$eviernes=Carbon::parse($eviernes);}
-        $esabado=$request->get('esabado'); if(!empty($esabado)){$esabado=Carbon::parse($esabado);}
-        $slunes=$request->get('slunes'); if(!empty($slunes)){$slunes=Carbon::parse($slunes);}
-        $smartes=$request->get('smartes'); if(!empty($smartes)){$smartes=Carbon::parse($smartes);}
-        $smiercoles=$request->get('smiercoles'); if(!empty($smiercoles)){$smiercoles=Carbon::parse($smiercoles);}
-        $sjueves=$request->get('sjueves'); if(!empty($sjueves)){$sjueves=Carbon::parse($sjueves);}
-        $sviernes=$request->get('sviernes'); if(!empty($sviernes)){$sviernes=Carbon::parse($sviernes);}
-        $ssabado=$request->get('ssabado'); if(!empty($ssabado)){$ssabado=Carbon::parse($ssabado);}
+        $entradas=array('elunes','emartes','emiercoles','ejueves','eviernes','esabado');
+        foreach ($entradas as $key){
+            if(!empty($request->get($key))){
+                $$key=Carbon::parse($request->get($key));
+            }else{
+                $$key=NULL;
+            }
+        }
+        $salidas=array('slunes','smartes','smiercoles','sjueves','sviernes','ssabado');
+        foreach ($salidas as $key){
+            if(!empty($request[$key])){
+                $$key=Carbon::parse($request[$key]);
+            }else{
+                $$key=NULL;
+            }
+        }
         $aula_l=$request->get('aula_l');
         $aula_m=$request->get('aula_m');
         $aula_mm=$request->get('aula_mm');
         $aula_j=$request->get('aula_j');
         $aula_v=$request->get('aula_v');
         $aula_s=$request->get('aula_s');
-        if(!empty($elunes)){$hl=$elunes->diff($slunes)->format('%h');}else{$hl=0;}
-        if(!empty($emartes)){$hm=$emartes->diff($smartes)->format('%h');}else{$hm=0;}
-        if(!empty($emiercoles)){$hmm=$emiercoles->diff($smiercoles)->format('%h');}else{$hmm=0;}
-        if(!empty($ejueves)){$hj=$ejueves->diff($sjueves)->format('%h');}else{$hj=0;}
-        if(!empty($eviernes)){$hv=$eviernes->diff($sviernes)->format('%h');}else{$hv=0;}
-        if(!empty($esabado)){$hs=$esabado->diff($ssabado)->format('%h');}else{$hs=0;}
+        $hl=!is_null($elunes)?$elunes->diff($slunes)->format('%h'):0;
+        $hm=!is_null($emartes)?$emartes->diff($smartes)->format('%h'):0;
+        $hmm=!is_null($emiercoles)?$emiercoles->diff($smiercoles)->format('%h'):0;
+        $hj=!is_null($ejueves)?$ejueves->diff($sjueves)->format('%h'):0;
+        $hv=!is_null($eviernes)?$eviernes->diff($sviernes)->format('%h'):0;
+        $hs=!is_null($esabado)?$esabado->diff($ssabado)->format('%h'):0;
         //Primero, necesito verificar si al momento de mover la materia, no exista un empalme de horas con el docente
         $docente=Grupo::where([
             'periodo'=>$periodo,
@@ -851,16 +866,16 @@ class DivisionController extends Controller
             $bandera = 0;
         }
         //Verificar si tiene alguna paralela
-        $parelela=$materia.$grupo;
+        $paralela=$materia.$grupo;
         if(Grupo::where('periodo',$periodo)
-            ->where('paralelo_de',$parelela)
+            ->where('paralelo_de',$paralela)
             ->count()>0
         ){
             $bandera2=1;
             $datos_paralelo=Grupo::where('periodo',$periodo)
-                ->where('paralelo_de',$parelela)
+                ->where('paralelo_de',$paralela)
                 ->first();
-            $materia_parelela=$datos_paralelo->materia;
+            $materia_paralela=$datos_paralelo->materia;
             $grupo_paralelo=$datos_paralelo->grupo;
         }else{
             $bandera2=0;
@@ -890,7 +905,7 @@ class DivisionController extends Controller
                 if($bandera2){
                     Horario::where([
                         'periodo'=>$periodo,
-                        'materia'=>$materia_parelela,
+                        'materia'=>$materia_paralela,
                         'grupo'=>$grupo_paralelo,
                         'dia_semana'=>2
                     ])->update([
@@ -922,7 +937,7 @@ class DivisionController extends Controller
                 if($bandera2){
                     Horario::where([
                         'periodo'=>$periodo,
-                        'materia'=>$materia_parelela,
+                        'materia'=>$materia_paralela,
                         'grupo'=>$grupo_paralelo,
                         'dia_semana'=>3
                     ])->update([
@@ -954,7 +969,7 @@ class DivisionController extends Controller
                 if($bandera2){
                     Horario::where([
                         'periodo'=>$periodo,
-                        'materia'=>$materia_parelela,
+                        'materia'=>$materia_paralela,
                         'grupo'=>$grupo_paralelo,
                         'dia_semana'=>4
                     ])->update([
@@ -986,7 +1001,7 @@ class DivisionController extends Controller
                 if($bandera2){
                     Horario::where([
                         'periodo'=>$periodo,
-                        'materia'=>$materia_parelela,
+                        'materia'=>$materia_paralela,
                         'grupo'=>$grupo_paralelo,
                         'dia_semana'=>5
                     ])->update([
@@ -1018,7 +1033,7 @@ class DivisionController extends Controller
                 if($bandera2){
                     Horario::where([
                         'periodo'=>$periodo,
-                        'materia'=>$materia_parelela,
+                        'materia'=>$materia_paralela,
                         'grupo'=>$grupo_paralelo,
                         'dia_semana'=>6
                     ])->update([
@@ -1050,7 +1065,7 @@ class DivisionController extends Controller
                 if($bandera2){
                     Horario::where([
                         'periodo'=>$periodo,
-                        'materia'=>$materia_parelela,
+                        'materia'=>$materia_paralela,
                         'grupo'=>$grupo_paralelo,
                         'dia_semana'=>7
                     ])->update([
@@ -1157,14 +1172,13 @@ class DivisionController extends Controller
                 ->orderBY('apellido_paterno')
                 ->orderBy('apellido_materno')
                 ->orderBy('nombre_alumno')
-                ->select('no_de_control','apellido_paterno','apellido_materno','nombre_alumno')
+                ->select(['no_de_control','apellido_paterno','apellido_materno','nombre_alumno'])
                 ->get();
+            $encabezado="Consulta de alumnos";
             if(empty($arroja)){
-                $encabezado="Consulta de alumnos";
                 $mensaje="No se encontraron alumnos con el apellido de búsqueda solicitado";
                 return view('division.no')->with(compact('encabezado','mensaje'));
             }else{
-                $encabezado="Consulta de alumnos";
                 return view('division.datos2_alumno')->with(compact('arroja',
                     'encabezado'));
             }
@@ -1334,7 +1348,8 @@ class DivisionController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
+            ->select(['hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia',
+                'grupo','docente'])
             ->distinct()
             ->get();
         $martes=Horario::where('periodo',$periodo)->where('dia_semana',3)
@@ -1342,7 +1357,8 @@ class DivisionController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
+            ->select(['hora_inicial','hora_final','nombre_abreviado_materia',
+                'horarios.materia','grupo','docente'])
             ->distinct()
             ->get();
         $miercoles=Horario::where('periodo',$periodo)->where('dia_semana',4)
@@ -1350,7 +1366,8 @@ class DivisionController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
+            ->select(['hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia',
+                'grupo','docente'])
             ->distinct()
             ->get();
         $jueves=Horario::where('periodo',$periodo)->where('dia_semana',5)
@@ -1358,7 +1375,8 @@ class DivisionController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
+            ->select(['hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia',
+                'grupo','docente'])
             ->distinct()
             ->get();
         $viernes=Horario::where('periodo',$periodo)->where('dia_semana',6)
@@ -1366,7 +1384,8 @@ class DivisionController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
+            ->select(['hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia',
+                'grupo','docente'])
             ->distinct()
             ->get();
         $sabado=Horario::where('periodo',$periodo)->where('dia_semana',7)
@@ -1374,7 +1393,8 @@ class DivisionController extends Controller
             ->join('materias','materias.materia','=','horarios.materia')
             ->join('materias_carreras','materias_carreras.materia','=','materias.materia')
             ->join('carreras','carreras.carrera','=','materias_carreras.carrera')
-            ->select('hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia','grupo','docente')
+            ->select(['hora_inicial','hora_final','nombre_abreviado_materia','horarios.materia',
+                'grupo','docente'])
             ->distinct()
             ->get();
         $encabezado="Uso de aulas";

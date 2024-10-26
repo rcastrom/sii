@@ -21,6 +21,8 @@ use App\Models\Puesto;
 use App\Models\SeleccionMateria;
 use App\Models\User;
 use Carbon\Carbon;
+use Carbon\CarbonPeriod;
+use Carbon\CarbonInterval;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -66,6 +68,36 @@ class AcademicosController extends Controller
         return view('academicos.listado')
             ->with(compact('encabezado','carreras','periodo_actual','periodos'));
     }
+    public function calculatePeriodsOverlap(CarbonPeriod $periodA, CarbonPeriod $periodB): CarbonInterval
+    {
+        if (!$periodA->overlaps($periodB)) {
+            return new CarbonInterval(0);
+        }
+
+        $firstEndDate = min($periodA->calculateEnd(), $periodB->calculateEnd());
+        $latestStartDate = max($periodA->getStartDate(), $periodB->getStartDate());
+
+        return CarbonInterval::make($firstEndDate->diff($latestStartDate));
+    }
+    public function cruce($periodo,$personal,$dia,$hora_entrada,$hora_salida)
+    {
+        $bandera=0;
+        $horas=Horario::where('periodo',$periodo)
+            ->where('docente',$personal)
+            ->where('dia_semana',$dia)
+            ->select(['hora_inicial','hora_final'])
+            ->get();
+        foreach($horas as $hora){
+            $periodo1=new CarbonPeriod($hora->hora_inicial,$hora->hora_final);
+            $periodo2=new CarbonPeriod($hora_entrada,$hora_salida);
+            $dif=$this->calculatePeriodsOverlap($periodo1,$periodo2);
+            if($dif->h>=1){
+                $bandera+=1;
+            }
+        }
+        return $bandera;
+    }
+
     public function listado(Request $request){
         $periodo=$request->get('periodo');
         $carr=$request->get('carrera');
@@ -467,28 +499,33 @@ class AcademicosController extends Controller
         $jue=$request->get('hj');
         $vie=$request->get('hv');
         $sab=$request->get('hs');
-        $elunes=$request->get('elunes'); if(!empty($elunes)){$elunes=Carbon::parse($elunes);}
-        $emartes=$request->get('emartes'); if(!empty($emartes)){$emartes=Carbon::parse($emartes);}
-        $emiercoles=$request->get('emiercoles'); if(!empty($emiercoles)){$emiercoles=Carbon::parse($emiercoles);}
-        $ejueves=$request->get('ejueves'); if(!empty($ejueves)){$ejueves=Carbon::parse($ejueves);}
-        $eviernes=$request->get('eviernes'); if(!empty($eviernes)){$eviernes=Carbon::parse($eviernes);}
-        $esabado=$request->get('esabado'); if(!empty($esabado)){$esabado=Carbon::parse($esabado);}
-        $slunes=$request->get('slunes'); if(!empty($slunes)){$slunes=Carbon::parse($slunes);}
-        $smartes=$request->get('smartes'); if(!empty($smartes)){$smartes=Carbon::parse($smartes);}
-        $smiercoles=$request->get('smiercoles'); if(!empty($smiercoles)){$smiercoles=Carbon::parse($smiercoles);}
-        $sjueves=$request->get('sjueves'); if(!empty($sjueves)){$sjueves=Carbon::parse($sjueves);}
-        $sviernes=$request->get('sviernes'); if(!empty($sviernes)){$sviernes=Carbon::parse($sviernes);}
-        $ssabado=$request->get('ssabado'); if(!empty($ssabado)){$ssabado=Carbon::parse($ssabado);}
+        $entradas=array('elunes','emartes','emiercoles','ejueves','eviernes','esabado');
+        foreach ($entradas as $key){
+            if(!empty($request->get($key))){
+                $$key=Carbon::parse($request->get($key));
+            }else{
+                $$key=NULL;
+            }
+        }
+        $salidas=array('slunes','smartes','smiercoles','sjueves','sviernes','ssabado');
+        foreach ($salidas as $key){
+            if(!empty($request[$key])){
+                $$key=Carbon::parse($request[$key]);
+            }else{
+                $$key=NULL;
+            }
+        }
 
-        if(!empty($elunes)){$hl=$elunes->diff($slunes)->format('%h');}else{$hl=0;}
-        if(!empty($emartes)){$hm=$emartes->diff($smartes)->format('%h');}else{$hm=0;}
-        if(!empty($emiercoles)){$hmm=$emiercoles->diff($smiercoles)->format('%h');}else{$hmm=0;}
-        if(!empty($ejueves)){$hj=$ejueves->diff($sjueves)->format('%h');}else{$hj=0;}
-        if(!empty($eviernes)){$hv=$eviernes->diff($sviernes)->format('%h');}else{$hv=0;}
-        if(!empty($esabado)){$hs=$esabado->diff($ssabado)->format('%h');}else{$hs=0;}
+        $hl=!is_null($elunes)?$elunes->diff($slunes)->format('%h'):0;
+        $hm=!is_null($emartes)?$emartes->diff($smartes)->format('%h'):0;
+        $hmm=!is_null($emiercoles)?$emiercoles->diff($smiercoles)->format('%h'):0;
+        $hj=!is_null($ejueves)?$ejueves->diff($sjueves)->format('%h'):0;
+        $hv=!is_null($eviernes)?$eviernes->diff($sviernes)->format('%h'):0;
+        $hs=!is_null($esabado)?$esabado->diff($ssabado)->format('%h'):0;
 
         //Primero, que no sobrepase las 8 hrs al dia
         $encabezado="Error de alta de horario administrativo";
+
         if($hl+$lun>8){
             $mensaje="No fue posible procesar el horario ya que el lunes sobrepasa las 8 horas al día";
             return view('academicos.no')->with(compact('mensaje','encabezado'));
@@ -520,6 +557,49 @@ class AcademicosController extends Controller
             return view('academicos.no')->with(compact('mensaje','encabezado'));
         }
         //Que no exista cruce
+        if($hl){
+            $cruce=$this->cruce($periodo,$docente,2,$elunes,$slunes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día lunes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hm){
+            $cruce=$this->cruce($periodo,$docente,3,$emartes,$smartes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día martes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hmm){
+            $cruce=$this->cruce($periodo,$docente,4,$emiercoles,$smiercoles);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día miércoles con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hj){
+            $cruce=$this->cruce($periodo,$docente,5,$ejueves,$sjueves);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día jueves con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hv){
+            $cruce=$this->cruce($periodo,$docente,6,$eviernes,$sviernes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día viernes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hs){
+            $cruce=$this->cruce($periodo,$docente,7,$esabado,$ssabado);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día sábado con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        //
         $cant=HorarioAdministrativo::where('periodo',$periodo)
             ->where('docente',$docente)->count();
         HorarioAdministrativo::insert([
@@ -529,7 +609,7 @@ class AcademicosController extends Controller
             'area_adscripcion'=>$area_adscripcion,
             'descripcion_horario'=>$actividad
         ]);
-        if(!empty($elunes)){
+        if(!is_null($elunes)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -554,7 +634,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($emartes)){
+        if(!is_null($emartes)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -579,7 +659,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($emiercoles)){
+        if(!is_null($emiercoles)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -604,7 +684,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($ejueves)){
+        if(!is_null($ejueves)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -629,7 +709,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($eviernes)){
+        if(!is_null($eviernes)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -654,7 +734,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($esabado)){
+        if(!is_null($esabado)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -750,25 +830,29 @@ class AcademicosController extends Controller
         $jue=$request->get('hj');
         $vie=$request->get('hv');
         $sab=$request->get('hs');
-        $elunes=$request->get('elunes'); if(!empty($elunes)){$elunes=Carbon::parse($elunes);}
-        $emartes=$request->get('emartes'); if(!empty($emartes)){$emartes=Carbon::parse($emartes);}
-        $emiercoles=$request->get('emiercoles'); if(!empty($emiercoles)){$emiercoles=Carbon::parse($emiercoles);}
-        $ejueves=$request->get('ejueves'); if(!empty($ejueves)){$ejueves=Carbon::parse($ejueves);}
-        $eviernes=$request->get('eviernes'); if(!empty($eviernes)){$eviernes=Carbon::parse($eviernes);}
-        $esabado=$request->get('esabado'); if(!empty($esabado)){$esabado=Carbon::parse($esabado);}
-        $slunes=$request->get('slunes'); if(!empty($slunes)){$slunes=Carbon::parse($slunes);}
-        $smartes=$request->get('smartes'); if(!empty($smartes)){$smartes=Carbon::parse($smartes);}
-        $smiercoles=$request->get('smiercoles'); if(!empty($smiercoles)){$smiercoles=Carbon::parse($smiercoles);}
-        $sjueves=$request->get('sjueves'); if(!empty($sjueves)){$sjueves=Carbon::parse($sjueves);}
-        $sviernes=$request->get('sviernes'); if(!empty($sviernes)){$sviernes=Carbon::parse($sviernes);}
-        $ssabado=$request->get('ssabado'); if(!empty($ssabado)){$ssabado=Carbon::parse($ssabado);}
+        $entradas=array('elunes','emartes','emiercoles','ejueves','eviernes','esabado');
+        foreach ($entradas as $key){
+            if(!empty($request->get($key))){
+                $$key=Carbon::parse($request->get($key));
+            }else{
+                $$key=NULL;
+            }
+        }
+        $salidas=array('slunes','smartes','smiercoles','sjueves','sviernes','ssabado');
+        foreach ($salidas as $key){
+            if(!empty($request[$key])){
+                $$key=Carbon::parse($request[$key]);
+            }else{
+                $$key=NULL;
+            }
+        }
 
-        if(!empty($elunes)){$hl=$elunes->diff($slunes)->format('%h');}else{$hl=0;}
-        if(!empty($emartes)){$hm=$emartes->diff($smartes)->format('%h');}else{$hm=0;}
-        if(!empty($emiercoles)){$hmm=$emiercoles->diff($smiercoles)->format('%h');}else{$hmm=0;}
-        if(!empty($ejueves)){$hj=$ejueves->diff($sjueves)->format('%h');}else{$hj=0;}
-        if(!empty($eviernes)){$hv=$eviernes->diff($sviernes)->format('%h');}else{$hv=0;}
-        if(!empty($esabado)){$hs=$esabado->diff($ssabado)->format('%h');}else{$hs=0;}
+        $hl=!is_null($elunes)?$elunes->diff($slunes)->format('%h'):0;
+        $hm=!is_null($emartes)?$emartes->diff($smartes)->format('%h'):0;
+        $hmm=!is_null($emiercoles)?$emiercoles->diff($smiercoles)->format('%h'):0;
+        $hj=!is_null($ejueves)?$ejueves->diff($sjueves)->format('%h'):0;
+        $hv=!is_null($eviernes)?$eviernes->diff($sviernes)->format('%h'):0;
+        $hs=!is_null($esabado)?$esabado->diff($ssabado)->format('%h'):0;
 
         //Primero, que no sobrepase las 8 hrs al dia
         $encabezado="Error en la modificación de horario administrativo del personal docente";
@@ -808,7 +892,51 @@ class AcademicosController extends Controller
                 'area_adscripcion'=>$area,
             ]);
         //Que no exista cruce
-        if(!empty($elunes)){
+        if($hl){
+            $cruce=$this->cruce($periodo,$docente,2,$elunes,$slunes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día lunes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hm){
+            $cruce=$this->cruce($periodo,$docente,3,$emartes,$smartes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día martes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hmm){
+            $cruce=$this->cruce($periodo,$docente,4,$emiercoles,$smiercoles);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día miércoles con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hj){
+            $cruce=$this->cruce($periodo,$docente,5,$ejueves,$sjueves);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día jueves con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hv){
+            $cruce=$this->cruce($periodo,$docente,6,$eviernes,$sviernes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día viernes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hs){
+            $cruce=$this->cruce($periodo,$docente,7,$esabado,$ssabado);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día sábado con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        //
+
+        if(!is_null($elunes)){
             try{
                Horario::where('periodo',$periodo)
                    ->where('docente',$docente)
@@ -824,7 +952,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($emartes)){
+        if(!is_null($emartes)){
             try{
                 Horario::where('periodo',$periodo)
                     ->where('docente',$docente)
@@ -840,7 +968,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($emiercoles)){
+        if(!is_null($emiercoles)){
             try{
                 Horario::where('periodo',$periodo)
                     ->where('docente',$docente)
@@ -856,7 +984,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($ejueves)){
+        if(!is_null($ejueves)){
             try{
                 Horario::where('periodo',$periodo)
                     ->where('docente',$docente)
@@ -872,7 +1000,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($eviernes)){
+        if(!is_null($eviernes)){
             try{
                 Horario::where('periodo',$periodo)
                     ->where('docente',$docente)
@@ -888,7 +1016,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($esabado)){
+        if(!is_null($esabado)){
             try{
                 Horario::where('periodo',$periodo)
                     ->where('docente',$docente)
@@ -936,25 +1064,30 @@ class AcademicosController extends Controller
         $jue=$request->get('hj');
         $vie=$request->get('hv');
         $sab=$request->get('hs');
-        $elunes=$request->get('elunes'); if(!empty($elunes)){$elunes=Carbon::parse($elunes);}
-        $emartes=$request->get('emartes'); if(!empty($emartes)){$emartes=Carbon::parse($emartes);}
-        $emiercoles=$request->get('emiercoles'); if(!empty($emiercoles)){$emiercoles=Carbon::parse($emiercoles);}
-        $ejueves=$request->get('ejueves'); if(!empty($ejueves)){$ejueves=Carbon::parse($ejueves);}
-        $eviernes=$request->get('eviernes'); if(!empty($eviernes)){$eviernes=Carbon::parse($eviernes);}
-        $esabado=$request->get('esabado'); if(!empty($esabado)){$esabado=Carbon::parse($esabado);}
-        $slunes=$request->get('slunes'); if(!empty($slunes)){$slunes=Carbon::parse($slunes);}
-        $smartes=$request->get('smartes'); if(!empty($smartes)){$smartes=Carbon::parse($smartes);}
-        $smiercoles=$request->get('smiercoles'); if(!empty($smiercoles)){$smiercoles=Carbon::parse($smiercoles);}
-        $sjueves=$request->get('sjueves'); if(!empty($sjueves)){$sjueves=Carbon::parse($sjueves);}
-        $sviernes=$request->get('sviernes'); if(!empty($sviernes)){$sviernes=Carbon::parse($sviernes);}
-        $ssabado=$request->get('ssabado'); if(!empty($ssabado)){$ssabado=Carbon::parse($ssabado);}
+        $entradas=array('elunes','emartes','emiercoles','ejueves','eviernes','esabado');
+        foreach ($entradas as $key){
+            if(!empty($request->get($key))){
+                $$key=Carbon::parse($request->get($key));
+            }else{
+                $$key=NULL;
+            }
+        }
+        $salidas=array('slunes','smartes','smiercoles','sjueves','sviernes','ssabado');
+        foreach ($salidas as $key){
+            if(!empty($request[$key])){
+                $$key=Carbon::parse($request[$key]);
+            }else{
+                $$key=NULL;
+            }
+        }
 
-        if(!empty($elunes)){$hl=$elunes->diff($slunes)->format('%h');}else{$hl=0;}
-        if(!empty($emartes)){$hm=$emartes->diff($smartes)->format('%h');}else{$hm=0;}
-        if(!empty($emiercoles)){$hmm=$emiercoles->diff($smiercoles)->format('%h');}else{$hmm=0;}
-        if(!empty($ejueves)){$hj=$ejueves->diff($sjueves)->format('%h');}else{$hj=0;}
-        if(!empty($eviernes)){$hv=$eviernes->diff($sviernes)->format('%h');}else{$hv=0;}
-        if(!empty($esabado)){$hs=$esabado->diff($ssabado)->format('%h');}else{$hs=0;}
+        $hl=!is_null($elunes)?$elunes->diff($slunes)->format('%h'):0;
+        $hm=!is_null($emartes)?$emartes->diff($smartes)->format('%h'):0;
+        $hmm=!is_null($emiercoles)?$emiercoles->diff($smiercoles)->format('%h'):0;
+        $hj=!is_null($ejueves)?$ejueves->diff($sjueves)->format('%h'):0;
+        $hv=!is_null($eviernes)?$eviernes->diff($sviernes)->format('%h'):0;
+        $hs=!is_null($esabado)?$esabado->diff($ssabado)->format('%h'):0;
+
 
         //Primero, que no sobrepase las 8 hrs al dia
         $encabezado="Error de alta de horas de apoyo para personal docente";
@@ -989,6 +1122,49 @@ class AcademicosController extends Controller
             return view('academicos.no')->with(compact('mensaje','encabezado'));
         }
         //Que no exista cruce
+        if($hl){
+            $cruce=$this->cruce($periodo,$docente,2,$elunes,$slunes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día lunes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hm){
+            $cruce=$this->cruce($periodo,$docente,3,$emartes,$smartes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día martes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hmm){
+            $cruce=$this->cruce($periodo,$docente,4,$emiercoles,$smiercoles);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día miércoles con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hj){
+            $cruce=$this->cruce($periodo,$docente,5,$ejueves,$sjueves);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día jueves con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hv){
+            $cruce=$this->cruce($periodo,$docente,6,$eviernes,$sviernes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día viernes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hs){
+            $cruce=$this->cruce($periodo,$docente,7,$esabado,$ssabado);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día sábado con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        //
         $cant=ApoyoDocencia::where('periodo',$periodo)
             ->where('docente',$docente)->count();
         ApoyoDocencia::insert([
@@ -998,7 +1174,7 @@ class AcademicosController extends Controller
             'consecutivo'=>$cant+1,
             'especifica_actividad'=>$especificar
         ]);
-        if(!empty($elunes)){
+        if(!is_null($elunes)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -1024,7 +1200,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($emartes)){
+        if(!is_null($emartes)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -1050,7 +1226,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($emiercoles)){
+        if(!is_null($emiercoles)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -1076,7 +1252,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($ejueves)){
+        if(!is_null($ejueves)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -1102,7 +1278,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($eviernes)){
+        if(!is_null($eviernes)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -1128,7 +1304,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($esabado)){
+        if(!is_null($esabado)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -1208,25 +1384,29 @@ class AcademicosController extends Controller
         $jue=$request->get('hj');
         $vie=$request->get('hv');
         $sab=$request->get('hs');
-        $elunes=$request->get('elunes'); if(!empty($elunes)){$elunes=Carbon::parse($elunes);}
-        $emartes=$request->get('emartes'); if(!empty($emartes)){$emartes=Carbon::parse($emartes);}
-        $emiercoles=$request->get('emiercoles'); if(!empty($emiercoles)){$emiercoles=Carbon::parse($emiercoles);}
-        $ejueves=$request->get('ejueves'); if(!empty($ejueves)){$ejueves=Carbon::parse($ejueves);}
-        $eviernes=$request->get('eviernes'); if(!empty($eviernes)){$eviernes=Carbon::parse($eviernes);}
-        $esabado=$request->get('esabado'); if(!empty($esabado)){$esabado=Carbon::parse($esabado);}
-        $slunes=$request->get('slunes'); if(!empty($slunes)){$slunes=Carbon::parse($slunes);}
-        $smartes=$request->get('smartes'); if(!empty($smartes)){$smartes=Carbon::parse($smartes);}
-        $smiercoles=$request->get('smiercoles'); if(!empty($smiercoles)){$smiercoles=Carbon::parse($smiercoles);}
-        $sjueves=$request->get('sjueves'); if(!empty($sjueves)){$sjueves=Carbon::parse($sjueves);}
-        $sviernes=$request->get('sviernes'); if(!empty($sviernes)){$sviernes=Carbon::parse($sviernes);}
-        $ssabado=$request->get('ssabado'); if(!empty($ssabado)){$ssabado=Carbon::parse($ssabado);}
+        $entradas=array('elunes','emartes','emiercoles','ejueves','eviernes','esabado');
+        foreach ($entradas as $key){
+            if(!empty($request->get($key))){
+                $$key=Carbon::parse($request->get($key));
+            }else{
+                $$key=NULL;
+            }
+        }
+        $salidas=array('slunes','smartes','smiercoles','sjueves','sviernes','ssabado');
+        foreach ($salidas as $key){
+            if(!empty($request[$key])){
+                $$key=Carbon::parse($request[$key]);
+            }else{
+                $$key=NULL;
+            }
+        }
 
-        if(!empty($elunes)){$hl=$elunes->diff($slunes)->format('%h');}else{$hl=0;}
-        if(!empty($emartes)){$hm=$emartes->diff($smartes)->format('%h');}else{$hm=0;}
-        if(!empty($emiercoles)){$hmm=$emiercoles->diff($smiercoles)->format('%h');}else{$hmm=0;}
-        if(!empty($ejueves)){$hj=$ejueves->diff($sjueves)->format('%h');}else{$hj=0;}
-        if(!empty($eviernes)){$hv=$eviernes->diff($sviernes)->format('%h');}else{$hv=0;}
-        if(!empty($esabado)){$hs=$esabado->diff($ssabado)->format('%h');}else{$hs=0;}
+        $hl=!is_null($elunes)?$elunes->diff($slunes)->format('%h'):0;
+        $hm=!is_null($emartes)?$emartes->diff($smartes)->format('%h'):0;
+        $hmm=!is_null($emiercoles)?$emiercoles->diff($smiercoles)->format('%h'):0;
+        $hj=!is_null($ejueves)?$ejueves->diff($sjueves)->format('%h'):0;
+        $hv=!is_null($eviernes)?$eviernes->diff($sviernes)->format('%h'):0;
+        $hs=!is_null($esabado)?$esabado->diff($ssabado)->format('%h'):0;
 
         //Primero, que no sobrepase las 8 hrs al dia
         $encabezado="Error de actualización de horario de apoyo para el docente";
@@ -1268,7 +1448,50 @@ class AcademicosController extends Controller
             ]);
 
         //Que no exista cruce
-        if(!empty($elunes)){
+        if($hl){
+            $cruce=$this->cruce($periodo,$docente,2,$elunes,$slunes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día lunes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hm){
+            $cruce=$this->cruce($periodo,$docente,3,$emartes,$smartes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día martes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hmm){
+            $cruce=$this->cruce($periodo,$docente,4,$emiercoles,$smiercoles);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día miércoles con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hj){
+            $cruce=$this->cruce($periodo,$docente,5,$ejueves,$sjueves);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día jueves con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hv){
+            $cruce=$this->cruce($periodo,$docente,6,$eviernes,$sviernes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día viernes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hs){
+            $cruce=$this->cruce($periodo,$docente,7,$esabado,$ssabado);
+            if($cruce>0){
+                $mensaje="Existe un empalme de la actividad de apoyo el día sábado con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        //
+        if(!is_null($elunes)){
             try{
                 Horario::where('periodo',$periodo)
                     ->where('docente',$docente)
@@ -1285,7 +1508,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($emartes)){
+        if(!is_null($emartes)){
             try{
                 Horario::where('periodo',$periodo)
                     ->where('docente',$docente)
@@ -1302,7 +1525,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($emiercoles)){
+        if(!is_null($emiercoles)){
             try{
                 Horario::where('periodo',$periodo)
                     ->where('docente',$docente)
@@ -1319,7 +1542,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($ejueves)){
+        if(!is_null($ejueves)){
             try{
                 Horario::where('periodo',$periodo)
                     ->where('docente',$docente)
@@ -1336,7 +1559,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($eviernes)){
+        if(!is_null($eviernes)){
             try{
                 Horario::where('periodo',$periodo)
                     ->where('docente',$docente)
@@ -1353,7 +1576,7 @@ class AcademicosController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($esabado)){
+        if(!is_null($esabado)){
             try{
                 Horario::where('periodo',$periodo)
                     ->where('docente',$docente)
@@ -1457,7 +1680,7 @@ class AcademicosController extends Controller
         ],[
             'contra.required'=>'Debe escribir la nueva contraseña',
             'contra.required_with'=>'Debe confirmar la contraseña',
-            'contra.same'=>'No concuerda con la verificacion',
+            'contra.same'=>'No concuerda con la verificación',
             'verifica.required'=>'Debe confirmar la nueva contraseña'
         ]);
         $ncontra=bcrypt($request->get('contra'));

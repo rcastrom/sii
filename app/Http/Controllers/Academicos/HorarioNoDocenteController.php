@@ -12,6 +12,8 @@ use App\Models\PeriodoEscolar;
 use App\Models\Personal;
 use App\Models\Puesto;
 use Carbon\Carbon;
+use Carbon\CarbonInterval;
+use Carbon\CarbonPeriod;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -25,6 +27,35 @@ class HorarioNoDocenteController extends Controller
         new MenuAcademicosController($events);
     }
 
+    public function calculatePeriodsOverlap(CarbonPeriod $periodA, CarbonPeriod $periodB): CarbonInterval
+    {
+        if (!$periodA->overlaps($periodB)) {
+            return new CarbonInterval(0);
+        }
+
+        $firstEndDate = min($periodA->calculateEnd(), $periodB->calculateEnd());
+        $latestStartDate = max($periodA->getStartDate(), $periodB->getStartDate());
+
+        return CarbonInterval::make($firstEndDate->diff($latestStartDate));
+    }
+    public function cruce($periodo,$personal,$dia,$hora_entrada,$hora_salida)
+    {
+        $bandera=0;
+        $horas=Horario::where('periodo',$periodo)
+            ->where('docente',$personal)
+            ->where('dia_semana',$dia)
+            ->select(['hora_inicial','hora_final'])
+            ->get();
+        foreach($horas as $hora){
+            $periodo1=new CarbonPeriod($hora->hora_inicial,$hora->hora_final);
+            $periodo2=new CarbonPeriod($hora_entrada,$hora_salida);
+            $dif=$this->calculatePeriodsOverlap($periodo1,$periodo2);
+            if($dif->h>=1){
+                $bandera+=1;
+            }
+        }
+        return $bandera;
+    }
     /**
      * Display a listing of the resource.
      */
@@ -95,25 +126,29 @@ class HorarioNoDocenteController extends Controller
         $jue=$request->get('hj');
         $vie=$request->get('hv');
         $sab=$request->get('hs');
-        $elunes=$request->get('elunes'); if(!empty($elunes)){$elunes=Carbon::parse($elunes);}
-        $emartes=$request->get('emartes'); if(!empty($emartes)){$emartes=Carbon::parse($emartes);}
-        $emiercoles=$request->get('emiercoles'); if(!empty($emiercoles)){$emiercoles=Carbon::parse($emiercoles);}
-        $ejueves=$request->get('ejueves'); if(!empty($ejueves)){$ejueves=Carbon::parse($ejueves);}
-        $eviernes=$request->get('eviernes'); if(!empty($eviernes)){$eviernes=Carbon::parse($eviernes);}
-        $esabado=$request->get('esabado'); if(!empty($esabado)){$esabado=Carbon::parse($esabado);}
-        $slunes=$request->get('slunes'); if(!empty($slunes)){$slunes=Carbon::parse($slunes);}
-        $smartes=$request->get('smartes'); if(!empty($smartes)){$smartes=Carbon::parse($smartes);}
-        $smiercoles=$request->get('smiercoles'); if(!empty($smiercoles)){$smiercoles=Carbon::parse($smiercoles);}
-        $sjueves=$request->get('sjueves'); if(!empty($sjueves)){$sjueves=Carbon::parse($sjueves);}
-        $sviernes=$request->get('sviernes'); if(!empty($sviernes)){$sviernes=Carbon::parse($sviernes);}
-        $ssabado=$request->get('ssabado'); if(!empty($ssabado)){$ssabado=Carbon::parse($ssabado);}
+        $entradas=array('elunes','emartes','emiercoles','ejueves','eviernes','esabado');
+        foreach ($entradas as $key){
+            if(!empty($request->get($key))){
+                $$key=Carbon::parse($request->get($key));
+            }else{
+                $$key=NULL;
+            }
+        }
+        $salidas=array('slunes','smartes','smiercoles','sjueves','sviernes','ssabado');
+        foreach ($salidas as $key){
+            if(!empty($request[$key])){
+                $$key=Carbon::parse($request[$key]);
+            }else{
+                $$key=NULL;
+            }
+        }
 
-        if(!empty($elunes)){$hl=$elunes->diff($slunes)->format('%h');}else{$hl=0;}
-        if(!empty($emartes)){$hm=$emartes->diff($smartes)->format('%h');}else{$hm=0;}
-        if(!empty($emiercoles)){$hmm=$emiercoles->diff($smiercoles)->format('%h');}else{$hmm=0;}
-        if(!empty($ejueves)){$hj=$ejueves->diff($sjueves)->format('%h');}else{$hj=0;}
-        if(!empty($eviernes)){$hv=$eviernes->diff($sviernes)->format('%h');}else{$hv=0;}
-        if(!empty($esabado)){$hs=$esabado->diff($ssabado)->format('%h');}else{$hs=0;}
+        $hl=!is_null($elunes)?$elunes->diff($slunes)->format('%h'):0;
+        $hm=!is_null($emartes)?$emartes->diff($smartes)->format('%h'):0;
+        $hmm=!is_null($emiercoles)?$emiercoles->diff($smiercoles)->format('%h'):0;
+        $hj=!is_null($ejueves)?$ejueves->diff($sjueves)->format('%h'):0;
+        $hv=!is_null($eviernes)?$eviernes->diff($sviernes)->format('%h'):0;
+        $hs=!is_null($esabado)?$esabado->diff($ssabado)->format('%h'):0;
 
         //Primero, que no sobrepase las 8 h al día
         $encabezado="Error de alta de horario de personal no docente";
@@ -153,6 +188,51 @@ class HorarioNoDocenteController extends Controller
             $mensaje="La suma total de horas, no puede ser superior a 36 horas";
             return view('academicos.no')->with(compact('mensaje','encabezado'));
         }
+        //Que no exista cruce
+        if($hl){
+            $cruce=$this->cruce($periodo,$personal,2,$elunes,$slunes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de horario para el día lunes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hm){
+            $cruce=$this->cruce($periodo,$personal,3,$emartes,$smartes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de horario para el día martes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hmm){
+            $cruce=$this->cruce($periodo,$personal,4,$emiercoles,$smiercoles);
+            if($cruce>0){
+                $mensaje="Existe un empalme de horario para el día miércoles con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hj){
+            $cruce=$this->cruce($periodo,$personal,5,$ejueves,$sjueves);
+            if($cruce>0){
+                $mensaje="Existe un empalme de horario para el día jueves con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hv){
+            $cruce=$this->cruce($periodo,$personal,6,$eviernes,$sviernes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de horario para el día viernes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hs){
+            $cruce=$this->cruce($periodo,$personal,7,$esabado,$ssabado);
+            if($cruce>0){
+                $mensaje="Existe un empalme de horario para el día sábado con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        //
+
         $registro=HorarioNoDocente::create([
             'periodo'=>$periodo,
             'personal'=>$personal,
@@ -161,7 +241,7 @@ class HorarioNoDocenteController extends Controller
             'observacion'=>$observacion,
         ]);
         $cant=$registro->id;
-        if(!empty($elunes)){
+        if(!is_null($elunes)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -186,7 +266,7 @@ class HorarioNoDocenteController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($emartes)){
+        if(!is_null($emartes)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -211,7 +291,7 @@ class HorarioNoDocenteController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($emiercoles)){
+        if(!is_null($emiercoles)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -236,7 +316,7 @@ class HorarioNoDocenteController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($ejueves)){
+        if(!is_null($ejueves)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -261,7 +341,7 @@ class HorarioNoDocenteController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($eviernes)){
+        if(!is_null($eviernes)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -286,7 +366,7 @@ class HorarioNoDocenteController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($esabado)){
+        if(!is_null($esabado)){
             try{
                 Horario::insert([
                     'periodo'=>$periodo,
@@ -389,25 +469,29 @@ class HorarioNoDocenteController extends Controller
         $jue=$request->get('hj');
         $vie=$request->get('hv');
         $sab=$request->get('hs');
-        $elunes=$request->get('elunes'); if(!empty($elunes)){$elunes=Carbon::parse($elunes);}
-        $emartes=$request->get('emartes'); if(!empty($emartes)){$emartes=Carbon::parse($emartes);}
-        $emiercoles=$request->get('emiercoles'); if(!empty($emiercoles)){$emiercoles=Carbon::parse($emiercoles);}
-        $ejueves=$request->get('ejueves'); if(!empty($ejueves)){$ejueves=Carbon::parse($ejueves);}
-        $eviernes=$request->get('eviernes'); if(!empty($eviernes)){$eviernes=Carbon::parse($eviernes);}
-        $esabado=$request->get('esabado'); if(!empty($esabado)){$esabado=Carbon::parse($esabado);}
-        $slunes=$request->get('slunes'); if(!empty($slunes)){$slunes=Carbon::parse($slunes);}
-        $smartes=$request->get('smartes'); if(!empty($smartes)){$smartes=Carbon::parse($smartes);}
-        $smiercoles=$request->get('smiercoles'); if(!empty($smiercoles)){$smiercoles=Carbon::parse($smiercoles);}
-        $sjueves=$request->get('sjueves'); if(!empty($sjueves)){$sjueves=Carbon::parse($sjueves);}
-        $sviernes=$request->get('sviernes'); if(!empty($sviernes)){$sviernes=Carbon::parse($sviernes);}
-        $ssabado=$request->get('ssabado'); if(!empty($ssabado)){$ssabado=Carbon::parse($ssabado);}
+        $entradas=array('elunes','emartes','emiercoles','ejueves','eviernes','esabado');
+        foreach ($entradas as $key){
+            if(!empty($request->get($key))){
+                $$key=Carbon::parse($request->get($key));
+            }else{
+                $$key=NULL;
+            }
+        }
+        $salidas=array('slunes','smartes','smiercoles','sjueves','sviernes','ssabado');
+        foreach ($salidas as $key){
+            if(!empty($request[$key])){
+                $$key=Carbon::parse($request[$key]);
+            }else{
+                $$key=NULL;
+            }
+        }
 
-        if(!empty($elunes)){$hl=$elunes->diff($slunes)->format('%h');}else{$hl=0;}
-        if(!empty($emartes)){$hm=$emartes->diff($smartes)->format('%h');}else{$hm=0;}
-        if(!empty($emiercoles)){$hmm=$emiercoles->diff($smiercoles)->format('%h');}else{$hmm=0;}
-        if(!empty($ejueves)){$hj=$ejueves->diff($sjueves)->format('%h');}else{$hj=0;}
-        if(!empty($eviernes)){$hv=$eviernes->diff($sviernes)->format('%h');}else{$hv=0;}
-        if(!empty($esabado)){$hs=$esabado->diff($ssabado)->format('%h');}else{$hs=0;}
+        $hl=!is_null($elunes)?$elunes->diff($slunes)->format('%h'):0;
+        $hm=!is_null($emartes)?$emartes->diff($smartes)->format('%h'):0;
+        $hmm=!is_null($emiercoles)?$emiercoles->diff($smiercoles)->format('%h'):0;
+        $hj=!is_null($ejueves)?$ejueves->diff($sjueves)->format('%h'):0;
+        $hv=!is_null($eviernes)?$eviernes->diff($sviernes)->format('%h'):0;
+        $hs=!is_null($esabado)?$esabado->diff($ssabado)->format('%h'):0;
 
         //Primero, que no sobrepase las 8 h al día
         $encabezado="Error de alta de horario de personal no docente";
@@ -447,13 +531,57 @@ class HorarioNoDocenteController extends Controller
             $mensaje="La suma total de horas, no puede ser superior a 36 horas";
             return view('academicos.no')->with(compact('mensaje','encabezado'));
         }
+        //Que no exista cruce
+        if($hl){
+            $cruce=$this->cruce($periodo,$personal,2,$elunes,$slunes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de horario para el día lunes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hm){
+            $cruce=$this->cruce($periodo,$personal,3,$emartes,$smartes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de horario para el día martes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hmm){
+            $cruce=$this->cruce($periodo,$personal,4,$emiercoles,$smiercoles);
+            if($cruce>0){
+                $mensaje="Existe un empalme de horario para el día miércoles con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hj){
+            $cruce=$this->cruce($periodo,$personal,5,$ejueves,$sjueves);
+            if($cruce>0){
+                $mensaje="Existe un empalme de horario para el día jueves con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hv){
+            $cruce=$this->cruce($periodo,$personal,6,$eviernes,$sviernes);
+            if($cruce>0){
+                $mensaje="Existe un empalme de horario para el día viernes con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        if($hs){
+            $cruce=$this->cruce($periodo,$personal,7,$esabado,$ssabado);
+            if($cruce>0){
+                $mensaje="Existe un empalme de horario para el día sábado con alguna otra actividad";
+                return view('academicos.no')->with(compact('mensaje','encabezado'));
+            }
+        }
+        //
         HorarioNoDocente::where('id',$nodocente->id)
             ->update([
                 'descripcion_horario'=>$actividad,
                 'area_adscripcion'=>$area_adscripcion,
                 'observacion'=>$observacion,
             ]);
-        if(!empty($elunes)){
+        if(!is_null($elunes)){
             try{
                 Horario::where(
                     [
@@ -474,7 +602,7 @@ class HorarioNoDocenteController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($emartes)){
+        if(!is_null($emartes)){
             try{
                 Horario::where(
                     [
@@ -495,7 +623,7 @@ class HorarioNoDocenteController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($emiercoles)){
+        if(!is_null($emiercoles)){
             try{
                 Horario::where(
                     [
@@ -516,7 +644,7 @@ class HorarioNoDocenteController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($ejueves)){
+        if(!is_null($ejueves)){
             try{
                 Horario::where(
                     [
@@ -537,7 +665,7 @@ class HorarioNoDocenteController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($eviernes)){
+        if(!is_null($eviernes)){
             try{
                 Horario::where(
                     [
@@ -558,7 +686,7 @@ class HorarioNoDocenteController extends Controller
                 return view('academicos.no')->with(compact('mensaje','encabezado'));
             }
         }
-        if(!empty($esabado)){
+        if(!is_null($esabado)){
             try{
                 Horario::where(
                     [
@@ -608,19 +736,19 @@ class HorarioNoDocenteController extends Controller
      */
     public function alta(Request $request): View
     {
-        $personal = $request->get('admin');
+        $noDocente = $request->get('admin');
         $periodo = $request->get('periodo');
         if($request->get('accion')==1){
          if(HorarioNoDocente::where('periodo',$periodo)
-         ->where('personal',$personal)->count()>0){
+         ->where('personal',$noDocente)->count()>0){
              $apoyos=HorarioNoDocente::where('periodo',$periodo)
-                 ->where('personal',$personal)
+                 ->where('personal',$noDocente)
                  ->join('puestos','horario_no_docentes.descripcion_horario','=','puestos.clave_puesto')
                  ->distinct()
                  ->get();
              $encabezado="Consulta de horario";
              return view('academicos.modificar_hnodocente')
-                 ->with(compact('encabezado','periodo','personal','apoyos'));
+                 ->with(compact('encabezado','periodo','noDocente','apoyos'));
          }else{
              $encabezado="Error de consulta";
              $mensaje="El personal no cuenta con horario no docente asignado";
@@ -633,15 +761,16 @@ class HorarioNoDocenteController extends Controller
                 ->get();
             $encabezado="Alta de horario para personal administrativo / docente";
             return view('academicos.alta_nodocente')
-                ->with(compact('personal','periodo','encabezado','puestos','areas'));
+                ->with(compact('noDocente','periodo','encabezado','puestos','areas'));
         }else{
-            $puestos=Puesto::get();
-            $areas=Organigrama::select(['clave_area','descripcion_area'])
-                ->orderBy('descripcion_area','ASC')
-                ->get();
-            $encabezado="Alta de horario para personal administrativo / docente";
-            return view('academicos.alta_nodocente')
-                ->with(compact('personal','periodo','encabezado','puestos','areas'));
+            $encabezado="Impresión de horario no docente";
+            $personal=Personal::where('id',$noDocente)
+                ->first();
+            $descripcion_area=Organigrama::where('clave_area',$personal->clave_area)
+                ->first();
+            return view('academicos.imprimir_horario')
+                ->with(compact('encabezado',
+                    'personal','descripcion_area','periodo'));
         }
     }
 }

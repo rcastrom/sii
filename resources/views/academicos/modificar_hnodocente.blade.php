@@ -36,7 +36,7 @@
                                         <?php
                                         for($i=2;$i<=7;$i++){
                                             $dias=\Illuminate\Support\Facades\DB::table('horarios')->where('periodo',$periodo)
-                                                ->where('docente',$personal)->where('consecutivo',$apoyo->consecutivo)
+                                                ->where('docente',$noDocente)->where('consecutivo',$apoyo->consecutivo)
                                                 ->where('tipo_horario','Z')
                                                 ->where('dia_semana',$i)->select('hora_inicial','hora_final')->first();
                                             if(!empty($dias)){

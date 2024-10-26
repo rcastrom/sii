@@ -619,7 +619,7 @@ class HorarioPDFController extends Controller
             $area_adscripcion=Organigrama::where('clave_area',$puesto->area_adscripcion)
                 ->select('descripcion_area')
                 ->first();
-            $this->fpdf->Text(66,155+$linea+$this->te-$this->py,$area_adscripcion->descripcion_area);
+            $this->fpdf->Text(84,155+$linea+$this->te-$this->py,$area_adscripcion->descripcion_area);
             $linea+=3;
         }
         $this->fpdf->Text(153,169.5+$this->te-$this->py,$this->hacol1);

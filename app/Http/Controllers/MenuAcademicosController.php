@@ -51,7 +51,7 @@ class MenuAcademicosController extends Controller
                         'icon' => 'far fa-circle',
                     ],
                     [
-                        'text'=>'Administrativos',
+                        'text'=>'No docentes',
                         'url'  => 'academicos/administrativos/nodocente',
                         'icon' => 'far fa-circle',
                     ],
