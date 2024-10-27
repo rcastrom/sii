@@ -18,6 +18,15 @@ class EvaluacionAlumno extends Model
     protected $primaryKey='no_de_control';
     protected $casts=[
         'no_de_control'=>'string',
+        'periodo'=>'string',
+        'materia'=>'string',
+        'grupo'=>'string',
+        'personal'=>'integer',
+        'clave_area' => 'string',
+        'encuesta' => 'string',
+        'respuestas' => 'string',
+        'consecutivo' => 'integer',
     ];
-    protected $fillable=['periodo','no_de_control','materia','grupo','personal','encuesta','respuestas'];
+    protected $fillable=['periodo','no_de_control','materia',
+        'grupo','personal','encuesta','respuestas','consecutivo'];
 }

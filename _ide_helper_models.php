@@ -17,11 +17,11 @@ namespace App\Models{
  *
  * @property string|null $actividad
  * @property string|null $descripcion_actividad
- * @method static \Illuminate\Database\Eloquent\Builder|ActividadesApoyo newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|ActividadesApoyo newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|ActividadesApoyo query()
- * @method static \Illuminate\Database\Eloquent\Builder|ActividadesApoyo whereActividad($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ActividadesApoyo whereDescripcionActividad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActividadesApoyo newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActividadesApoyo newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActividadesApoyo query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActividadesApoyo whereActividad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ActividadesApoyo whereDescripcionActividad($value)
  */
 	class ActividadesApoyo extends \Eloquent {}
 }
@@ -49,26 +49,26 @@ namespace App\Models{
  * @property string|null $indice_reprobacion_semestre
  * @property string|null $creditos_autorizados
  * @property string|null $indice_reprobacion_acumulado
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico query()
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico whereCreditosAprobados($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico whereCreditosAutorizados($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico whereCreditosCursados($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico whereEstatusPeriodoAlumno($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico whereIndiceReprobacionAcumulado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico whereIndiceReprobacionSemestre($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico whereMateriasAExamenEspecial($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico whereMateriasCursadas($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico whereMateriasEspecialReprobadas($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico whereMateriasReprobadas($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico whereNoDeControl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico wherePromedioAritmetico($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico wherePromedioAritmeticoAcumulado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico wherePromedioCertificado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico wherePromedioPonderado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AcumuladoHistorico wherePromedioPonderadoAcumulado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico whereCreditosAprobados($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico whereCreditosAutorizados($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico whereCreditosCursados($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico whereEstatusPeriodoAlumno($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico whereIndiceReprobacionAcumulado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico whereIndiceReprobacionSemestre($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico whereMateriasAExamenEspecial($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico whereMateriasCursadas($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico whereMateriasEspecialReprobadas($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico whereMateriasReprobadas($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico whereNoDeControl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico wherePromedioAritmetico($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico wherePromedioAritmeticoAcumulado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico wherePromedioCertificado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico wherePromedioPonderado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AcumuladoHistorico wherePromedioPonderadoAcumulado($value)
  */
 	class AcumuladoHistorico extends \Eloquent {}
 }
@@ -115,45 +115,45 @@ namespace App\Models{
  * @property string|null $nss
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno query()
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereApellidoMaterno($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereApellidoPaterno($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereBecadoPor($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereCarrera($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereCiudadProcedencia($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereCorreoElectronico($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereCreditosAprobados($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereCreditosCursados($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereCurpAlumno($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereEntidadProcedencia($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereEscuelaProcedencia($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereEspecialidad($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereEstadoCivil($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereEstatusAlumno($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereFechaNacimiento($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereFechaTitulacion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereNip($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereNivelEscolar($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereNoDeControl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereNombreAlumno($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereNss($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereOpcionTitulacion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno wherePeriodoIngresoIt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno wherePeriodoTitulacion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno wherePeriodosRevalidacion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno wherePlanDeEstudios($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno wherePromedioAritmeticoAcumulado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno wherePromedioFinalAlcanzado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno wherePromedioPeriodoAnterior($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereReticula($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereSemestre($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereSexo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereTipoIngreso($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereUltimoPeriodoInscrito($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Alumno whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereApellidoMaterno($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereApellidoPaterno($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereBecadoPor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereCarrera($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereCiudadProcedencia($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereCorreoElectronico($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereCreditosAprobados($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereCreditosCursados($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereCurpAlumno($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereEntidadProcedencia($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereEscuelaProcedencia($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereEspecialidad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereEstadoCivil($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereEstatusAlumno($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereFechaNacimiento($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereFechaTitulacion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereNip($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereNivelEscolar($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereNoDeControl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereNombreAlumno($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereNss($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereOpcionTitulacion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno wherePeriodoIngresoIt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno wherePeriodoTitulacion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno wherePeriodosRevalidacion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno wherePlanDeEstudios($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno wherePromedioAritmeticoAcumulado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno wherePromedioFinalAlcanzado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno wherePromedioPeriodoAnterior($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereReticula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereSemestre($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereSexo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereTipoIngreso($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereUltimoPeriodoInscrito($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Alumno whereUpdatedAt($value)
  */
 	class Alumno extends \Eloquent {}
 }
@@ -172,17 +172,17 @@ namespace App\Models{
  * @property string|null $facebook
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|AlumnosGeneral newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|AlumnosGeneral newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|AlumnosGeneral query()
- * @method static \Illuminate\Database\Eloquent\Builder|AlumnosGeneral whereCodigoPostal($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AlumnosGeneral whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AlumnosGeneral whereDomicilioCalle($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AlumnosGeneral whereDomicilioColonia($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AlumnosGeneral whereFacebook($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AlumnosGeneral whereNoDeControl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AlumnosGeneral whereTelefono($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AlumnosGeneral whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AlumnosGeneral newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AlumnosGeneral newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AlumnosGeneral query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AlumnosGeneral whereCodigoPostal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AlumnosGeneral whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AlumnosGeneral whereDomicilioCalle($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AlumnosGeneral whereDomicilioColonia($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AlumnosGeneral whereFacebook($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AlumnosGeneral whereNoDeControl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AlumnosGeneral whereTelefono($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AlumnosGeneral whereUpdatedAt($value)
  */
 	class AlumnosGeneral extends \Eloquent {}
 }
@@ -198,16 +198,16 @@ namespace App\Models{
  * @property string|null $especifica_actividad
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia query()
- * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia whereActividad($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia whereConsecutivo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia whereDocente($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia whereEspecificaActividad($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|ApoyoDocencia whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApoyoDocencia newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApoyoDocencia newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApoyoDocencia query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApoyoDocencia whereActividad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApoyoDocencia whereConsecutivo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApoyoDocencia whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApoyoDocencia whereDocente($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApoyoDocencia whereEspecificaActividad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApoyoDocencia wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|ApoyoDocencia whereUpdatedAt($value)
  */
 	class ApoyoDocencia extends \Eloquent {}
 }
@@ -225,16 +225,16 @@ namespace App\Models{
  * @property bool|null $estatus
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|Aula newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Aula newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Aula query()
- * @method static \Illuminate\Database\Eloquent\Builder|Aula whereAula($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Aula whereCapacidad($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Aula whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Aula whereEstatus($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Aula whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Aula whereUbicacion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Aula whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aula newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aula newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aula query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aula whereAula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aula whereCapacidad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aula whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aula whereEstatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aula whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aula whereUbicacion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Aula whereUpdatedAt($value)
  */
 	class Aula extends \Eloquent {}
 }
@@ -253,17 +253,17 @@ namespace App\Models{
  * @property string $carrera
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|AulaAspirante newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|AulaAspirante newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|AulaAspirante query()
- * @method static \Illuminate\Database\Eloquent\Builder|AulaAspirante whereAula($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AulaAspirante whereCapacidad($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AulaAspirante whereCarrera($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AulaAspirante whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AulaAspirante whereDisponibles($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AulaAspirante whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AulaAspirante wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AulaAspirante whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AulaAspirante newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AulaAspirante newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AulaAspirante query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AulaAspirante whereAula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AulaAspirante whereCapacidad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AulaAspirante whereCarrera($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AulaAspirante whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AulaAspirante whereDisponibles($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AulaAspirante whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AulaAspirante wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AulaAspirante whereUpdatedAt($value)
  */
 	class AulaAspirante extends \Eloquent {}
 }
@@ -304,39 +304,39 @@ namespace App\Models{
  * @property string|null $proareas
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion query()
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereAdeudaBiblioteca($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereAdeudaEscolar($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereAdeudaFinancieros($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereAdeudoEspecial($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereAutorizaEscolar($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereBaja($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereCreditosAutorizados($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereCuentaPago($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereEgresa($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereEncuesto($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereEstatusReinscripcion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereFechaHoraPago($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereFechaHoraSeleccion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereFechaRecibo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereIndiceReprobacion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereLugarPago($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereLugarSeleccion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereMotivoAvisoBaja($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereNoDeControl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereOtroMensaje($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereProareas($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion wherePromedio($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion wherePromedioAcumulado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereReciboPago($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereRegular($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereSemestre($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|AvisoReinscripcion whereVoboAdelantaSel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereAdeudaBiblioteca($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereAdeudaEscolar($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereAdeudaFinancieros($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereAdeudoEspecial($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereAutorizaEscolar($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereBaja($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereCreditosAutorizados($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereCuentaPago($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereEgresa($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereEncuesto($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereEstatusReinscripcion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereFechaHoraPago($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereFechaHoraSeleccion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereFechaRecibo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereIndiceReprobacion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereLugarPago($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereLugarSeleccion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereMotivoAvisoBaja($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereNoDeControl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereOtroMensaje($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereProareas($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion wherePromedio($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion wherePromedioAcumulado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereReciboPago($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereRegular($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereSemestre($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|AvisoReinscripcion whereVoboAdelantaSel($value)
  */
 	class AvisoReinscripcion extends \Eloquent {}
 }
@@ -362,24 +362,24 @@ namespace App\Models{
  * @property bool|null $ofertar
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera query()
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera whereCargaMaxima($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera whereCargaMinima($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera whereCarrera($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera whereClaveOficial($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera whereCreditosTotales($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera whereModalidad($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera whereNivelEscolar($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera whereNombreCarrera($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera whereNombreReducido($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera whereNreal($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera whereOfertar($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera whereReticula($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera whereSiglas($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Carrera whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera whereCargaMaxima($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera whereCargaMinima($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera whereCarrera($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera whereClaveOficial($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera whereCreditosTotales($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera whereModalidad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera whereNivelEscolar($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera whereNombreCarrera($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera whereNombreReducido($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera whereNreal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera whereOfertar($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera whereReticula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera whereSiglas($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Carrera whereUpdatedAt($value)
  */
 	class Carrera extends \Eloquent {}
 }
@@ -398,17 +398,17 @@ namespace App\Models{
  * @property int|null $nivel
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|Categoria newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Categoria newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Categoria query()
- * @method static \Illuminate\Database\Eloquent\Builder|Categoria whereCategoria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Categoria whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Categoria whereDescripcion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Categoria whereHoras($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Categoria whereHorasGrupo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Categoria whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Categoria whereNivel($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Categoria whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Categoria newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Categoria newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Categoria query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Categoria whereCategoria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Categoria whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Categoria whereDescripcion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Categoria whereHoras($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Categoria whereHorasGrupo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Categoria whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Categoria whereNivel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Categoria whereUpdatedAt($value)
  */
 	class Categoria extends \Eloquent {}
 }
@@ -422,12 +422,12 @@ namespace App\Models{
  * @property int|null $entidad_federativa
  * @property string|null $nombre_entidad
  * @property string|null $clave_entidad
- * @method static \Illuminate\Database\Eloquent\Builder|EntidadesFederativa newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|EntidadesFederativa newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|EntidadesFederativa query()
- * @method static \Illuminate\Database\Eloquent\Builder|EntidadesFederativa whereClaveEntidad($value)
- * @method static \Illuminate\Database\Eloquent\Builder|EntidadesFederativa whereEntidadFederativa($value)
- * @method static \Illuminate\Database\Eloquent\Builder|EntidadesFederativa whereNombreEntidad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EntidadesFederativa newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EntidadesFederativa newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EntidadesFederativa query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EntidadesFederativa whereClaveEntidad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EntidadesFederativa whereEntidadFederativa($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EntidadesFederativa whereNombreEntidad($value)
  */
 	class EntidadesFederativa extends \Eloquent {}
 }
@@ -448,19 +448,19 @@ namespace App\Models{
  * @property string $nombre_corto
  * @property \Illuminate\Support\Carbon $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|Especialidad newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Especialidad newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Especialidad query()
- * @method static \Illuminate\Database\Eloquent\Builder|Especialidad whereActiva($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Especialidad whereCarrera($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Especialidad whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Especialidad whereCreditosEspecialidad($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Especialidad whereCreditosOptativos($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Especialidad whereEspecialidad($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Especialidad whereNombreCorto($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Especialidad whereNombreEspecialidad($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Especialidad whereReticula($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Especialidad whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Especialidad newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Especialidad newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Especialidad query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Especialidad whereActiva($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Especialidad whereCarrera($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Especialidad whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Especialidad whereCreditosEspecialidad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Especialidad whereCreditosOptativos($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Especialidad whereEspecialidad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Especialidad whereNombreCorto($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Especialidad whereNombreEspecialidad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Especialidad whereReticula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Especialidad whereUpdatedAt($value)
  */
 	class Especialidad extends \Eloquent {}
 }
@@ -473,11 +473,11 @@ namespace App\Models{
  * @mixin Builder
  * @property string $estatus
  * @property string $descripcion
- * @method static \Illuminate\Database\Eloquent\Builder|EstatusAlumno newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|EstatusAlumno newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|EstatusAlumno query()
- * @method static \Illuminate\Database\Eloquent\Builder|EstatusAlumno whereDescripcion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|EstatusAlumno whereEstatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EstatusAlumno newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EstatusAlumno newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EstatusAlumno query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EstatusAlumno whereDescripcion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EstatusAlumno whereEstatus($value)
  */
 	class EstatusAlumno extends \Eloquent {}
 }
@@ -491,28 +491,30 @@ namespace App\Models{
  * @property string $periodo
  * @property string $no_de_control
  * @property string $materia
- * @property string|null $grupo
- * @property string|null $rfc
+ * @property string $grupo
+ * @property int|null $personal
  * @property string|null $clave_area
- * @property string|null $encuesta
- * @property string|null $respuestas
+ * @property string $encuesta
+ * @property string $respuestas
  * @property string|null $resp_abierta
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|EvaluacionAlumno newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|EvaluacionAlumno newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|EvaluacionAlumno query()
- * @method static \Illuminate\Database\Eloquent\Builder|EvaluacionAlumno whereClaveArea($value)
- * @method static \Illuminate\Database\Eloquent\Builder|EvaluacionAlumno whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|EvaluacionAlumno whereEncuesta($value)
- * @method static \Illuminate\Database\Eloquent\Builder|EvaluacionAlumno whereGrupo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|EvaluacionAlumno whereMateria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|EvaluacionAlumno whereNoDeControl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|EvaluacionAlumno wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|EvaluacionAlumno whereRespAbierta($value)
- * @method static \Illuminate\Database\Eloquent\Builder|EvaluacionAlumno whereRespuestas($value)
- * @method static \Illuminate\Database\Eloquent\Builder|EvaluacionAlumno whereRfc($value)
- * @method static \Illuminate\Database\Eloquent\Builder|EvaluacionAlumno whereUpdatedAt($value)
+ * @property int $consecutivo
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAlumno newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAlumno newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAlumno query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAlumno whereClaveArea($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAlumno whereConsecutivo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAlumno whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAlumno whereEncuesta($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAlumno whereGrupo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAlumno whereMateria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAlumno whereNoDeControl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAlumno wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAlumno wherePersonal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAlumno whereRespAbierta($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAlumno whereRespuestas($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAlumno whereUpdatedAt($value)
  */
 	class EvaluacionAlumno extends \Eloquent {}
 }
@@ -530,16 +532,16 @@ namespace App\Models{
  * @property string $fecha_final
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|FechaEvaluacion newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|FechaEvaluacion newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|FechaEvaluacion query()
- * @method static \Illuminate\Database\Eloquent\Builder|FechaEvaluacion whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FechaEvaluacion whereEncuesta($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FechaEvaluacion whereFechaFinal($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FechaEvaluacion whereFechaInicio($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FechaEvaluacion whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FechaEvaluacion wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FechaEvaluacion whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechaEvaluacion newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechaEvaluacion newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechaEvaluacion query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechaEvaluacion whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechaEvaluacion whereEncuesta($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechaEvaluacion whereFechaFinal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechaEvaluacion whereFechaInicio($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechaEvaluacion whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechaEvaluacion wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechaEvaluacion whereUpdatedAt($value)
  */
 	class FechaEvaluacion extends \Eloquent {}
 }
@@ -560,19 +562,19 @@ namespace App\Models{
  * @property int|null $puntero
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|FechasCarrera newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|FechasCarrera newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|FechasCarrera query()
- * @method static \Illuminate\Database\Eloquent\Builder|FechasCarrera whereCarrera($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FechasCarrera whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FechasCarrera whereFechaFin($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FechasCarrera whereFechaInicio($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FechasCarrera whereFechaInscripcion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FechasCarrera whereIntervalo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FechasCarrera wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FechasCarrera wherePersonas($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FechasCarrera wherePuntero($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FechasCarrera whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechasCarrera newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechasCarrera newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechasCarrera query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechasCarrera whereCarrera($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechasCarrera whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechasCarrera whereFechaFin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechasCarrera whereFechaInicio($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechasCarrera whereFechaInscripcion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechasCarrera whereIntervalo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechasCarrera wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechasCarrera wherePersonas($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechasCarrera wherePuntero($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FechasCarrera whereUpdatedAt($value)
  */
 	class FechasCarrera extends \Eloquent {}
 }
@@ -593,19 +595,19 @@ namespace App\Models{
  * @property string|null $quien
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|FolioConstancia newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|FolioConstancia newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|FolioConstancia query()
- * @method static \Illuminate\Database\Eloquent\Builder|FolioConstancia whereAnio($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FolioConstancia whereControl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FolioConstancia whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FolioConstancia whereFecha($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FolioConstancia whereFolio($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FolioConstancia whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FolioConstancia wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FolioConstancia whereQuien($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FolioConstancia whereTipo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|FolioConstancia whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FolioConstancia newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FolioConstancia newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FolioConstancia query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FolioConstancia whereAnio($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FolioConstancia whereControl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FolioConstancia whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FolioConstancia whereFecha($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FolioConstancia whereFolio($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FolioConstancia whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FolioConstancia wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FolioConstancia whereQuien($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FolioConstancia whereTipo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|FolioConstancia whereUpdatedAt($value)
  */
 	class FolioConstancia extends \Eloquent {}
 }
@@ -625,18 +627,18 @@ namespace App\Models{
  * @property string|null $promedio_ponderado
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|GenerarListasTemporal newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|GenerarListasTemporal newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|GenerarListasTemporal query()
- * @method static \Illuminate\Database\Eloquent\Builder|GenerarListasTemporal whereApellidoMaterno($value)
- * @method static \Illuminate\Database\Eloquent\Builder|GenerarListasTemporal whereApellidoPaterno($value)
- * @method static \Illuminate\Database\Eloquent\Builder|GenerarListasTemporal whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|GenerarListasTemporal whereFechaHoraSeleccion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|GenerarListasTemporal whereNoDeControl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|GenerarListasTemporal whereNombreAlumno($value)
- * @method static \Illuminate\Database\Eloquent\Builder|GenerarListasTemporal wherePromedioPonderado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|GenerarListasTemporal whereSemestre($value)
- * @method static \Illuminate\Database\Eloquent\Builder|GenerarListasTemporal whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GenerarListasTemporal newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GenerarListasTemporal newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GenerarListasTemporal query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GenerarListasTemporal whereApellidoMaterno($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GenerarListasTemporal whereApellidoPaterno($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GenerarListasTemporal whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GenerarListasTemporal whereFechaHoraSeleccion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GenerarListasTemporal whereNoDeControl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GenerarListasTemporal whereNombreAlumno($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GenerarListasTemporal wherePromedioPonderado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GenerarListasTemporal whereSemestre($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|GenerarListasTemporal whereUpdatedAt($value)
  */
 	class GenerarListasTemporal extends \Eloquent {}
 }
@@ -663,25 +665,25 @@ namespace App\Models{
  * @property bool|null $entrego
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo query()
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereAlumnosInscritos($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereCapacidadGrupo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereCarrera($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereDocente($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereEntrego($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereEstatusGrupo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereExclusivo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereFolioActa($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereGrupo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereMateria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereParaleloDe($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereReticula($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereTipoPersonal($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Grupo whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo whereAlumnosInscritos($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo whereCapacidadGrupo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo whereCarrera($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo whereDocente($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo whereEntrego($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo whereEstatusGrupo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo whereExclusivo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo whereFolioActa($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo whereGrupo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo whereMateria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo whereParaleloDe($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo whereReticula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo whereTipoPersonal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Grupo whereUpdatedAt($value)
  */
 	class Grupo extends \Eloquent {}
 }
@@ -706,23 +708,23 @@ namespace App\Models{
  * @property string|null $periodo_acredita_materia
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno query()
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereCalificacion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereEstatusMateria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereGrupo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereMateria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereNoDeControl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereNopresento($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno wherePeriodoAcreditaMateria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno wherePlanDeEstudios($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereTipoEvaluacion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HistoriaAlumno whereUsuario($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HistoriaAlumno newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HistoriaAlumno newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HistoriaAlumno query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HistoriaAlumno whereCalificacion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HistoriaAlumno whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HistoriaAlumno whereEstatusMateria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HistoriaAlumno whereGrupo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HistoriaAlumno whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HistoriaAlumno whereMateria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HistoriaAlumno whereNoDeControl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HistoriaAlumno whereNopresento($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HistoriaAlumno wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HistoriaAlumno wherePeriodoAcreditaMateria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HistoriaAlumno wherePlanDeEstudios($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HistoriaAlumno whereTipoEvaluacion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HistoriaAlumno whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HistoriaAlumno whereUsuario($value)
  */
 	class HistoriaAlumno extends \Eloquent {}
 }
@@ -750,26 +752,26 @@ namespace App\Models{
  * @property string|null $tipo_personal
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|Horario newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Horario newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Horario query()
- * @method static \Illuminate\Database\Eloquent\Builder|Horario whereActividad($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Horario whereAula($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Horario whereConsecutivo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Horario whereConsecutivoAdmvo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Horario whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Horario whereDiaSemana($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Horario whereDocente($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Horario whereGrupo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Horario whereHoraFinal($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Horario whereHoraInicial($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Horario whereMateria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Horario wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Horario whereTipoHorario($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Horario whereTipoPersonal($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Horario whereUpdatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Horario whereVigenciaFin($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Horario whereVigenciaInicio($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario whereActividad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario whereAula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario whereConsecutivo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario whereConsecutivoAdmvo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario whereDiaSemana($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario whereDocente($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario whereGrupo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario whereHoraFinal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario whereHoraInicial($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario whereMateria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario whereTipoHorario($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario whereTipoPersonal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario whereVigenciaFin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Horario whereVigenciaInicio($value)
  */
 	class Horario extends \Eloquent {}
 }
@@ -782,19 +784,48 @@ namespace App\Models{
  * @property int $docente
  * @property int $consecutivo_admvo
  * @property int $descripcion_horario
+ * @property string $area_adscripcion
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo query()
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo whereConsecutivoAdmvo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo whereDescripcionHorario($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo whereDocente($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioAdministrativo whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioAdministrativo newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioAdministrativo newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioAdministrativo query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioAdministrativo whereAreaAdscripcion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioAdministrativo whereConsecutivoAdmvo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioAdministrativo whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioAdministrativo whereDescripcionHorario($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioAdministrativo whereDocente($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioAdministrativo wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioAdministrativo whereUpdatedAt($value)
  */
 	class HorarioAdministrativo extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property string $periodo
+ * @property int $personal
+ * @property int $descripcion_horario
+ * @property string $area_adscripcion
+ * @property string|null $observacion
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioNoDocente newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioNoDocente newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioNoDocente query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioNoDocente whereAreaAdscripcion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioNoDocente whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioNoDocente whereDescripcionHorario($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioNoDocente whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioNoDocente whereObservacion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioNoDocente wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioNoDocente wherePersonal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioNoDocente whereUpdatedAt($value)
+ */
+	class HorarioNoDocente extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -808,16 +839,16 @@ namespace App\Models{
  * @property string|null $depto
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion query()
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion whereDepto($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion whereDocente($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion whereObservaciones($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|HorarioObservacion whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioObservacion newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioObservacion newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioObservacion query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioObservacion whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioObservacion whereDepto($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioObservacion whereDocente($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioObservacion whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioObservacion whereObservaciones($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioObservacion wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|HorarioObservacion whereUpdatedAt($value)
  */
 	class HorarioObservacion extends \Eloquent {}
 }
@@ -831,12 +862,12 @@ namespace App\Models{
  * @property int $id
  * @property string|null $idiomas
  * @property string|null $abrev
- * @method static \Illuminate\Database\Eloquent\Builder|Idioma newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Idioma newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Idioma query()
- * @method static \Illuminate\Database\Eloquent\Builder|Idioma whereAbrev($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Idioma whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Idioma whereIdiomas($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Idioma newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Idioma newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Idioma query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Idioma whereAbrev($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Idioma whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Idioma whereIdiomas($value)
  */
 	class Idioma extends \Eloquent {}
 }
@@ -854,16 +885,16 @@ namespace App\Models{
  * @property string $nombre_completo
  * @property string $nombre_abrev
  * @property bool|null $ya_eval
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasGrupo newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasGrupo newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasGrupo query()
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasGrupo whereClave($value)
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasGrupo whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasGrupo whereIdioma($value)
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasGrupo whereNombreAbrev($value)
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasGrupo whereNombreCompleto($value)
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasGrupo wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasGrupo whereYaEval($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasGrupo newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasGrupo newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasGrupo query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasGrupo whereClave($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasGrupo whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasGrupo whereIdioma($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasGrupo whereNombreAbrev($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasGrupo whereNombreCompleto($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasGrupo wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasGrupo whereYaEval($value)
  */
 	class IdiomasGrupo extends \Eloquent {}
 }
@@ -880,15 +911,15 @@ namespace App\Models{
  * @property string|null $liberacion
  * @property int $idioma
  * @property string $opcion
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasLiberacion newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasLiberacion newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasLiberacion query()
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasLiberacion whereCalif($value)
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasLiberacion whereControl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasLiberacion whereIdioma($value)
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasLiberacion whereLiberacion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasLiberacion whereOpcion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|IdiomasLiberacion wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasLiberacion newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasLiberacion newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasLiberacion query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasLiberacion whereCalif($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasLiberacion whereControl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasLiberacion whereIdioma($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasLiberacion whereLiberacion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasLiberacion whereOpcion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|IdiomasLiberacion wherePeriodo($value)
  */
 	class IdiomasLiberacion extends \Eloquent {}
 }
@@ -906,16 +937,16 @@ namespace App\Models{
  * @property string|null $correo
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|Jefe newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Jefe newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Jefe query()
- * @method static \Illuminate\Database\Eloquent\Builder|Jefe whereClaveArea($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Jefe whereCorreo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Jefe whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Jefe whereDescripcionArea($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Jefe whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Jefe whereIdJefe($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Jefe whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Jefe newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Jefe newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Jefe query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Jefe whereClaveArea($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Jefe whereCorreo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Jefe whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Jefe whereDescripcionArea($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Jefe whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Jefe whereIdJefe($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Jefe whereUpdatedAt($value)
  */
 	class Jefe extends \Eloquent {}
 }
@@ -936,19 +967,19 @@ namespace App\Models{
  * @property string|null $generales
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|Materia newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Materia newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Materia query()
- * @method static \Illuminate\Database\Eloquent\Builder|Materia whereCaracterizacion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Materia whereClaveArea($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Materia whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Materia whereGenerales($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Materia whereMateria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Materia whereNivelEscolar($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Materia whereNombreAbreviadoMateria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Materia whereNombreCompletoMateria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Materia whereTipoMateria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Materia whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Materia newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Materia newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Materia query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Materia whereCaracterizacion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Materia whereClaveArea($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Materia whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Materia whereGenerales($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Materia whereMateria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Materia whereNivelEscolar($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Materia whereNombreAbreviadoMateria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Materia whereNombreCompletoMateria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Materia whereTipoMateria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Materia whereUpdatedAt($value)
  */
 	class Materia extends \Eloquent {}
 }
@@ -973,23 +1004,23 @@ namespace App\Models{
  * @property int|null $renglon
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|MateriaCarrera newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|MateriaCarrera newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|MateriaCarrera query()
- * @method static \Illuminate\Database\Eloquent\Builder|MateriaCarrera whereCarrera($value)
- * @method static \Illuminate\Database\Eloquent\Builder|MateriaCarrera whereClaveOficialMateria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|MateriaCarrera whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|MateriaCarrera whereCreditosMateria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|MateriaCarrera whereCreditosPrerrequisito($value)
- * @method static \Illuminate\Database\Eloquent\Builder|MateriaCarrera whereEspecialidad($value)
- * @method static \Illuminate\Database\Eloquent\Builder|MateriaCarrera whereHorasPracticas($value)
- * @method static \Illuminate\Database\Eloquent\Builder|MateriaCarrera whereHorasTeoricas($value)
- * @method static \Illuminate\Database\Eloquent\Builder|MateriaCarrera whereMateria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|MateriaCarrera whereOrdenCertificado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|MateriaCarrera whereRenglon($value)
- * @method static \Illuminate\Database\Eloquent\Builder|MateriaCarrera whereReticula($value)
- * @method static \Illuminate\Database\Eloquent\Builder|MateriaCarrera whereSemestreReticula($value)
- * @method static \Illuminate\Database\Eloquent\Builder|MateriaCarrera whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MateriaCarrera newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MateriaCarrera newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MateriaCarrera query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MateriaCarrera whereCarrera($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MateriaCarrera whereClaveOficialMateria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MateriaCarrera whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MateriaCarrera whereCreditosMateria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MateriaCarrera whereCreditosPrerrequisito($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MateriaCarrera whereEspecialidad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MateriaCarrera whereHorasPracticas($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MateriaCarrera whereHorasTeoricas($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MateriaCarrera whereMateria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MateriaCarrera whereOrdenCertificado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MateriaCarrera whereRenglon($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MateriaCarrera whereReticula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MateriaCarrera whereSemestreReticula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|MateriaCarrera whereUpdatedAt($value)
  */
 	class MateriaCarrera extends \Eloquent {}
 }
@@ -1005,14 +1036,14 @@ namespace App\Models{
  * @property string $descripcion
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|Motivo newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Motivo newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Motivo query()
- * @method static \Illuminate\Database\Eloquent\Builder|Motivo whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Motivo whereDescripcion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Motivo whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Motivo whereMotivo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Motivo whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Motivo newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Motivo newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Motivo query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Motivo whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Motivo whereDescripcion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Motivo whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Motivo whereMotivo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Motivo whereUpdatedAt($value)
  */
 	class Motivo extends \Eloquent {}
 }
@@ -1029,15 +1060,15 @@ namespace App\Models{
  * @property string $municipio
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|Municipio newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Municipio newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Municipio query()
- * @method static \Illuminate\Database\Eloquent\Builder|Municipio whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Municipio whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Municipio whereIdEstado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Municipio whereIdMunicipio($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Municipio whereMunicipio($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Municipio whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Municipio newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Municipio newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Municipio query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Municipio whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Municipio whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Municipio whereIdEstado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Municipio whereIdMunicipio($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Municipio whereMunicipio($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Municipio whereUpdatedAt($value)
  */
 	class Municipio extends \Eloquent {}
 }
@@ -1052,13 +1083,13 @@ namespace App\Models{
  * @property string|null $descripcion_area
  * @property string|null $area_depende
  * @property string|null $siglas
- * @method static \Illuminate\Database\Eloquent\Builder|Organigrama newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Organigrama newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Organigrama query()
- * @method static \Illuminate\Database\Eloquent\Builder|Organigrama whereAreaDepende($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Organigrama whereClaveArea($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Organigrama whereDescripcionArea($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Organigrama whereSiglas($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organigrama newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organigrama newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organigrama query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organigrama whereAreaDepende($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organigrama whereClaveArea($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organigrama whereDescripcionArea($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Organigrama whereSiglas($value)
  */
 	class Organigrama extends \Eloquent {}
 }
@@ -1073,13 +1104,13 @@ namespace App\Models{
  * @property string $ciudad
  * @property string $tec
  * @property string|null $cct
- * @method static \Illuminate\Database\Eloquent\Builder|Parametro newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Parametro newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Parametro query()
- * @method static \Illuminate\Database\Eloquent\Builder|Parametro whereCct($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Parametro whereCiudad($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Parametro whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Parametro whereTec($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parametro newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parametro newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parametro query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parametro whereCct($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parametro whereCiudad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parametro whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parametro whereTec($value)
  */
 	class Parametro extends \Eloquent {}
 }
@@ -1111,30 +1142,30 @@ namespace App\Models{
  * @property bool|null $cambio_carrera
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar query()
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereCambioCarrera($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereCierreHorarios($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereCierreSeleccion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereFechaInicio($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereFechaTermino($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereFinCalDocentes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereFinEspecial($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereFinSeleAlumnos($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereFinVacacionalSs($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereIdentificacionCorta($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereIdentificacionLarga($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereInicioCalDocentes($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereInicioEspecial($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereInicioSeleAlumnos($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereInicioVacacional($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereInicioVacacionalSs($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereTerminoVacacional($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoEscolar whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereCambioCarrera($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereCierreHorarios($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereCierreSeleccion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereFechaInicio($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereFechaTermino($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereFinCalDocentes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereFinEspecial($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereFinSeleAlumnos($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereFinVacacionalSs($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereIdentificacionCorta($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereIdentificacionLarga($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereInicioCalDocentes($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereInicioEspecial($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereInicioSeleAlumnos($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereInicioVacacional($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereInicioVacacionalSs($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereTerminoVacacional($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoEscolar whereUpdatedAt($value)
  */
 	class PeriodoEscolar extends \Eloquent {}
 }
@@ -1154,18 +1185,18 @@ namespace App\Models{
  * @property string|null $termina
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoFicha newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoFicha newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoFicha query()
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoFicha whereActivo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoFicha whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoFicha whereEntrega($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoFicha whereFichas($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoFicha whereFinPrope($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoFicha whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoFicha whereInicioPrope($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoFicha whereTermina($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PeriodoFicha whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoFicha newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoFicha newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoFicha query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoFicha whereActivo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoFicha whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoFicha whereEntrega($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoFicha whereFichas($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoFicha whereFinPrope($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoFicha whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoFicha whereInicioPrope($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoFicha whereTermina($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PeriodoFicha whereUpdatedAt($value)
  */
 	class PeriodoFicha extends \Eloquent {}
 }
@@ -1182,15 +1213,15 @@ namespace App\Models{
  * @property string $email
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera query()
- * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera whereCarrera($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera whereReticula($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PermisosCarrera whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermisosCarrera newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermisosCarrera newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermisosCarrera query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermisosCarrera whereCarrera($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermisosCarrera whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermisosCarrera whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermisosCarrera whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermisosCarrera whereReticula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PermisosCarrera whereUpdatedAt($value)
  */
 	class PermisosCarrera extends \Eloquent {}
 }
@@ -1227,35 +1258,35 @@ namespace App\Models{
  * @property string|null $siglas
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|Personal newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Personal newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Personal query()
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereApellidoMaterno($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereApellidoPaterno($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereApellidosEmpleado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereClaveArea($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereCodigoPostalEmpleado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereColoniaEmpleado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereCorreoElectronico($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereCorreoInstitucion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereCurpEmpleado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereDomicilioEmpleado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereEstadoCivil($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereIngresoRama($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereInicioGobierno($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereInicioPlantel($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereInicioSep($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereNoTarjeta($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereNombramiento($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereNombreEmpleado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereRfc($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereSexoEmpleado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereSiglas($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereStatusEmpleado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereTelefonoEmpleado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Personal whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereApellidoMaterno($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereApellidoPaterno($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereApellidosEmpleado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereClaveArea($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereCodigoPostalEmpleado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereColoniaEmpleado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereCorreoElectronico($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereCorreoInstitucion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereCurpEmpleado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereDomicilioEmpleado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereEstadoCivil($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereIngresoRama($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereInicioGobierno($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereInicioPlantel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereInicioSep($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereNoTarjeta($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereNombramiento($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereNombreEmpleado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereRfc($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereSexoEmpleado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereSiglas($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereStatusEmpleado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereTelefonoEmpleado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Personal whereUpdatedAt($value)
  */
 	class Personal extends \Eloquent {}
 }
@@ -1273,16 +1304,16 @@ namespace App\Models{
  * @property string|null $nivel
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalCarrera newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalCarrera newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalCarrera query()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalCarrera whereCarrera($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalCarrera whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalCarrera whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalCarrera whereNivel($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalCarrera whereNombreCorto($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalCarrera whereSiglas($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalCarrera whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalCarrera newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalCarrera newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalCarrera query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalCarrera whereCarrera($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalCarrera whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalCarrera whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalCarrera whereNivel($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalCarrera whereNombreCorto($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalCarrera whereSiglas($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalCarrera whereUpdatedAt($value)
  */
 	class PersonalCarrera extends \Eloquent {}
 }
@@ -1299,15 +1330,15 @@ namespace App\Models{
  * @property string $tabla
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalDato newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalDato newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalDato query()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalDato whereCampo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalDato whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalDato whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalDato whereLectura($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalDato whereTabla($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalDato whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalDato newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalDato newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalDato query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalDato whereCampo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalDato whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalDato whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalDato whereLectura($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalDato whereTabla($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalDato whereUpdatedAt($value)
  */
 	class PersonalDato extends \Eloquent {}
 }
@@ -1320,11 +1351,11 @@ namespace App\Models{
  * @mixin Builder
  * @property string $estatus
  * @property string|null $descripcion
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstatus newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstatus newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstatus query()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstatus whereDescripcion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstatus whereEstatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalEstatus newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalEstatus newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalEstatus query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalEstatus whereDescripcion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalEstatus whereEstatus($value)
  */
 	class PersonalEstatus extends \Eloquent {}
 }
@@ -1344,18 +1375,18 @@ namespace App\Models{
  * @property string|null $cedula
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstudio newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstudio newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstudio query()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstudio whereCedula($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstudio whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstudio whereFechaFinal($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstudio whereFechaInicio($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstudio whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstudio whereIdCarrera($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstudio whereIdDocente($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstudio whereIdEscuela($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalEstudio whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalEstudio newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalEstudio newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalEstudio query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalEstudio whereCedula($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalEstudio whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalEstudio whereFechaFinal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalEstudio whereFechaInicio($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalEstudio whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalEstudio whereIdCarrera($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalEstudio whereIdDocente($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalEstudio whereIdEscuela($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalEstudio whereUpdatedAt($value)
  */
 	class PersonalEstudio extends \Eloquent {}
 }
@@ -1373,16 +1404,16 @@ namespace App\Models{
  * @property string|null $nombre
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalInstitEstudio newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalInstitEstudio newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalInstitEstudio query()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalInstitEstudio whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalInstitEstudio whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalInstitEstudio whereIdEscuela($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalInstitEstudio whereIdEstado($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalInstitEstudio whereIdMunicipio($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalInstitEstudio whereNombre($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalInstitEstudio whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalInstitEstudio newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalInstitEstudio newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalInstitEstudio query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalInstitEstudio whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalInstitEstudio whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalInstitEstudio whereIdEscuela($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalInstitEstudio whereIdEstado($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalInstitEstudio whereIdMunicipio($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalInstitEstudio whereNombre($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalInstitEstudio whereUpdatedAt($value)
  */
 	class PersonalInstitEstudio extends \Eloquent {}
 }
@@ -1398,14 +1429,14 @@ namespace App\Models{
  * @property string $descripcion
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalNivelEstudio newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalNivelEstudio newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalNivelEstudio query()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalNivelEstudio whereCaracter($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalNivelEstudio whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalNivelEstudio whereDescripcion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalNivelEstudio whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalNivelEstudio whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalNivelEstudio newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalNivelEstudio newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalNivelEstudio query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalNivelEstudio whereCaracter($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalNivelEstudio whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalNivelEstudio whereDescripcion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalNivelEstudio whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalNivelEstudio whereUpdatedAt($value)
  */
 	class PersonalNivelEstudio extends \Eloquent {}
 }
@@ -1421,14 +1452,14 @@ namespace App\Models{
  * @property string $descripcion
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalNombramiento newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalNombramiento newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalNombramiento query()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalNombramiento whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalNombramiento whereDescripcion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalNombramiento whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalNombramiento whereLetra($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalNombramiento whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalNombramiento newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalNombramiento newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalNombramiento query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalNombramiento whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalNombramiento whereDescripcion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalNombramiento whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalNombramiento whereLetra($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalNombramiento whereUpdatedAt($value)
  */
 	class PersonalNombramiento extends \Eloquent {}
 }
@@ -1452,22 +1483,22 @@ namespace App\Models{
  * @property string $efectos_finales
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalPlaza newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalPlaza newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalPlaza query()
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalPlaza whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalPlaza whereDiagonal($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalPlaza whereEfectosFinales($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalPlaza whereEfectosIniciales($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalPlaza whereEstatusPlaza($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalPlaza whereHoras($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalPlaza whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalPlaza whereIdCategoria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalPlaza whereIdMotivo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalPlaza whereIdPersonal($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalPlaza whereSubunidad($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalPlaza whereUnidad($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PersonalPlaza whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalPlaza newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalPlaza newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalPlaza query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalPlaza whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalPlaza whereDiagonal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalPlaza whereEfectosFinales($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalPlaza whereEfectosIniciales($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalPlaza whereEstatusPlaza($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalPlaza whereHoras($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalPlaza whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalPlaza whereIdCategoria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalPlaza whereIdMotivo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalPlaza whereIdPersonal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalPlaza whereSubunidad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalPlaza whereUnidad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PersonalPlaza whereUpdatedAt($value)
  */
 	class PersonalPlaza extends \Eloquent {}
 }
@@ -1480,11 +1511,11 @@ namespace App\Models{
  * @mixin Builder
  * @property int $plan_de_estudio
  * @property string $descripcion
- * @method static \Illuminate\Database\Eloquent\Builder|PlanDeEstudio newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PlanDeEstudio newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|PlanDeEstudio query()
- * @method static \Illuminate\Database\Eloquent\Builder|PlanDeEstudio whereDescripcion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|PlanDeEstudio wherePlanDeEstudio($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlanDeEstudio newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlanDeEstudio newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlanDeEstudio query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlanDeEstudio whereDescripcion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|PlanDeEstudio wherePlanDeEstudio($value)
  */
 	class PlanDeEstudio extends \Eloquent {}
 }
@@ -1493,13 +1524,38 @@ namespace App\Models{
 /**
  * 
  *
+ * @property string $encuesta
+ * @property string $aspecto
+ * @property int $no_pregunta
+ * @property string|null $pregunta
+ * @property string|null $respuestas
+ * @property int|null $resp_val
+ * @property int $consecutivo
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pregunta newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pregunta newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pregunta query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pregunta whereAspecto($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pregunta whereConsecutivo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pregunta whereEncuesta($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pregunta whereNoPregunta($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pregunta wherePregunta($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pregunta whereRespVal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Pregunta whereRespuestas($value)
+ */
+	class Pregunta extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
  * @property int|null $clave_puesto
  * @property string|null $descripcion_puesto
- * @method static \Illuminate\Database\Eloquent\Builder|Puesto newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Puesto newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Puesto query()
- * @method static \Illuminate\Database\Eloquent\Builder|Puesto whereClavePuesto($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Puesto whereDescripcionPuesto($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Puesto newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Puesto newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Puesto query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Puesto whereClavePuesto($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Puesto whereDescripcionPuesto($value)
  */
 	class Puesto extends \Eloquent {}
 }
@@ -1515,14 +1571,14 @@ namespace App\Models{
  * @property string $description
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|Role newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Role newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|Role query()
- * @method static \Illuminate\Database\Eloquent\Builder|Role whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Role whereDescription($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Role whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Role whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Role whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Role newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Role newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Role query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Role whereUpdatedAt($value)
  */
 	class Role extends \Eloquent {}
 }
@@ -1546,24 +1602,53 @@ namespace App\Models{
  * @property string|null $global
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @method static \Illuminate\Database\Eloquent\Builder|SeleccionMateria newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|SeleccionMateria newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|SeleccionMateria query()
- * @method static \Illuminate\Database\Eloquent\Builder|SeleccionMateria whereCalificacion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|SeleccionMateria whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|SeleccionMateria whereFechaHoraSeleccion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|SeleccionMateria whereGlobal($value)
- * @method static \Illuminate\Database\Eloquent\Builder|SeleccionMateria whereGrupo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|SeleccionMateria whereMateria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|SeleccionMateria whereNoDeControl($value)
- * @method static \Illuminate\Database\Eloquent\Builder|SeleccionMateria whereNopresento($value)
- * @method static \Illuminate\Database\Eloquent\Builder|SeleccionMateria wherePeriodo($value)
- * @method static \Illuminate\Database\Eloquent\Builder|SeleccionMateria whereRepeticion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|SeleccionMateria whereStatusSeleccion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|SeleccionMateria whereTipoEvaluacion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|SeleccionMateria whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateria newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateria newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateria query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateria whereCalificacion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateria whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateria whereFechaHoraSeleccion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateria whereGlobal($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateria whereGrupo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateria whereMateria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateria whereNoDeControl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateria whereNopresento($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateria wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateria whereRepeticion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateria whereStatusSeleccion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateria whereTipoEvaluacion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateria whereUpdatedAt($value)
  */
 	class SeleccionMateria extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property string $periodo
+ * @property string $no_de_control
+ * @property string $materia
+ * @property string $grupo
+ * @property string $movimiento
+ * @property string $responsable
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateriaLog newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateriaLog newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateriaLog query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateriaLog whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateriaLog whereGrupo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateriaLog whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateriaLog whereMateria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateriaLog whereMovimiento($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateriaLog whereNoDeControl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateriaLog wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateriaLog whereResponsable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|SeleccionMateriaLog whereUpdatedAt($value)
+ */
+	class SeleccionMateriaLog extends \Eloquent {}
 }
 
 namespace App\Models{
@@ -1580,17 +1665,17 @@ namespace App\Models{
  * @property string|null $usocurso
  * @property string|null $nosegundas
  * @property int|null $prioridad
- * @method static \Illuminate\Database\Eloquent\Builder|TipoEvaluacion newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|TipoEvaluacion newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|TipoEvaluacion query()
- * @method static \Illuminate\Database\Eloquent\Builder|TipoEvaluacion whereCalifMinimaAprobatoria($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TipoEvaluacion whereDescripcionCortaEvaluacion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TipoEvaluacion whereDescripcionEvaluacion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TipoEvaluacion whereNosegundas($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TipoEvaluacion wherePlanDeEstudios($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TipoEvaluacion wherePrioridad($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TipoEvaluacion whereTipoEvaluacion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TipoEvaluacion whereUsocurso($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TipoEvaluacion newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TipoEvaluacion newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TipoEvaluacion query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TipoEvaluacion whereCalifMinimaAprobatoria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TipoEvaluacion whereDescripcionCortaEvaluacion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TipoEvaluacion whereDescripcionEvaluacion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TipoEvaluacion whereNosegundas($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TipoEvaluacion wherePlanDeEstudios($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TipoEvaluacion wherePrioridad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TipoEvaluacion whereTipoEvaluacion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TipoEvaluacion whereUsocurso($value)
  */
 	class TipoEvaluacion extends \Eloquent {}
 }
@@ -1603,11 +1688,11 @@ namespace App\Models{
  * @mixin Builder
  * @property int $id
  * @property string $descripcion
- * @method static \Illuminate\Database\Eloquent\Builder|TiposIngreso newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|TiposIngreso newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|TiposIngreso query()
- * @method static \Illuminate\Database\Eloquent\Builder|TiposIngreso whereDescripcion($value)
- * @method static \Illuminate\Database\Eloquent\Builder|TiposIngreso whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TiposIngreso newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TiposIngreso newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TiposIngreso query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TiposIngreso whereDescripcion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|TiposIngreso whereId($value)
  */
 	class TiposIngreso extends \Eloquent {}
 }
@@ -1622,7 +1707,7 @@ namespace App\Models{
  * @property string $name
  * @property string $email
  * @property \Illuminate\Support\Carbon|null $email_verified_at
- * @property mixed $password
+ * @property string $password
  * @property string|null $remember_token
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
@@ -1635,18 +1720,18 @@ namespace App\Models{
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Laravel\Sanctum\PersonalAccessToken> $tokens
  * @property-read int|null $tokens_count
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
- * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
- * @method static \Illuminate\Database\Eloquent\Builder|User query()
- * @method static \Illuminate\Database\Eloquent\Builder|User whereCreatedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereEmail($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereEmailVerifiedAt($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereName($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User wherePassword($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereRememberToken($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereTwoFactorSecret($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmailVerifiedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereTwoFactorSecret($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
  */
 	class User extends \Eloquent {}
 }

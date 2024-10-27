@@ -14,8 +14,8 @@ de datos con la estructura en PostgreSQL (sin valores) así como las definicione
 tablas y procedimientos que, hasta el momento, cuenta el sistema.
 
 Los módulos que se han migrado son:
-* Servicios Escolares (100%).
-* Estudiantes (90%).
+* Servicios Escolares (98%).
+* Estudiantes (100%).
 * División de Estudios Profesionales (100%).
 * Jefaturas Académicas (100%).
 * Planeación (40%).

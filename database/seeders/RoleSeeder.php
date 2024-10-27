@@ -50,6 +50,10 @@ class RoleSeeder extends Seeder
         $role->description='Jefaturas Académicas';
         $role->save();
 
+        $role=new Role();
+        $role->name='alumno';
+        $role->description='Alumnos';
+        $role->save();
 
     }
 }

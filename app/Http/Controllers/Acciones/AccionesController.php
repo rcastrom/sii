@@ -321,7 +321,7 @@ class AccionesController extends Controller
             ->join('carreras',function(JoinClause $join){
                 $join->on('carreras.carrera','=','permisos_carreras.carrera')
                     ->on('carreras.reticula','=','permisos_carreras.reticula');
-            })->select('carreras.carrera','carreras.reticula','carreras.nombre_reducido')
+            })->select(['carreras.carrera','carreras.reticula','carreras.nombre_reducido'])
             ->orderBy('nombre_reducido','ASC')
             ->orderBy('reticula','ASC')
             ->get();
@@ -407,5 +407,76 @@ class AccionesController extends Controller
     public function nivel_academico_docente($id_docente)
     {
         return DB::select("select * from pac_nivel_academico($id_docente)");
+    }
+
+    /*
+     * Indica las materias en las que el estudiante no ha evaluado al docente
+     * @param string $periodo
+     * @param string $control
+     * @return array $data
+     */
+    public function materias_evaluar($periodo, $control){
+        return DB::select("SELECT * FROM evl_omitir_mat_alu('$periodo','$control');");
+    }
+
+    /*
+     * Indica si el estudiante está en fecha de reinscripción
+     */
+    public function en_fecha($periodo)
+    {
+        return DB::select('SELECT 1 AS si FROM periodos_escolares WHERE periodo = :periodo
+        AND CURRENT_DATE BETWEEN inicio_sele_alumnos AND fin_sele_alumnos',['periodo'=>$periodo]);
+    }
+
+    /*
+     * Indica si el estudiante está en su fecha - hora de selección materias
+     */
+    public function en_tiempo_reinscripcion($periodo,$control)
+    {
+        return DB::select('SELECT 1 AS si FROM avisos_reinscripcion WHERE periodo = :periodo
+        AND no_de_control = :control AND CURRENT_TIMESTAMP > fecha_hora_seleccion',['periodo'=>$periodo,'control'=>$control]);
+    }
+
+    /*
+     * Determina si la materia está en especial o no, y si fue seleccionada
+     */
+    public function verifica_especial($control, $periodo)
+    {
+        return DB::select("select * from pac_verifica_especial('$control','$periodo')");
+    }
+
+    /*
+     * Determina si la materia está en repetición o no, y si fue seleccionada
+     */
+    public function verifica_repite($control, $periodo)
+    {
+        return DB::select("select * from pac_verifica_repite('$control','$periodo')");
+    }
+
+    /*
+     * Grupos que se ofertan para la reinscripción
+     */
+    public function grupos_materia($periodo, $control, $materia)
+    {
+        return DB::select("select * from pac_gruposmateria('$periodo','$control','$materia')");
+    }
+
+    /*
+     * Determina si el estudiante tiene otra materia que le impida el cruce
+     */
+    public function cruce_horario($periodo,$control,$dia,$hinicial,$hfinal)
+    {
+        return DB::select('select 1 as si from seleccion_materias SM, horarios H where SM.periodo = H.periodo
+                and SM.materia = H.materia
+                and SM.grupo = H.grupo
+                and SM.periodo = :periodo
+                and SM.no_de_control = :no_de_control
+                and  H.dia_semana = :dia
+                and  ( H.hora_inicial = :hora_inicial  or
+                    ( (hora_inicial < :hora_inicial) and (:hora_inicial < hora_final) )  or
+                    ( (hora_inicial < :hora_final) and (:hora_final < hora_final) )  or
+                    ( (:hora_inicial < hora_inicial) and (hora_inicial < :hora_final)) or
+                    ( (hora_inicial > :hora_inicial) and (hora_final < :hora_final))
+                )',['periodo'=>$periodo,'no_de_control'=>$control,'dia'=>$dia,'hora_inicial'=>$hinicial,'hora_final'=>$hfinal]);
     }
 }
