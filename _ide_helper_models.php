@@ -343,6 +343,17 @@ namespace App\Models{
 
 namespace App\Models{
 /**
+ * 
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CalificacionParcial newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CalificacionParcial newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CalificacionParcial query()
+ */
+	class CalificacionParcial extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
  * Class Carrera
  *
  * @package App
@@ -1113,6 +1124,33 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|Parametro whereTec($value)
  */
 	class Parametro extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property string $periodo
+ * @property string $materia
+ * @property string $grupo
+ * @property int $unidad
+ * @property int $docente
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parcial newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parcial newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parcial query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parcial whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parcial whereDocente($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parcial whereGrupo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parcial whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parcial whereMateria($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parcial wherePeriodo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parcial whereUnidad($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Parcial whereUpdatedAt($value)
+ */
+	class Parcial extends \Eloquent {}
 }
 
 namespace App\Models{

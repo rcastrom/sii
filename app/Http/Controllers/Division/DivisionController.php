@@ -774,7 +774,7 @@ class DivisionController extends Controller
             'materia'=>$materia,
             'grupo'=>$grupo,
             'movimiento'=>'B',
-            'cuando'=>Carbon::now(),
+            'created_at'=>Carbon::now(),
             'responsable'=>$quien
         ]);
         //Cantidad de inscritos

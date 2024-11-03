@@ -10,6 +10,11 @@ use App\Models\Materia;
 use App\Models\PeriodoEscolar;
 use App\Models\Personal;
 use App\Models\SeleccionMateria;
+use App\Models\Parcial;
+use App\Models\CalificacionParcial;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Events\Dispatcher;
 use App\Http\Controllers\MenuDocenteController;
@@ -17,6 +22,7 @@ use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\ListasExport;
 use PDF;
+use PhpOffice\PhpSpreadsheet\Exception;
 
 class DocenteController extends Controller
 {
@@ -31,39 +37,35 @@ class DocenteController extends Controller
         $correo=Auth::user()->email;
         return Personal::where('correo_institucion',$correo)->first();
     }
-    public function encurso(){
-        $periodo_actual=(new AccionesController)->periodo();
-        $periodo=$periodo_actual[0]->periodo;
-        $doc=$this->docente();
-        if(Grupo::where('periodo',$periodo)->where('rfc',$doc->rfc)->count()>0){
-            $materias=Grupo::where('periodo',$periodo)
-                ->where('rfc',$doc->rfc)
-                ->join('materias','grupos.materia','=','materias.materia')
-                ->get();
-            $nperiodo=PeriodoEscolar::where('periodo',$periodo)->first();
-            $encabezado="Grupos del semestre en curso";
-            return view('personal.prelistas')->with(compact('materias',
-                'nperiodo','encabezado','periodo'));
-        }else{
-            $encabezado="Sin grupos";
-            $mensaje="No cuenta con grupos en el período actual";
-            return view('personal.no')->with(compact('mensaje','encabezado'));
-        }
+    public function grupos_semestre(){
+        return $this->extracted(2);
     }
+    public function encurso(){
+        return $this->extracted(1);
+    }
+    public function consulta_parciales(){
+        return $this->extracted(3);
+    }
+
     public function lista($per,$mat,$gpo){
-        $periodo=base64_decode($per); $materia=base64_decode($mat); $grupo=base64_decode($gpo);
+        $periodo=base64_decode($per);
+        $materia=base64_decode($mat);
+        $grupo=base64_decode($gpo);
         $doc=$this->docente();
         if(SeleccionMateria::where('periodo',$periodo)
                 ->where('materia',$materia)
                 ->where('grupo',$grupo)
                 ->count()>0){
-            $inscritos=SeleccionMateria::where('periodo',$periodo)
-                ->where('materia',$materia)
-                ->where('grupo',$grupo)
-                ->join('alumnos','seleccion_materias.no_de_control','=','alumnos.no_de_control')
-                ->orderBy('apellido_paterno','ASC')
-                ->orderBy('apellido_materno','ASC')
-                ->orderBy('nombre_alumno','ASC')
+            $inscritos=SeleccionMateria::where([
+                'periodo' => $periodo,
+                'materia' => $materia,
+                'grupo' => $grupo
+            ])->join('alumnos','seleccion_materias.no_de_control','=','alumnos.no_de_control')
+                ->select(['seleccion_materias.no_de_control','alumnos.apellido_paterno',
+                    'alumnos.apellido_materno','alumnos.nombre_alumno'])
+                ->orderBy('alumnos.apellido_paterno','ASC')
+                ->orderBy('alumnos.apellido_materno','ASC')
+                ->orderBy('alumnos.nombre_alumno','ASC')
                 ->get();
             $nombre_mat=Materia::where('materia',$materia)->first();
             $nperiodo=PeriodoEscolar::where('periodo',$periodo)->first();
@@ -82,30 +84,40 @@ class DocenteController extends Controller
             return view('personal.no')->with(compact('mensaje','encabezado'));
         }
     }
-    public function excel($per,$mat,$gpo){
-        $periodo=base64_decode($per); $materia=base64_decode($mat); $grupo=base64_decode($gpo);
+
+    /**
+     * @throws Exception
+     * @throws \PhpOffice\PhpSpreadsheet\Writer\Exception
+     */
+    public function excel($per, $mat, $gpo){
+        $periodo=base64_decode($per);
+        $materia=base64_decode($mat);
+        $grupo=base64_decode($gpo);
         if(SeleccionMateria::where('periodo',$periodo)
                 ->where('materia',$materia)
                 ->where('grupo',$grupo)
                 ->count()>0){
-            $inscritos=SeleccionMateria::where('periodo',$periodo)
-                ->where('materia',$materia)
-                ->where('grupo',$grupo)
-                ->join('alumnos','seleccion_materias.no_de_control','=','alumnos.no_de_control')
-                ->select('seleccion_materias.no_de_control','apellido_paterno','apellido_materno','nombre_alumno')
-                ->orderBy('apellido_paterno','ASC')
-                ->orderBy('apellido_materno','ASC')
-                ->orderBy('nombre_alumno','ASC')
+            $inscritos=SeleccionMateria::where([
+                'periodo' => $periodo,
+                'materia' => $materia,
+                'grupo' => $grupo
+            ])->join('alumnos','seleccion_materias.no_de_control','=','alumnos.no_de_control')
+                ->select(['seleccion_materias.no_de_control','alumnos.apellido_paterno',
+                    'alumnos.apellido_materno','alumnos.nombre_alumno'])
+                ->orderBy('alumnos.apellido_paterno','ASC')
+                ->orderBy('alumnos.apellido_materno','ASC')
+                ->orderBy('alumnos.nombre_alumno','ASC')
                 ->get();
             return Excel::download(new ListasExport($inscritos),'lista.xlsx');
-        }else{
-            $encabezado="Error de consulta de lista";
-            $mensaje="No cuenta con alumnos inscritos en la materia";
-            return view('personal.no')->with(compact('mensaje','encabezado'));
         }
+        $encabezado="Error de consulta de lista";
+        $mensaje="No cuenta con alumnos inscritos en la materia";
+        return view('personal.no')->with(compact('mensaje','encabezado'));
     }
     public function evaluar($per,$mat,$gpo){
-        $periodo=base64_decode($per); $materia=base64_decode($mat); $grupo=base64_decode($gpo);
+        $periodo=base64_decode($per);
+        $materia=base64_decode($mat);
+        $grupo=base64_decode($gpo);
         $calificar=(new AccionesController)->calificar($periodo);
         if(!empty($calificar)) {
             if (SeleccionMateria::where('periodo', $periodo)
@@ -115,14 +127,16 @@ class DocenteController extends Controller
                 $mensaje="La materia ha sido evaluada";
                 return view('personal.no')->with(compact('mensaje','encabezado'));
             }else{
-                $inscritos = SeleccionMateria::where('periodo', $periodo)
-                    ->where('materia', $materia)
-                    ->where('grupo', $grupo)
-                    ->join('alumnos', 'seleccion_materias.no_de_control', '=', 'alumnos.no_de_control')
-                    ->select('seleccion_materias.no_de_control', 'apellido_paterno', 'apellido_materno', 'nombre_alumno')
-                    ->orderBy('apellido_paterno', 'ASC')
-                    ->orderBy('apellido_materno', 'ASC')
-                    ->orderBy('nombre_alumno', 'ASC')
+                $inscritos = SeleccionMateria::where([
+                    'periodo' => $periodo,
+                    'materia' => $materia,
+                    'grupo' => $grupo
+                ])->join('alumnos','seleccion_materias.no_de_control','=','alumnos.no_de_control')
+                    ->select(['seleccion_materias.no_de_control','alumnos.apellido_paterno',
+                        'alumnos.apellido_materno','alumnos.nombre_alumno'])
+                    ->orderBy('alumnos.apellido_paterno','ASC')
+                    ->orderBy('alumnos.apellido_materno','ASC')
+                    ->orderBy('alumnos.nombre_alumno','ASC')
                     ->get();
                 $nombre_mat = Materia::where('materia', $materia)->first();
                 $doc=$this->docente();
@@ -134,7 +148,8 @@ class DocenteController extends Controller
             }
         }else{
             $fechas=PeriodoEscolar::where('periodo',$periodo)
-                ->select('inicio_cal_docentes','fin_cal_docentes')->first();
+                ->select(['inicio_cal_docentes','fin_cal_docentes'])
+                ->first();
             $inicio=$fechas->inicio_cal_docentes;
             $fin=$fechas->fin_cal_docentes;
             $encabezado="Error de captura de calificaciones finales";
@@ -143,7 +158,9 @@ class DocenteController extends Controller
         }
     }
     public function acta($per,$mat,$gpo){
-        $periodo=base64_decode($per); $materia=base64_decode($mat); $grupo=base64_decode($gpo);
+        $periodo=base64_decode($per);
+        $materia=base64_decode($mat);
+        $grupo=base64_decode($gpo);
         if(SeleccionMateria::where('periodo',$periodo)
                 ->where('materia',$materia)
                 ->where('grupo',$grupo)
@@ -153,14 +170,16 @@ class DocenteController extends Controller
                     ->where('grupo',$grupo)
                     ->whereNotNull('calificacion')
                     ->count()>0){
-                $inscritos=SeleccionMateria::where('periodo',$periodo)
-                    ->where('materia',$materia)
-                    ->where('grupo',$grupo)
-                    ->join('alumnos','seleccion_materias.no_de_control','=','alumnos.no_de_control')
-                    ->select('seleccion_materias.no_de_control','apellido_paterno','apellido_materno','nombre_alumno','calificacion')
-                    ->orderBy('apellido_paterno','ASC')
-                    ->orderBy('apellido_materno','ASC')
-                    ->orderBy('nombre_alumno','ASC')
+                $inscritos=SeleccionMateria::where([
+                    'periodo' => $periodo,
+                    'materia' => $materia,
+                    'grupo' => $grupo
+                ])->join('alumnos','seleccion_materias.no_de_control','=','alumnos.no_de_control')
+                    ->select(['seleccion_materias.no_de_control','alumnos.apellido_paterno',
+                        'alumnos.apellido_materno','alumnos.nombre_alumno'])
+                    ->orderBy('alumnos.apellido_paterno','ASC')
+                    ->orderBy('alumnos.apellido_materno','ASC')
+                    ->orderBy('alumnos.nombre_alumno','ASC')
                     ->get();
                 $datos=Grupo::where('periodo',$periodo)
                     ->where('materia',$materia)
@@ -198,7 +217,7 @@ class DocenteController extends Controller
         $inscritos = SeleccionMateria::where('periodo', $periodo)
             ->where('materia', $materia)
             ->where('grupo', $grupo)
-            ->select('no_de_control','repeticion')
+            ->select(['no_de_control','repeticion'])
             ->get();
         foreach ($inscritos as $alumnos) {
             $control = $alumnos->no_de_control;
@@ -246,4 +265,170 @@ class DocenteController extends Controller
                 'quienes','encabezado'));
         }
     }
+
+    /**
+     * @param $accion
+     * @return Factory|View|Application|\Illuminate\View\View
+     */
+    public function extracted($accion): \Illuminate\View\View|Application|Factory|View
+    {
+        $periodo_actual = (new AccionesController)->periodo();
+        $periodo = $periodo_actual[0]->periodo;
+        $doc = $this->docente();
+        if (Grupo::where('periodo', $periodo)->where('docente', $doc->id)->count() > 0) {
+            $materias = Grupo::where('periodo', $periodo)
+                ->where('docente', $doc->id)
+                ->join('materias', 'grupos.materia', '=', 'materias.materia')
+                ->get();
+            $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
+            if($accion==1){
+                $encabezado = "Grupos del semestre en curso";
+                return view('personal.prelistas')->with(compact('materias',
+                    'nperiodo', 'encabezado', 'periodo'));
+            }elseif($accion==2){
+                $encabezado="Calificaciones parciales";
+                return view('personal.parciales')->with(compact('materias',
+                    'nperiodo', 'encabezado', 'periodo'));
+            }else{
+                $encabezado="Consulta de calificaciones parciales";
+                return view('personal.parciales_consulta')->with(compact('materias',
+                    'nperiodo', 'encabezado', 'periodo'));
+            }
+        } else {
+            $encabezado = "Sin grupos";
+            $mensaje = "No cuenta con grupos en el período actual";
+            return view('personal.no')->with(compact('mensaje', 'encabezado'));
+        }
+    }
+    public function preparciales(Request $request)
+    {
+        $request->validate([
+            'unidad'=>'required',
+        ], [
+            'unidad.required'=>'Debe indicar la unidad por evaluar',
+        ]);
+        $periodo_actual = (new AccionesController)->periodo();
+        $periodo = $periodo_actual[0]->periodo;
+        $doc = $this->docente();
+        $datos_materia=explode('_',$request->get('materia'));
+        $materia=$datos_materia[0];
+        $grupo=$datos_materia[1];
+        $unidad=$request->get('unidad');
+        $alumnos=SeleccionMateria::where([
+            'periodo' => $periodo,
+            'materia' => $materia,
+            'grupo' => $grupo
+        ])->join('alumnos','seleccion_materias.no_de_control','=','alumnos.no_de_control')
+            ->select(['seleccion_materias.no_de_control','alumnos.apellido_paterno',
+                'alumnos.apellido_materno','alumnos.nombre_alumno'])
+            ->orderBy('alumnos.apellido_paterno','ASC')
+            ->orderBy('alumnos.apellido_materno','ASC')
+            ->orderBy('alumnos.nombre_alumno','ASC')
+            ->get();
+        $encabezado="Calificaciones parciales del semestre";
+        $nmateria=Materia::where('materia',$materia)
+            ->select('nombre_completo_materia')
+            ->first();
+        if(Parcial::where([
+            'periodo' => $periodo,
+            'docente' => $doc->id,
+            'materia' => $materia,
+            'unidad' => $unidad,
+            'grupo' => $grupo
+        ])->count() > 0){
+            $parcial=Parcial::where([
+                'periodo' => $periodo,
+                'docente' => $doc->id,
+                'materia' => $materia,
+                'unidad' => $unidad,
+                'grupo' => $grupo
+            ])->select('id')->first();
+            if(CalificacionParcial::where('parcial',$parcial->id)->count() > 0){
+                $registros=CalificacionParcial::where('parcial',$parcial->id)
+                    ->select('no_de_control')
+                    ->get();
+                foreach ($registros as $registro) {
+                    $data[]=$registro->no_de_control;
+                }
+                $faltantes=SeleccionMateria::where([
+                    'periodo'=>$periodo,
+                    'materia'=>$materia,
+                    'grupo' => $grupo
+                ])->select('no_de_control')
+                ->whereNotIn('no_de_control',$data)
+                    ->get();
+                if(!empty($faltantes)){
+                    foreach ($faltantes as $faltante) {
+                        CalificacionParcial::insert([
+                            'parcial'=>$parcial->id,
+                            'no_de_control'=>$faltante->no_de_control,
+                            'calificacion'=>0,
+                            'desertor'=>false
+                        ]);
+                    }
+                }
+                $alumnos=CalificacionParcial::where('parcial',$parcial->id)
+                    ->join('alumnos','calificaciones_parciales.no_de_control'
+                        ,'=','alumnos.no_de_control')
+                    ->select(['calificaciones_parciales.no_de_control','alumnos.apellido_paterno',
+                        'alumnos.apellido_materno','alumnos.nombre_alumno',
+                        'calificaciones_parciales.calificacion',
+                        'calificaciones_parciales.desertor','calificaciones_parciales.id'])
+                    ->orderBy('alumnos.apellido_paterno','ASC')
+                    ->orderBy('alumnos.apellido_materno','ASC')
+                    ->orderBy('alumnos.nombre_alumno','ASC')
+                    ->get();
+                $id=$parcial->id;
+                return view('personal.evalparcial1')
+                    ->with(compact('nmateria','encabezado','unidad','alumnos','id'));
+            }
+        }
+        $docente=$doc->id;
+        return view('personal.evalparcial')
+        ->with(compact('periodo','grupo',
+            'encabezado','materia','unidad','nmateria','alumnos','docente'));
+    }
+    public function consulta_calificaciones(Request $request){
+        $periodo_actual = (new AccionesController)->periodo();
+        $periodo = $periodo_actual[0]->periodo;
+        $doc = $this->docente();
+        $datos_materia=explode('_',$request->get('materia'));
+        $materia=$datos_materia[0];
+        $grupo=$datos_materia[1];
+        $encabezado="Consulta de calificaciones";
+        if(Parcial::where([
+            'periodo' => $periodo,
+            'docente' => $doc->id,
+            'materia' => $materia,
+            'grupo' => $grupo
+        ])->count() > 0){
+            $maximo=Parcial::where([
+                'periodo' => $periodo,
+                'docente' => $doc->id,
+                'materia' => $materia,
+                'grupo' => $grupo
+            ])->max('unidad');
+            $alumnos=SeleccionMateria::where([
+                'periodo' => $periodo,
+                'materia' => $materia,
+                'grupo' => $grupo
+            ])->join('alumnos','seleccion_materias.no_de_control','=','alumnos.no_de_control')
+                ->select(['seleccion_materias.no_de_control','alumnos.apellido_paterno',
+                    'alumnos.apellido_materno','alumnos.nombre_alumno'])
+                ->orderBy('alumnos.apellido_paterno','ASC')
+                ->orderBy('alumnos.apellido_materno','ASC')
+                ->orderBy('alumnos.nombre_alumno','ASC')
+                ->get();
+            $nmateria=Materia::where('materia',$materia)
+                ->select('nombre_completo_materia')
+                ->first();
+            return view('personal.consulta_calificaciones')
+                ->with(compact('nmateria','periodo','doc',
+                    'materia','grupo', 'encabezado','alumnos','maximo'));
+
+        }
+        $mensaje="No ha registrado ninguna calificación";
+        return view('personal.no')->with(compact('mensaje', 'encabezado'));
+    }
+
 }

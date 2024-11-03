@@ -25,18 +25,24 @@ class MenuDocenteController extends Controller
                         'icon' => 'far fa-circle',
                     ],
                     [
-                        'text'=>'Parciales',
-                        'url'=>'personal/periodo/parciales',
-                        'icon'=>'far fa-circle',
-                    ],
-                    [
                         'text'=>'Residencias',
                         'url'=>'personal/periodo/residencias',
                         'icon'=>'far fa-circle',
                     ],
+                ]
+            ]);
+            $event->menu->add([
+                'text'=>'Calificaciones',
+                'icon'=>'fa fa-th',
+                'submenu'=>[
                     [
-                        'text'=>'Población Escolar',
-                        'url'=>'personal/periodo/poblacion',
+                        'text'=>'Parciales',
+                        'url'=>'personal/calif/parciales',
+                        'icon'=>'far fa-circle',
+                    ],
+                    [
+                        'text'=>'Consulta',
+                        'url'=>'personal/calif/consulta',
                         'icon'=>'far fa-circle',
                     ]
                 ]
