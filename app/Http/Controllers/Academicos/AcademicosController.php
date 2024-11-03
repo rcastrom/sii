@@ -15,6 +15,7 @@ use App\Models\HorarioAdministrativo;
 use App\Models\HorarioObservacion;
 use App\Models\Materia;
 use App\Models\Organigrama;
+use App\Models\Parcial;
 use App\Models\PeriodoEscolar;
 use App\Models\Personal;
 use App\Models\Puesto;
@@ -127,15 +128,68 @@ class AcademicosController extends Controller
         $materia=$request->get('materia');
         $grupo=$request->get('grupo');
         $periodo=$request->get('periodo');
+        $accion=$request->get('accion');
         $nmateria=Materia::where('materia',$materia)->first();
-        $personal=Personal::whereIn('nombramiento',['D','X'])
-            ->where('status_empleado','2')
-            ->orderBy('apellidos_empleado','ASC')
-            ->orderBy('nombre_empleado','ASC')
-            ->get();
-        $encabezado="Asignación de docente";
-        return view('academicos.alta_docente')
-            ->with(compact('materia','grupo','nmateria','personal','periodo','encabezado'));
+        if($accion==1){
+            $personal=Personal::whereIn('nombramiento',['D','X'])
+                ->where('status_empleado','2')
+                ->orderBy('apellidos_empleado','ASC')
+                ->orderBy('nombre_empleado','ASC')
+                ->get();
+            $encabezado="Asignación de docente";
+            return view('academicos.alta_docente')
+                ->with(compact('materia','grupo','nmateria','personal','periodo','encabezado'));
+        }elseif($accion==2){
+            $encabezado="Calificaciones parciales";
+            if(Grupo::where([
+                'periodo'=>$periodo,
+                'materia'=>$materia,
+                'grupo'=>$grupo
+            ])->whereNull('docente')->count()>0){
+                $mensaje="Al no tener docente asignado, no es posible revisar la calificación parcial de la materia/grupo";
+                return view('academicos.no')
+                    ->with(compact('mensaje','encabezado'));
+            }else{
+                $doc=Grupo::where([
+                    'periodo'=>$periodo,
+                    'materia'=>$materia,
+                    'grupo'=>$grupo
+                ])->select('docente')
+                    ->first();
+                if(Parcial::where([
+                        'periodo' => $periodo,
+                        'docente' => $doc->docente,
+                        'materia' => $materia,
+                        'grupo' => $grupo
+                    ])->count() > 0){
+                    $maximo=Parcial::where([
+                        'periodo' => $periodo,
+                        'docente' => $doc->docente,
+                        'materia' => $materia,
+                        'grupo' => $grupo
+                    ])->max('unidad');
+                    $alumnos=SeleccionMateria::where([
+                        'periodo' => $periodo,
+                        'materia' => $materia,
+                        'grupo' => $grupo
+                    ])->join('alumnos','seleccion_materias.no_de_control','=','alumnos.no_de_control')
+                        ->select(['seleccion_materias.no_de_control','alumnos.apellido_paterno',
+                            'alumnos.apellido_materno','alumnos.nombre_alumno'])
+                        ->orderBy('alumnos.apellido_paterno','ASC')
+                        ->orderBy('alumnos.apellido_materno','ASC')
+                        ->orderBy('alumnos.nombre_alumno','ASC')
+                        ->get();
+                    return view('academicos.consulta_calificaciones')
+                        ->with(compact('nmateria','periodo','doc',
+                            'materia','grupo', 'encabezado','alumnos','maximo'));
+
+                }else{
+                    $mensaje="No se ha registrado ninguna calificación";
+                    return view('academicos.no')
+                        ->with(compact('mensaje', 'encabezado'));
+                }
+            }
+        }
     }
     public function altadocente(Request $request){
         $materia=$request->get('materia');

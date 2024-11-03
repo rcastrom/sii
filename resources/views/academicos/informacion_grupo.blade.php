@@ -93,6 +93,7 @@
                 <select name="accion" id="accion" required class="form-control">
                     <option value="" selected>--Seleccione--</option>
                     <option value="1">Asignación de docente</option>
+                    <option value="2">Consulta de calif. parcial</option>
                 </select>
             </div>
             <input type="hidden" name="materia" id="materia" value="{{$materia}}">

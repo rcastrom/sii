@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Acciones;
 
 use App\Http\Controllers\Controller;
-use App\Models\AlumnosGeneral;
 use App\Models\Grupo;
 use App\Models\MateriaCarrera;
 use App\Models\PeriodoFicha;
@@ -45,15 +44,7 @@ class AccionesController extends Controller
     public function cruce($periodo,$materia,$grupo,$docente,$dia){
         return DB::select("select cruce from cruce_horario('$periodo','$materia','$grupo','$docente','$dia')");
     }
-    /*
-     *
-     * Devolver los datos del alumno
-     * @return mixed
-     */
-    public function datos_generales_alumno($control)
-    {
-        return AlumnosGeneral::where('no_de_control',$control)->first();
-    }
+
     /*
      * Devuelve el kardex del estudiante
      * @param string $control
@@ -265,9 +256,9 @@ class AccionesController extends Controller
      * @param string $rfc
      * @return array $data
      */
-    public function residencias($periodo,$rfc)
+    public function residencias($periodo,$docente)
     {
-        return DB::select("select * from pac_cresidencias('$periodo','$rfc')");
+        return DB::select("select * from pac_cresidencias('$periodo',$docente)");
     }
     /*
      * Devuelve a los estudiantes asignados del docente para residencias en el periodo señalado
@@ -276,8 +267,8 @@ class AccionesController extends Controller
      * @param string $rfc
      * @return array $data
      */
-    public function inforesidencias($periodo,$rfc){
-        return DB::select("select * from pac_dataresidencias('$periodo','$rfc')");
+    public function inforesidencias($periodo,$docente){
+        return DB::select("select * from pac_dataresidencias('$periodo',$docente)");
     }
 
     /*

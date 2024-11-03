@@ -252,18 +252,48 @@ class DocenteController extends Controller
     public function residencias2(Request $request){
         $per_residencias=$request->get('per_res');
         $doc=$this->docente();
-        $cant=(new AccionesController)->residencias($per_residencias,$doc->rfc);
+        $cant=(new AccionesController)->residencias($per_residencias,$doc->id);
         if($cant[0]->cantidad==0){
             $encabezado="Error de periodo de evaluación en residencia profesional";
             $mensaje="No cuenta con residencias asignadas en el período señalado";
             return view('personal.no')->with(compact('mensaje','encabezado'));
         }else{
             //Esta sección debe ajustarse posteriormente
-            $quienes=(new AccionesController)->inforesidencias($per_residencias,$doc->rfc);
+            $quienes=(new AccionesController)->inforesidencias($per_residencias,$doc->id);
             $encabezado="Evaluación de Residencias Profesionales";
             return view('personal.residencias2')->with(compact('per_residencias',
                 'quienes','encabezado'));
         }
+    }
+    public function comparar_alumnos($periodo,$materia,$grupo,$docente){
+        $parciales=Parcial::where(
+            [
+                'periodo'=>$periodo,
+                'materia'=>$materia,
+                'grupo'=>$grupo,
+                'docente'=>$docente
+            ]
+        )->select('id')->get();
+        foreach ($parciales as $parcial) {
+            $alumnos=CalificacionParcial::where('parcial',$parcial->id)
+                ->select('no_de_control')
+                ->get();
+            foreach ($alumnos as $alumno) {
+                if(SeleccionMateria::where([
+                    'periodo'=>$periodo,
+                    'materia'=>$materia,
+                    'grupo'=>$grupo,
+                    'no_de_control'=>$alumno->no_de_control,
+                ])->count()==0){
+                    CalificacionParcial::where([
+                        'parcial'=>$parcial->id,
+                        'no_de_control'=>$alumno->no_de_control
+                    ])->delete();
+                }
+            }
+        }
+
+
     }
 
     /**
@@ -336,6 +366,8 @@ class DocenteController extends Controller
             'unidad' => $unidad,
             'grupo' => $grupo
         ])->count() > 0){
+            //Si algún alumno se dio de baja, se borra de la lista de los parciales
+            $this->comparar_alumnos($periodo,$materia,$grupo,$doc->id);
             $parcial=Parcial::where([
                 'periodo' => $periodo,
                 'docente' => $doc->id,
@@ -350,18 +382,18 @@ class DocenteController extends Controller
                 foreach ($registros as $registro) {
                     $data[]=$registro->no_de_control;
                 }
-                $faltantes=SeleccionMateria::where([
+                $inscritos=SeleccionMateria::where([
                     'periodo'=>$periodo,
                     'materia'=>$materia,
                     'grupo' => $grupo
                 ])->select('no_de_control')
                 ->whereNotIn('no_de_control',$data)
                     ->get();
-                if(!empty($faltantes)){
-                    foreach ($faltantes as $faltante) {
+                if(!empty($inscritos)){
+                    foreach ($inscritos as $inscrito) {
                         CalificacionParcial::insert([
                             'parcial'=>$parcial->id,
-                            'no_de_control'=>$faltante->no_de_control,
+                            'no_de_control'=>$inscrito->no_de_control,
                             'calificacion'=>0,
                             'desertor'=>false
                         ]);

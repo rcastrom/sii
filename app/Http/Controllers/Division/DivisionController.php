@@ -643,6 +643,20 @@ class DivisionController extends Controller
                 $mensaje="Se eliminó la materia ".$materia." grupo ".$grupo;
                 return view('division.si')->with(compact('encabezado','mensaje'));
             }
+        }elseif($accion==6){
+            //Reajusta la cantidad de inscritos
+            $inscritos=SeleccionMateria::where('periodo',$periodo)
+                ->where('materia',$materia)
+                ->where('grupo',$grupo)
+                ->count();
+            Grupo::where([
+                'periodo'=>$periodo,
+                'materia'=>$materia,
+                'grupo'=>$grupo
+            ])->update(['alumnos_inscritos'=>$inscritos]);
+            $encabezado="Ajuste de inscritos";
+            $mensaje="Se ajustó la cantidad de estudiantes inscritos en la materia ".$materia." grupo ".$grupo;
+            return view('division.si')->with(compact('encabezado','mensaje'));
         }
     }
     public function altacontrol(Request $request){

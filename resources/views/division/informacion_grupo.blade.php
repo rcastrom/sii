@@ -97,6 +97,7 @@
                     <option value="3">Modificar horario</option>
                     <option value="4">Modificar capacidad grupo</option>
                     <option value="5">Eliminar grupo</option>
+                    <option value="6">Ajuste de inscritos</option>
                 </select>
             </div>
             <input type="hidden" name="materia" id="materia" value="{{$materia}}">
