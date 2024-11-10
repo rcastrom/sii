@@ -76,7 +76,7 @@
         <table class="tabla table-striped">
             <thead>
             <tr>
-                <th colspan="6">{{$nperiodos[$key][0]->identificacion_larga}}</th>
+                <th colspan="6">{{$nperiodos[$key]->identificacion_larga}}</th>
             </tr>
             <tr>
                 <th>No</th>

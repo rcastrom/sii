@@ -19,6 +19,7 @@ Route::group(['prefix'=>'estudiante','middleware'=>['auth','role:alumno']],funct
             ->name('alumnos.eval_doc');
         Route::post('/eval_doc',[AlumnosController::class, 'evaluaciondoc'])
             ->name('alumnos.eval_docente');
+        Route::get('/calificaciones',[AlumnosController::class,'consulta_calificaciones']);
     });
     Route::group(['prefix'=>'reinscripcion'],function (){
         Route::get('/',[ReinscripcionController::class,'index'])
@@ -26,5 +27,10 @@ Route::group(['prefix'=>'estudiante','middleware'=>['auth','role:alumno']],funct
         Route::get('/{materia}/{tipocur}',[ReinscripcionController::class, 'seleccion_materia']);
         Route::post('/seleccion/',[ReinscripcionController::class, 'reinscribir'])
             ->name('alumnos.seleccion');
+    });
+    Route::controller(AlumnosController::class)->prefix('mantenimiento')->group(function (){
+        Route::get('/contrasena','contrasenia');
+        Route::post('/ccontrasena','ccontrasenia')
+            ->name('alumnos.contra');
     });
 });

@@ -49,6 +49,11 @@ class MenuAlumnosController extends Controller
                         'text'=>'Evaluación al docente',
                         'url'=>'estudiante/periodo/eval',
                         'icon'=>'far fa-circle',
+                    ],
+                    [
+                        'text'=>'Calificaciones',
+                        'url'=>'estudiante/periodo/calificaciones',
+                        'icon'=>'far fa-circle',
                     ]
                 ]
             ]);
@@ -61,6 +66,17 @@ class MenuAlumnosController extends Controller
                         'url'=>'estudiante/reinscripcion/',
                         'icon'=>'far fa-circle',
                     ],
+                ]
+            ]);
+            $event->menu->add([
+                'text' => 'Mantenimiento',
+                'icon' => 'fa fa-wrench',
+                'submenu' => [
+                    [
+                        'text' => 'Contraseña',
+                        'url'  => 'estudiante/mantenimiento/contrasena',
+                        'icon' => 'far fa-circle',
+                    ]
                 ]
             ]);
         });

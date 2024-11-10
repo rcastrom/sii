@@ -15,6 +15,7 @@ use App\Models\PeriodoEscolar;
 use App\Models\Personal;
 use App\Models\Pregunta;
 use App\Models\SeleccionMateria;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Support\Facades\Auth;
@@ -51,7 +52,7 @@ class AlumnosController extends Controller
                 'carrera'=>$alumno->carrera,
                 'reticula' => $alumno->reticula,
             ]
-        )->select(['nombre_carrera', 'creditos_totales'])->first();
+        )->select(['nombre_carrera', 'creditos_totales','clave_oficial'])->first();
         $estatus = EstatusAlumno::where('estatus', $alumno->estatus_alumno)->first();
         $opcion=$request->opcion;
         if($opcion==1){
@@ -236,5 +237,48 @@ class AlumnosController extends Controller
             'updated_at'=>null
         ]);
         return redirect('/estudiante/periodo/eval');
+    }
+    public function consulta_calificaciones()
+    {
+        $control=$this->control();
+        $periodo_actual=(new AccionesController)->periodo();
+        $periodo=$periodo_actual[0]->periodo;
+        $encabezado="Consulta de calificaciones";
+        if(SeleccionMateria::where(
+            [
+                'periodo'=>$periodo,
+                'no_de_control' => $control
+            ]
+        )->count()==0){
+            $mensaje="No cuentas con ninguna materia registrada en el semestre";
+            return view('alumnos.no')
+                ->with(compact('mensaje','encabezado'));
+        }
+        $materias=(new AccionesController)->horario($control,$periodo);
+        return view('alumnos.consulta_calificaciones')
+            ->with(compact('materias',
+                'encabezado','periodo','control'));
+    }
+    public function contrasenia(){
+        $encabezado="Cambio de contraseña";
+        return view('alumnos.contrasenia',['encabezado'=>$encabezado]);
+    }
+    public function ccontrasenia(Request $request){
+        request()->validate([
+            'contra'=>'required|required_with:verifica|same:verifica',
+            'verifica'=>'required'
+        ],[
+            'contra.required'=>'Debe escribir la nueva contraseña',
+            'contra.required_with'=>'Debe confirmar la contraseña',
+            'contra.same'=>'No concuerda con la verificacion',
+            'verifica.required'=>'Debe confirmar la nueva contraseña'
+        ]);
+        $ncontra=bcrypt($request->get('contra'));
+        $data=Auth::user()->email;
+        User::where('email',$data)->update([
+            'password'=>$ncontra,
+            'updated_at'=>Carbon::now()
+        ]);
+        return redirect()->route('inicio_alumnos');
     }
 }
