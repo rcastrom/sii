@@ -29,6 +29,11 @@ class MenuDocenteController extends Controller
                         'url'=>'personal/periodo/residencias',
                         'icon'=>'far fa-circle',
                     ],
+                    [
+                            'text'=>'Evaluación al docente',
+                            'url'=>'personal/periodo/evaluacion',
+                            'icon'=>'far fa-circle',
+                    ]
                 ]
             ]);
             $event->menu->add([
@@ -43,17 +48,6 @@ class MenuDocenteController extends Controller
                     [
                         'text'=>'Consulta',
                         'url'=>'personal/calif/consulta',
-                        'icon'=>'far fa-circle',
-                    ]
-                ]
-            ]);
-            $event->menu->add([
-                'text'=>'Evaluación al Docente',
-                'icon'=>'fa fa-list-alt',
-                'submenu'=>[
-                    [
-                        'text'=>'Consulta',
-                        'url'=>'personal/eval/consulta',
                         'icon'=>'far fa-circle',
                     ]
                 ]

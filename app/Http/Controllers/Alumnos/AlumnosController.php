@@ -192,7 +192,7 @@ class AlumnosController extends Controller
             $docente=null;
         }else{
             $nombre_maestro=Personal::where('id',$doc->docente)->first();
-            $docente=$doc->id;
+            $docente=$doc->docente;
             $nombre_docente=trim($nombre_maestro->nombre_empleado)." ".trim($nombre_maestro->apellidos_empleado);
         }
         $encabezado="Evaluación al docente";

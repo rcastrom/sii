@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Acciones;
 
+use App\Models\EvaluacionAspecto;
+use App\Models\EvaluacionAlumno;
 use App\Http\Controllers\Controller;
 use App\Models\Grupo;
 use App\Models\MateriaCarrera;
 use App\Models\PeriodoFicha;
 use App\Models\PermisosCarrera;
 use App\Models\SeleccionMateria;
+use App\Models\Pregunta;
 use Illuminate\Database\Query\JoinClause;
 use Illuminate\Support\Facades\DB;
 use App\Models\Carrera;
@@ -201,7 +204,7 @@ class AccionesController extends Controller
      * @return mixed
      */
     public function consulta_idiomas($periodo,$idioma){
-        return DB::select("select * from pac_idiomas_consulta('$periodo',$idioma)");
+        return DB::select("select * from pac_idiomas_consulta('$periodo','$idioma')");
     }
     /*
      * Devuelve la población escolar
@@ -258,7 +261,7 @@ class AccionesController extends Controller
      */
     public function residencias($periodo,$docente)
     {
-        return DB::select("select * from pac_cresidencias('$periodo',$docente)");
+        return DB::select("select * from pac_cresidencias('$periodo','$docente')");
     }
     /*
      * Devuelve a los estudiantes asignados del docente para residencias en el periodo señalado
@@ -268,7 +271,7 @@ class AccionesController extends Controller
      * @return array $data
      */
     public function inforesidencias($periodo,$docente){
-        return DB::select("select * from pac_dataresidencias('$periodo',$docente)");
+        return DB::select("select * from pac_dataresidencias('$periodo','$docente')");
     }
 
     /*
@@ -278,7 +281,7 @@ class AccionesController extends Controller
      * @return array $data
      */
     public function personal_estudios($personal){
-        return DB::select("select * from pap_estudios_personal($personal)");
+        return DB::select("select * from pap_estudios_personal('$personal')");
     }
 
     /*
@@ -397,7 +400,7 @@ class AccionesController extends Controller
      */
     public function nivel_academico_docente($id_docente)
     {
-        return DB::select("select * from pac_nivel_academico($id_docente)");
+        return DB::select("select * from pac_nivel_academico('$id_docente')");
     }
 
     /*
@@ -455,7 +458,7 @@ class AccionesController extends Controller
     /*
      * Determina si el estudiante tiene otra materia que le impida el cruce
      */
-    public function cruce_horario($periodo,$control,$dia,$hinicial,$hfinal)
+    public function cruce_horario($periodo,$control,$dia,$hora_inicial,$hora_final)
     {
         return DB::select('select 1 as si from seleccion_materias SM, horarios H where SM.periodo = H.periodo
                 and SM.materia = H.materia
@@ -468,6 +471,106 @@ class AccionesController extends Controller
                     ( (hora_inicial < :hora_final) and (:hora_final < hora_final) )  or
                     ( (:hora_inicial < hora_inicial) and (hora_inicial < :hora_final)) or
                     ( (hora_inicial > :hora_inicial) and (hora_final < :hora_final))
-                )',['periodo'=>$periodo,'no_de_control'=>$control,'dia'=>$dia,'hora_inicial'=>$hinicial,'hora_final'=>$hfinal]);
+                )',
+            [
+                'periodo'=>$periodo,
+                'no_de_control'=>$control,
+                'dia'=>$dia,
+                'hora_inicial'=>$hora_inicial,
+                'hora_final'=>$hora_final
+            ]
+        );
+    }
+
+    /*
+     * Dar los datos de las materias que han sido evaluadas (eval docente), inscritos,
+     * y cuántos han evaluado
+     */
+    public function evaluacion_al_docente_datos($periodo, $docente, $maximo)
+    {
+        return DB::select("select * from pac_evl_docente('$periodo','$docente','$maximo')");
+    }
+
+    /*
+     * Resultados por preguntas, de la evaluación al docente
+     */
+    public function resultados_evaluacion_al_docente($periodo,$pregunta,$materia,$grupo)
+    {
+        return DB::select("SELECT * FROM pac_eval_docente('$periodo','$pregunta','$materia','$grupo')");
+    }
+
+    /*
+     * Indica los resultados de la evaluación al docente
+     */
+    public function resultados_evaluacion_docente($periodo,$docente){
+        $resultados=array();
+        $i=0; //Este es el contador inicial para el registro de información
+        $consecutivo=EvaluacionAlumno::where('encuesta','A')
+            ->max('consecutivo');
+        $maximo=Pregunta::where('consecutivo',$consecutivo)
+            ->where('encuesta','A')
+            ->count();
+        $info_evaluado=$this->evaluacion_al_docente_datos($periodo,$docente,$maximo);
+        $aspectos=EvaluacionAspecto::where('encuesta','A')
+            ->where('consecutivo',$consecutivo)
+            ->orderBy('aspecto')
+            ->get();
+        $valor_resp=[];
+        foreach ($aspectos as $aspecto){
+            $valor_resp[0]=0;
+            $valor_resp[1]=0;
+            $valor_resp[2]=0;
+            $valor_resp[3]=0;
+            $valor_resp[4]=0;
+            $valor_resp[5]=0;
+            $suma=0;
+            $num_res=0;
+            $preguntas=Pregunta::where('encuesta','A')
+                ->where('consecutivo',$consecutivo)
+                ->where('aspecto',$aspecto->aspecto)
+                ->select('no_pregunta')
+                ->get();
+            foreach ($info_evaluado as $value){
+                $materia=$value->materia;
+                $gpo=$value->grupo;
+                foreach ($preguntas as $pregunta){
+                    $obtenido=$this->resultados_evaluacion_al_docente($periodo,$pregunta->no_pregunta,$materia,$gpo);
+                    foreach ($obtenido as $obt){
+                        switch ($obt->respuesta){
+                            case 'A': $valor_resp[0]+=$obt->cantidad;break;
+                            case 'B': $valor_resp[1]+=$obt->cantidad;break;
+                            case 'C': $valor_resp[2]+=$obt->cantidad;break;
+                            case 'D': $valor_resp[3]+=$obt->cantidad;break;
+                            case 'E': $valor_resp[4]+=$obt->cantidad;break;
+                            case 'F': $valor_resp[5]+=$obt->cantidad;break;
+                            case '1' :$valor_resp[0]+=$obt->cantidad;break;
+                            case '2' :$valor_resp[1]+=$obt->cantidad;break;
+                            case '3' :$valor_resp[2]+=$obt->cantidad;break;
+                            case '4' :$valor_resp[3]+=$obt->cantidad;break;
+                            case '5' :$valor_resp[4]+=$obt->cantidad;break;
+                            default: $valor_resp[5]+=$obt->cantidad; break;
+                        }
+                    }
+                }
+            }
+            for($a=0;$a<5;$a++){
+                $suma+=$valor_resp[$a]*($a+1);
+                $num_res+=$valor_resp[$a];
+            }
+            $porcentaje = round($suma/$num_res,2);
+            switch ($porcentaje){
+                case ($porcentaje>=1&&$porcentaje<=3.24): $cal="INSUFICIENTE"; break;
+                case ($porcentaje>=3.25&&$porcentaje<=3.74): $cal="SUFICIENTE"; break;
+                case ($porcentaje>=3.75&&$porcentaje<=4.24): $cal="BUENO"; break;
+                case ($porcentaje>=4.25&&$porcentaje<=4.74): $cal="NOTABLE"; break;
+                case ($porcentaje>=4.75&&$porcentaje<=5): $cal="EXCELENTE"; break;
+            }
+            $resultados[$i]["aspecto"]=$aspecto->aspecto;
+            $resultados[$i]["descripcion"]=$aspecto->descripcion;
+            $resultados[$i]["porcentaje"]=$porcentaje;
+            $resultados[$i]["calificacion"]=$cal;
+            $i++;
+        }
+        return $resultados;
     }
 }
