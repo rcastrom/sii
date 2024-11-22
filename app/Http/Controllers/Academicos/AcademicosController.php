@@ -24,8 +24,12 @@ use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Carbon\CarbonInterval;
+use Exception;
 use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\View\Factory;
+use Illuminate\Contracts\View\View;
 use Illuminate\Database\QueryException;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -59,16 +63,12 @@ class AcademicosController extends Controller
     }
 
     public function existentes(){
-        $encabezado="Grupos del período";
-        $carreras = Carrera::select(['carrera', 'reticula', 'nombre_reducido'])
-            ->orderBy('carrera')
-            ->orderBy('reticula')->get();
-        $periodo_semestre = (new AccionesController)->periodo();
-        $periodo_actual=$periodo_semestre[0]->periodo;
-        $periodos = PeriodoEscolar::orderBy('periodo','DESC')->get();
-        return view('academicos.listado')
-            ->with(compact('encabezado','carreras','periodo_actual','periodos'));
+        return $this->extracted(1);
     }
+
+    /**
+     * @throws Exception
+     */
     public function calculatePeriodsOverlap(CarbonPeriod $periodA, CarbonPeriod $periodB): CarbonInterval
     {
         if (!$periodA->overlaps($periodB)) {
@@ -80,7 +80,11 @@ class AcademicosController extends Controller
 
         return CarbonInterval::make($firstEndDate->diff($latestStartDate));
     }
-    public function cruce($periodo,$personal,$dia,$hora_entrada,$hora_salida)
+
+    /**
+     * @throws Exception
+     */
+    public function cruce($periodo, $personal, $dia, $hora_entrada, $hora_salida)
     {
         $bandera=0;
         $horas=Horario::where('periodo',$periodo)
@@ -426,18 +430,18 @@ class AcademicosController extends Controller
             ->join('materias_carreras as mc','mc.materia','=','grupos.materia')
             ->join('materias','mc.materia','=','materias.materia')
             ->select(['grupos.materia','grupo','nombre_abreviado_materia'])
-            ->distinct('grupos.materia')
+            ->distinct()
             ->get();
         $admin=HorarioAdministrativo::where('periodo',$request->get('periodo'))
             ->where('docente',$request->get('docente'))
             ->join('puestos','horarios_administrativos.descripcion_horario','=','puestos.clave_puesto')
-            ->distinct('consecutivo_admvo')
+            ->distinct()
             ->select(['consecutivo_admvo','descripcion_puesto'])
             ->get();
         $apoyo=ApoyoDocencia::where('periodo',$request->get('periodo'))
             ->where('docente',$request->get('docente'))
             ->join('actividades_apoyo','apoyo_docencia.actividad','=','actividades_apoyo.actividad')
-            ->distinct('consecutivo')
+            ->distinct()
             ->get();
         $periodo=$request->get('periodo');
         $docente=$request->get('docente');
@@ -462,18 +466,18 @@ class AcademicosController extends Controller
             ->join('materias_carreras as mc','mc.materia','=','grupos.materia')
             ->join('materias','mc.materia','=','materias.materia')
             ->select(['grupos.materia','grupo','nombre_abreviado_materia'])
-            ->distinct('grupos.materia')
+            ->distinct()
             ->get();
         $admin=HorarioAdministrativo::where('periodo',$periodo)
             ->where('docente',$docente)
             ->join('puestos','horarios_administrativos.descripcion_horario','=','puestos.clave_puesto')
-            ->distinct('consecutivo_admvo')
+            ->distinct()
             ->select(['consecutivo_admvo','descripcion_puesto'])
             ->get();
         $apoyo=ApoyoDocencia::where('periodo',$periodo)
             ->where('docente',$docente)
             ->join('actividades_apoyo','apoyo_docencia.actividad','=','actividades_apoyo.actividad')
-            ->distinct('consecutivo')
+            ->distinct()
             ->get();
         $areas=Organigrama::select(['clave_area','descripcion_area'])
             ->orderBy('descripcion_area','ASC')
@@ -527,6 +531,10 @@ class AcademicosController extends Controller
                     'personal','descripcion_area','periodo'));
         }
     }
+
+    /**
+     * @throws Exception
+     */
     public function procesaadmvoalta(Request $request){
         request()->validate([
             'slunes'=>'required_with:elunes',
@@ -577,7 +585,7 @@ class AcademicosController extends Controller
         $hv=!is_null($eviernes)?$eviernes->diff($sviernes)->format('%h'):0;
         $hs=!is_null($esabado)?$esabado->diff($ssabado)->format('%h'):0;
 
-        //Primero, que no sobrepase las 8 hrs al dia
+        //Primero, que no sobrepase las 8 h al día
         $encabezado="Error de alta de horario administrativo";
 
         if($hl+$lun>8){
@@ -605,7 +613,7 @@ class AcademicosController extends Controller
             return view('academicos.no')->with(compact('mensaje','encabezado'));
         }
 
-        //Sólo por si acaso, las horas no pueden ser negativas
+        //Solo por si acaso, las horas no pueden ser negativas
         if(($hl<0)||($hm<0)||($hmm<0)||($hj<0)||($hv<0)||($hs<0)){
             $mensaje="La hora de salida no puede ser mayor a la de entrada";
             return view('academicos.no')->with(compact('mensaje','encabezado'));
@@ -832,7 +840,7 @@ class AcademicosController extends Controller
             ->join('materias_carreras as mc','mc.materia','=','grupos.materia')
             ->join('materias','mc.materia','=','materias.materia')
             ->select(['grupos.materia','grupo','nombre_abreviado_materia'])
-            ->distinct('grupos.materia')
+            ->distinct()
             ->get();
         $areas=Organigrama::select(['clave_area','descripcion_area'])
             ->orderBy('descripcion_area','ASC')
@@ -857,6 +865,10 @@ class AcademicosController extends Controller
         $mensaje="Se eliminó la actividad administrativa que tenía asignada";
         return view('academicos.si')->with(compact('encabezado','mensaje'));
     }
+
+    /**
+     * @throws Exception
+     */
     public function procesoadmvoupdate(Request $request){
         request()->validate([
             'slunes'=>'required_with:elunes',
@@ -908,7 +920,7 @@ class AcademicosController extends Controller
         $hv=!is_null($eviernes)?$eviernes->diff($sviernes)->format('%h'):0;
         $hs=!is_null($esabado)?$esabado->diff($ssabado)->format('%h'):0;
 
-        //Primero, que no sobrepase las 8 hrs al dia
+        //Primero, que no sobrepase las 8 h al día
         $encabezado="Error en la modificación de horario administrativo del personal docente";
         if($hl+$lun>8){
             $mensaje="No fue posible procesar el horario ya que el lunes sobrepasa las 8 horas al día";
@@ -1090,6 +1102,10 @@ class AcademicosController extends Controller
         $mensaje="Se modificó con éxito el horario administrativo del docente";
         return view('academicos.si')->with(compact('mensaje','encabezado'));
     }
+
+    /**
+     * @throws Exception
+     */
     public function procesaapoyoalta(Request $request){
         request()->validate([
             'especificar'=>'required',
@@ -1143,7 +1159,7 @@ class AcademicosController extends Controller
         $hs=!is_null($esabado)?$esabado->diff($ssabado)->format('%h'):0;
 
 
-        //Primero, que no sobrepase las 8 hrs al dia
+        //Primero, que no sobrepase las 8 h al día
         $encabezado="Error de alta de horas de apoyo para personal docente";
         if($hl+$lun>8){
             $mensaje="No fue posible procesar el horario ya que el lunes sobrepasa las 8 horas al día";
@@ -1170,7 +1186,7 @@ class AcademicosController extends Controller
             return view('academicos.no')->with(compact('mensaje','encabezado'));
         }
 
-        //Sólo por si acaso, las horas no pueden ser negativas
+        //Solo por si acaso, las horas no pueden ser negativas
         if(($hl<0)||($hm<0)||($hmm<0)||($hj<0)||($hv<0)||($hs<0)){
             $mensaje="La hora de salida no puede ser mayor a la de entrada";
             return view('academicos.no')->with(compact('mensaje','encabezado'));
@@ -1401,7 +1417,7 @@ class AcademicosController extends Controller
             ->join('materias_carreras as mc','mc.materia','=','grupos.materia')
             ->join('materias','mc.materia','=','materias.materia')
             ->select(['grupos.materia','grupo','nombre_abreviado_materia'])
-            ->distinct('grupos.materia')
+            ->distinct()
             ->get();
         $nperiodo=PeriodoEscolar::where('periodo',$periodo)->first();
         $encabezado="Actualización de horario de apoyo para personal docente";
@@ -1409,6 +1425,10 @@ class AcademicosController extends Controller
             ->with(compact('periodo','docente',
                 'consecutivo','puestos','puesto','info','nperiodo','encabezado'));
     }
+
+    /**
+     * @throws Exception
+     */
     public function procesoapoyoupdate(Request $request){
         request()->validate([
             'especificar'=>'required',
@@ -1462,7 +1482,7 @@ class AcademicosController extends Controller
         $hv=!is_null($eviernes)?$eviernes->diff($sviernes)->format('%h'):0;
         $hs=!is_null($esabado)?$esabado->diff($ssabado)->format('%h'):0;
 
-        //Primero, que no sobrepase las 8 hrs al dia
+        //Primero, que no sobrepase las 8 h al día
         $encabezado="Error de actualización de horario de apoyo para el docente";
         if($hl+$lun>8){
             $mensaje="No fue posible procesar el horario ya que el lunes sobrepasa las 8 horas al día";
@@ -1488,7 +1508,7 @@ class AcademicosController extends Controller
             $mensaje="No fue posible procesar el horario ya que el sábado sobrepasa las 8 horas al día";
             return view('academicos.no')->with(compact('mensaje','encabezado'));
         }
-        //Sólo por si acaso, las horas no pueden ser negativas
+        //Solo por si acaso, las horas no pueden ser negativas
         if(($hl<0)||($hm<0)||($hmm<0)||($hj<0)||($hv<0)||($hs<0)){
             $mensaje="La hora de salida no puede ser mayor a la de entrada";
             return view('academicos.no')->with(compact('mensaje','encabezado'));
@@ -1722,6 +1742,9 @@ class AcademicosController extends Controller
         $mensaje="Se eliminó la leyenda para el horario del docente";
         return view('academicos.si')->with(compact('encabezado','mensaje'));
     }
+    public function seleccion_evaluacion(){
+       return $this->extracted(2);
+    }
 
     public function contrasenia(){
         $encabezado="Cambio de contraseña";
@@ -1744,5 +1767,27 @@ class AcademicosController extends Controller
             'updated_at'=>Carbon::now()
         ]);
         return redirect()->route('academicos.index');
+    }
+
+    /**
+     * @param $accion
+     * @return Factory|View|Application|\Illuminate\View\View
+     */
+    public function extracted($accion)
+    {
+        $carreras = Carrera::select(['carrera', 'reticula', 'nombre_reducido'])
+            ->orderBy('carrera')
+            ->orderBy('reticula')->get();
+        $periodo_semestre = (new AccionesController)->periodo();
+        $periodo_actual = $periodo_semestre[0]->periodo;
+        $periodos = PeriodoEscolar::orderBy('periodo', 'DESC')->get();
+        if($accion==1){
+            $encabezado="Grupos del período";
+            return view('academicos.listado')
+                ->with(compact('encabezado', 'carreras', 'periodo_actual', 'periodos'));
+        }
+        $encabezado="Consulta de resultados de evaluación al docente por carrera";
+        return view('academicos.listado_evaluacion_periodos')
+            ->with(compact('encabezado', 'carreras', 'periodo_actual', 'periodos'));
     }
 }

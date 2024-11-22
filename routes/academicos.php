@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Academicos\AcademicosController;
 use App\Http\Controllers\Academicos\HorarioNoDocenteController;
+use App\Http\Controllers\Academicos\EvaluacionDocenteCarreraController;
 use App\Http\Controllers\PDF\HorarioPDFController;
 
 
@@ -28,6 +29,12 @@ Route::group(['prefix' => 'academicos','middleware' => ['auth','role:academico']
        Route::get('/aulas',[AcademicosController::class, 'pobxaulas']);
        Route::post('/aula2',[AcademicosController::class, 'pobxaulas2'])
             ->name('academicos.aula');
+       Route::get('/evaluacion',[AcademicosController::class,'seleccion_evaluacion']);
+       Route::post('/evaluacion',[EvaluacionDocenteCarreraController::class, 'resultados_evaluacion'])
+           ->name('academicos.evaluacion_docente');
+        Route::get('/grafica/{periodo}/{carrera}/{reticula}/{promedio}',
+            [EvaluacionDocenteCarreraController::class,'grafica_evaluacion_carrera'])
+            ->name('academicos.grafica_evaluacion_docente_carrera');
     });
     Route::group(['prefix'=>'docentes','middleware' => ['auth','role:academico']],function(){
         Route::get('/index',[AcademicosController::class,'predocentes']);

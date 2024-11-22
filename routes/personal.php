@@ -1,11 +1,12 @@
 <?php
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Docentes\DocenteController;
+use App\Http\Controllers\Docentes\EvaluacionDocenteController;
 use App\Http\Controllers\Docentes\ParcialesController;
 use App\Http\Controllers\Acciones\GraficoController;
 
 Route::group(['prefix'=>'personal','middleware'=>['auth','role:personal']],function (){
-    Route::get('/',[DocenteController::class,'index'])->name('inicio_personal');
+    Route::get('/',[DocenteController::class,'index'])->name('personal.index');
     Route::controller(DocenteController::class)->prefix('periodo')->group(function (){
         Route::get('/grupos',[DocenteController::class,'encurso']);
         Route::get('/listas/{periodo}/{materia}/{gpo}',[DocenteController::class,'lista']);
@@ -18,7 +19,7 @@ Route::group(['prefix'=>'personal','middleware'=>['auth','role:personal']],funct
         Route::post('/eval/residencias',[DocenteController::class,'residencias2'])
             ->name('personal_residencias1');
         Route::get('evaluacion',[DocenteController::class,'evaluacion_docente1']);
-        Route::post('evaluacion',[DocenteController::class,'evaluacion_docente2'])
+        Route::post('evaluacion',[EvaluacionDocenteController::class,'evaluacion_docente2'])
             ->name('personal.evaldocente');
         Route::get('/grafica/{periodo}/{docente}/{promedio}',[GraficoController::class,'evaluacion_docente'])
             ->name('personal.grafica_evaluacion_docente');
@@ -33,5 +34,9 @@ Route::group(['prefix'=>'personal','middleware'=>['auth','role:personal']],funct
             ->name('personal.parciales');
         Route::resource('parcial',ParcialesController::class);
     });
-
+    Route::controller(DocenteController::class)->prefix('utileria')->group(function (){
+        Route::get('/contra','contrasenia');
+        Route::post('/ccontrasena','ccontrasenia')
+            ->name('personal.contra');
+    });
 });

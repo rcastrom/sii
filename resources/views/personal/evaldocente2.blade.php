@@ -68,7 +68,7 @@
             </div>
         </div>
         <div class="card">
-            <img src="{{route('personal.grafica_evaluacion_docente',['periodo'=>$periodo,'docente'=>$doc->id,'promedio'=>$promedio])}}" alt="">
+            <img src="{{route('personal.grafica_evaluacion_docente',['periodo'=>$periodo,'docente'=>$personal,'promedio'=>$promedio])}}" alt="">
         </div>
     </x-information>
 @stop

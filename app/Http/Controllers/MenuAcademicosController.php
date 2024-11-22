@@ -39,6 +39,11 @@ class MenuAcademicosController extends Controller
                         'url'  => 'academicos/estadistica/aulas',
                         'icon' => 'far fa-circle',
                     ],
+                    [
+                        'text'=>'Evaluación docente',
+                        'url'  => 'academicos/estadistica/evaluacion',
+                        'icon' => 'far fa-circle',
+                    ],
                 ]
             ]);
             $event->menu->add([

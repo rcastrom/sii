@@ -19,6 +19,7 @@
                     @endforeach
                 </select>
             </div>
+            <input type="hidden" name="personal" value="{{base64_encode($doc->id)}}">
             <button type="submit" class="btn btn-primary">Continuar</button>
         </form>
     </x-information>

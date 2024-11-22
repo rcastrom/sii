@@ -5,15 +5,15 @@ namespace App\Http\Controllers\Docentes;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\Acciones\AccionesController;
 use App\Models\Alumno;
-use App\Models\EvaluacionAlumno;
 use App\Models\Grupo;
 use App\Models\Materia;
 use App\Models\PeriodoEscolar;
 use App\Models\Personal;
-use App\Models\Pregunta;
 use App\Models\SeleccionMateria;
 use App\Models\Parcial;
 use App\Models\CalificacionParcial;
+use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Foundation\Application;
@@ -470,52 +470,31 @@ class DocenteController extends Controller
         $periodos=PeriodoEscolar::whereNotIn('periodo',array('99990','99999'))
             ->orderBy('periodo','desc')
             ->get();
-        $encabezado="Evaluación al docente";
-        return view('personal.evaldocente1')->with(compact('periodos','periodo','encabezado'));
-    }
-    public function evaluacion_docente2(Request $request)
-    {
         $doc = $this->docente();
-        $periodo=$request->get('periodo');
-        $nperiodo=PeriodoEscolar::where('periodo',$periodo)
-            ->select('identificacion_corta')->first();
-        $encabezado="Resultados de evaluación al docente";
-        if(EvaluacionAlumno::where(
-            [
-                'personal' => $doc->id,
-                'periodo' => $periodo,
-            ]
-        )->count() == 0){
-            $mensaje="No hay información que mostrar";
-            return view('personal.no')->with(compact('encabezado', 'mensaje'));
-        }
-        // Esta variable se emplea por si en algún momento llegara a cambiar la encuesta
-        $maximo=Pregunta::where('consecutivo','=',2)
-            ->where('encuesta','=','A')
-            ->count();
-        $materias=(new AccionesController)->evaluacion_al_docente_datos($periodo,$doc->id,$maximo);
-        $resultados=(new AccionesController)->resultados_evaluacion_docente($periodo,$doc->id);
-        $valores=[];
-        $i=0;
-        $suma=0;
-        foreach ($resultados as $key=>$value){
-            $valores[$i]=$value["porcentaje"];
-            $suma+=$value["porcentaje"];
-            $i++;
-        }
-        $promedio=round($suma/$i,2);
-
-        switch ($promedio){
-            case ($promedio>=1&&$promedio<=3.24): $cal="INSUFICIENTE"; break;
-            case ($promedio>=3.25&&$promedio<=3.74): $cal="SUFICIENTE"; break;
-            case ($promedio>=3.75&&$promedio<=4.24): $cal="BUENO"; break;
-            case ($promedio>=4.25&&$promedio<=4.74): $cal="NOTABLE"; break;
-            case ($promedio>=4.75&&$promedio<=5): $cal="EXCELENTE"; break;
-            default : $cal="Otros"; break;
-        }
-        return view('personal.evaldocente2')
-            ->with(compact('materias','nperiodo',
-                'periodo','doc',
-                'resultados','encabezado','promedio','cal','valores'));
+        $encabezado="Evaluación al docente";
+        return view('personal.evaldocente1')
+            ->with(compact('periodos','periodo','encabezado','doc'));
+    }
+    public function contrasenia(){
+        $encabezado="Cambio de contraseña";
+        return view('personal.contrasenia',['encabezado'=>$encabezado]);
+    }
+    public function ccontrasenia(Request $request){
+        request()->validate([
+            'contra'=>'required|required_with:verifica|same:verifica',
+            'verifica'=>'required'
+        ],[
+            'contra.required'=>'Debe escribir la nueva contraseña',
+            'contra.required_with'=>'Debe confirmar la contraseña',
+            'contra.same'=>'No concuerda con la verificación',
+            'verifica.required'=>'Debe confirmar la nueva contraseña'
+        ]);
+        $ncontra=bcrypt($request->get('contra'));
+        $data=Auth::user()->email;
+        User::where('email',$data)->update([
+            'password'=>$ncontra,
+            'updated_at'=>Carbon::now()
+        ]);
+        return redirect()->route('personal.index');
     }
 }

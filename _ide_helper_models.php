@@ -345,9 +345,23 @@ namespace App\Models{
 /**
  * 
  *
+ * @property int $id
+ * @property int $parcial
+ * @property string $no_de_control
+ * @property int $calificacion
+ * @property bool|null $desertor
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CalificacionParcial newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CalificacionParcial newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|CalificacionParcial query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CalificacionParcial whereCalificacion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CalificacionParcial whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CalificacionParcial whereDesertor($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CalificacionParcial whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CalificacionParcial whereNoDeControl($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CalificacionParcial whereParcial($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|CalificacionParcial whereUpdatedAt($value)
  */
 	class CalificacionParcial extends \Eloquent {}
 }
@@ -528,6 +542,31 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAlumno whereUpdatedAt($value)
  */
 	class EvaluacionAlumno extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * 
+ *
+ * @property int $id
+ * @property string $aspecto
+ * @property string $encuesta
+ * @property string $descripcion
+ * @property int $consecutivo
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAspecto newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAspecto newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAspecto query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAspecto whereAspecto($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAspecto whereConsecutivo($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAspecto whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAspecto whereDescripcion($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAspecto whereEncuesta($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAspecto whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|EvaluacionAspecto whereUpdatedAt($value)
+ */
+	class EvaluacionAspecto extends \Eloquent {}
 }
 
 namespace App\Models{
