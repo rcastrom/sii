@@ -1,5 +1,11 @@
 {
     "nunito": {
         "normal": "nunito-normal_99fa167b6ffac157e5aaeb26e0b6bff3"
+    },
+    "montserrat": {
+        "100_italic": "\/var\/www\/html\/sii\/storage\/fonts\/montserrat_100_italic_b535c3ffc30dc493b81d5a9064cf4da1",
+        "normal": "\/var\/www\/html\/sii\/storage\/fonts\/montserrat_normal_42c4685997b060287746eb334ec9b069",
+        "bold": "\/var\/www\/html\/sii\/storage\/fonts\/montserrat_bold_e0127ea752c0b8e3c6d5801a0474f62d",
+        "600": "montserrat_600_c8f38370775665f395bfbe03289004bf"
     }
 }

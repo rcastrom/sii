@@ -3,15 +3,22 @@
 namespace App\Http\Controllers\Desarrollo;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\MenuDesarrolloController;
 use App\Models\AulaAspirante;
 use App\Models\Aula;
 use App\Http\Controllers\Acciones\AccionesController;
 use App\Models\Carrera;
 use App\Models\PeriodoEscolar;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
 
 class AulasController extends Controller
 {
+    public function __construct(Dispatcher $events)
+    {
+        new MenuDesarrolloController($events);
+    }
+
     /**
      * Display a listing of the resource.
      */

@@ -17,4 +17,10 @@ class FechaEvaluacion extends Model
     use HasFactory;
     protected $table='fecha_evaluacion';
     protected $fillable=['periodo','encuesta','fecha_inicio','fecha_final'];
+    protected $casts=[
+        'periodo'=>'string',
+        'encuesta'=>'string',
+        'fecha_inicio'=>'date',
+        'fecha_final'=>'date',
+    ];
 }

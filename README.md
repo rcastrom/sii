@@ -20,8 +20,8 @@ Los módulos que se han migrado son:
 * Jefaturas Académicas (100%).
 * Planeación (40%).
 * Coordinación de Verano (90%).
-* Desarrollo Académico (20%).
-* Personal docente (90%).
+* Desarrollo Académico (40%).
+* Personal docente (100%).
 * Recursos Humanos (99%)
 
 ### Pre-requisitos 📋
@@ -103,6 +103,11 @@ por ejemplo
  DB_DATABASE=<su base de datos>
  DB_USERNAME=<su usuario>
  DB_PASSWORD=<su contraseña>
+ RUTA_IMG_TECNM="/var/www/html/sii/public/img/tecnm.jpg" #Ejemplo de la ruta para indicar el escudo del TECNM
+ NOMBRE_TEC="Instituto Tecnológico de Ensenada" #El nombre de su tecnológico
+ RUTA_IMG_GOBFED="/var/www/html/sii/public/img/gobfederal.jpg" #Logo del Gob Federal
+ UBICACION_CREAR_IMAGENES="/var/www/html/sii/storage/img/" #Ruta temporal para gráficos
+ RUTA_IMG_PIE_PAGINA="/var/www/html/sii/public/img/logo_pie_pagina.jpg" #Ruta para pie de página de documentos
  
 ```
 
@@ -160,7 +165,6 @@ Esta versión ha sido creada hasta el momento para los siguientes perfiles de us
 (también conocidos como _roles_):
 * escolares
 * alumno
-* docente
 * verano
 * division
 * acad

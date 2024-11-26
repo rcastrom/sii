@@ -3,11 +3,18 @@
 namespace App\Http\Controllers\Desarrollo;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\MenuDesarrolloController;
 use App\Models\FechaEvaluacion;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
 
 class FechasEvaluacionController extends Controller
 {
+    public function __construct(Dispatcher $events)
+    {
+        new MenuDesarrolloController($events);
+    }
+
     /**
      * Display a listing of the resource.
      */

@@ -52,6 +52,17 @@ class MenuDesarrolloController extends Controller
                     ]
                 ],
             ]);
+            $event->menu->add([
+                'text' => 'Mantenimiento',
+                'icon' => 'fa fa-wrench',
+                'submenu' => [
+                    [
+                        'text' => 'Contraseña',
+                        'url'  => 'desarrollo/mantenimiento/contrasena',
+                        'icon' => 'far fa-circle',
+                    ]
+                ]
+            ]);
         });
     }
 }
