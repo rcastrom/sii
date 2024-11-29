@@ -7,12 +7,12 @@ use App\Models\Aula;
 use App\Models\Carrera;
 use App\Models\EvaluacionAlumno;
 use App\Models\FechaEvaluacion;
+use App\Models\Grupo;
 use App\Models\Organigrama;
 use App\Models\PeriodoEscolar;
 use App\Models\PeriodoFicha;
 use App\Models\AulaAspirante;
 use App\Http\Controllers\Acciones\AccionesController;
-use App\Http\Controllers\Desarrollo\ResultadosEvalDocenteCarreraController;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Carbon\Carbon;
@@ -247,7 +247,7 @@ class DesarrolloController extends Controller
                 return match ($tipo_busqueda){
                    'CE'=>$this->resultados_por_carrera($periodo,$encuesta),
                    'DE'=>$this->resultados_por_departamento($periodo),
-                   'DO'=>$this->resultados_por_docentes($periodo,$encuesta),
+                   'DO'=>$this->resultados_por_docentes($periodo),
                    'LA'=>$this->resultados_alumnos_sin_evaluar($periodo,$encuesta),
                    'LM'=>$this->resultados_docentes_sin_evaluacion($periodo,$encuesta),
                    default => throw new Exception('Unsupported'),
@@ -273,17 +273,13 @@ class DesarrolloController extends Controller
             ->where('nivel_escolar',$nivel)
             ->orderBy('carrera')
             ->orderBy('reticula')->get();
-        $nombre_periodo=PeriodoEscolar::where('periodo',$periodo)
-            ->select('identificacion_corta')
-            ->first();
+        $nombre_periodo=(new AccionesController)->nombre_periodo($periodo);
         return view('desarrollo.resultado_evaluacion_docente_carreras')
             ->with(compact('carreras','periodo','encabezado','nombre_periodo'));
     }
     public function resultados_por_departamento($periodo){
         $encabezado="Evaluación al docente, búsqueda por departamento";
-        $nombre_periodo=PeriodoEscolar::where('periodo',$periodo)
-            ->select('identificacion_corta')
-            ->first();
+        $nombre_periodo=(new AccionesController)->nombre_periodo($periodo);
         $departamentos=Organigrama::where('area_depende','110000')
             ->whereNotNull('siglas')
             ->orderby('descripcion_area','ASC')
@@ -291,8 +287,18 @@ class DesarrolloController extends Controller
         return view('desarrollo.resultado_evaluacion_docente_departamentos')
             ->with(compact('departamentos','periodo','encabezado','nombre_periodo'));
     }
-    public function resultados_por_docentes($periodo,$encuesta){
-        //
+    public function resultados_por_docentes($periodo){
+        $encabezado="Evaluación al docente, búsqueda por docentes";
+        $nombre_periodo=(new AccionesController)->nombre_periodo($periodo);
+        $docentes=Grupo::where('periodo',$periodo)
+            ->join('personal','personal.id','=','grupos.docente')
+            ->select(['grupos.docente','personal.apellidos_empleado','personal.nombre_empleado'])
+            ->distinct()
+            ->orderBy('apellidos_empleado','ASC')
+            ->orderBy('nombre_empleado','ASC')
+            ->get();
+        return view('desarrollo.resultado_evaluacion_docente')
+            ->with(compact('docentes','periodo','encabezado','nombre_periodo'));
     }
     public function resultados_alumnos_sin_evaluar($periodo,$encuesta)
     {
@@ -302,64 +308,7 @@ class DesarrolloController extends Controller
     {
         //
     }
-    public function resultados_carrera_evaluacion(Request $request)
-    {
-        $periodo=$request->get('periodo');
-        $nombre_periodo=PeriodoEscolar::where('periodo',$periodo)
-            ->select('identificacion_corta')->first();
-        $carr=$request->get('carrera');
-        $datos=explode('_',$carr);
-        $carrera=trim($datos[0]);
-        $reticula=trim($datos[1]);
-        list($nombre_carrera,$materias_activas,$materias_evaluadas,$docentes_activos,
-            $docentes_evaluados,$alumnos_activos,$alumnos_evaluados)=(new ResultadosEvalDocenteCarreraController)
-            ->resultados_carrera($periodo,$carrera,$reticula);
-        $resultados=(new ResultadosEvalDocenteCarreraController)->resultados_evaluacion_docente_carrera($periodo,$carrera,$reticula);
-        $valores=[];
-        $i=0;
-        $suma=0;
-        foreach ($resultados as $key=>$value){
-            $valores[$i]=$value["porcentaje"];
-            $suma+=$value["porcentaje"];
-            $i++;
-        }
-        $promedio=round($suma/$i,2);
-        switch ($promedio){
-            case ($promedio>=1&&$promedio<=3.24): $cal="INSUFICIENTE"; break;
-            case ($promedio>=3.25&&$promedio<=3.74): $cal="SUFICIENTE"; break;
-            case ($promedio>=3.75&&$promedio<=4.24): $cal="BUENO"; break;
-            case ($promedio>=4.25&&$promedio<=4.74): $cal="NOTABLE"; break;
-            case ($promedio>=4.75&&$promedio<=5): $cal="EXCELENTE"; break;
-            default : $cal="Otros"; break;
-        }
-        $archivo=$periodo.$carrera.$reticula.date("Ymd").".jpg";
-        (new ResultadosEvalDocenteCarreraController)->grafica_evaluacion_carrera($resultados,$promedio,$archivo);
-        $pdf=PDF::setPaper('letter')->loadView('desarrollo.resultados_carrera_pdf',
-            [
-                'nombre_periodo'=>$nombre_periodo,
-                'nombre_carrera'=>$nombre_carrera,
-                'carrera'=>$carrera,
-                'reticula'=>$reticula,
-                'promedio'=>$promedio,
-                'calificacion'=>$cal,
-                'periodo'=>$periodo,
-                'materias_activas'=>$materias_activas,
-                'materias_evaluadas'=>$materias_evaluadas,
-                'docentes_activos'=>$docentes_activos,
-                'docentes_evaluados'=>$docentes_evaluados,
-                'alumnos_activos'=>$alumnos_activos,
-                'alumnos_evaluados'=>$alumnos_evaluados,
-                'resultados_carrera'=>$resultados,
-                'archivo'=>$archivo,
-            ]
-        );
-        return $pdf->stream('resultados_carrera.pdf');
-    }
-    public function resultados_departamento_evaluacion(Request $request)
-    {
-        $periodo=$request->get('periodo');
-        $departamento=$request->get('departamento');
-    }
+
     public function contrasenia(){
         $encabezado="Cambio de contraseña";
         return view('desarrollo.contrasenia',['encabezado'=>$encabezado]);

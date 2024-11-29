@@ -38,6 +38,17 @@ class AccionesController extends Controller
     {
         return DB::Select('select periodo from pac_periodo_actual()');
     }
+
+    /*
+     * Devuelve el nombre del periodo
+     */
+    public function nombre_periodo($periodo)
+    {
+        return PeriodoEscolar::where('periodo',$periodo)
+            ->select('identificacion_corta')
+            ->first();
+    }
+
     /*
      * Verifica si el docente tiene cruce de horario
      */

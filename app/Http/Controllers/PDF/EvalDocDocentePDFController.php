@@ -2,20 +2,20 @@
 
 namespace App\Http\Controllers\PDF;
 
+use App\Http\Controllers\Acciones\AccionesController;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\Acciones\EvalDocenteController;
 use App\Models\EvaluacionAlumno;
 use App\Models\EvaluacionAspecto;
-use App\Models\Organigrama;
 use App\Models\PeriodoEscolar;
+use App\Models\Personal;
 use App\Models\Pregunta;
-use Codedge\Fpdf\Fpdf\Fpdf;
 use Illuminate\Http\Request;
+use Codedge\Fpdf\Fpdf\Fpdf;
 use Amenadiel\JpGraph\Graph;
 use Amenadiel\JpGraph\Plot;
 use JetBrains\PhpStorm\NoReturn;
 
-class EvalDocDeptoPDFController extends Controller
+class EvalDocDocentePDFController extends Controller
 {
     /**
      * Handle the incoming request.
@@ -23,12 +23,12 @@ class EvalDocDeptoPDFController extends Controller
     #[NoReturn] public function __invoke(Request $request)
     {
         $periodo = $request->periodo;
-        $departamento = $request->departamento;
+        $docente=$request->docente;
         $pdf = new Fpdf('P','mm','Letter');
         $pdf->AddPage();
         $pdf->SetAutoPageBreak(0);
         if(EvaluacionAlumno::where('periodo',$periodo)
-            ->where('clave_area',$departamento)->count() == 0){
+                ->where('personal',$docente)->count() == 0){
             $pdf->SetFont('Arial','B',16);
             $pdf->Cell("130","5","Aun no hay datos por mostrar",0,1,'C');
             $pdf->Output();
@@ -48,8 +48,9 @@ class EvalDocDeptoPDFController extends Controller
         $nombre_periodo=PeriodoEscolar::where('periodo',$periodo)
             ->select('identificacion_larga')
             ->first();
-        $nombre_depto=Organigrama::where('clave_area',$departamento)
-            ->select('descripcion_area')->first();
+        $nombre_docente=Personal::where('id',$docente)
+            ->select(['apellidos_empleado','nombre_empleado'])
+            ->first();
         $consecutivo=EvaluacionAspecto::where('encuesta','=','A')
             ->max('consecutivo');
         $numero_preguntas=Pregunta::where('encuesta','A')
@@ -61,17 +62,19 @@ class EvalDocDeptoPDFController extends Controller
             mb_convert_encoding("RESULTADOS DE LA EVALUACIÓN DOCENTE DEL PERÍODO " . $nombre_periodo->identificacion_larga,
                 'ISO-8859-1', 'UTF-8'),0,2,"L");
         $pdf->SetFont('MM','B',8);
-        $pdf->Cell($w,$h, mb_convert_encoding(trim($nombre_depto->descripcion_area), 'ISO-8859-1', 'UTF-8'),
+        $pdf->Cell($w,$h, mb_convert_encoding(
+            trim($nombre_docente->apellidos_empleado)." ".trim($nombre_docente->nombre_empleado),
+            'ISO-8859-1', 'UTF-8'),
             0,2,"L");
-        $this->tabla_materias($pdf,$periodo,$departamento,$numero_preguntas);
+        $this->tabla_materias($pdf,$periodo,$docente,$numero_preguntas);
         //Resultados
         $pdf->Ln(4);
         $x = 41;
         $pdf->SetX($x);
         $pdf->SetFont('MM','B',8);
-        $data=(new EvalDocenteController)->resultados_x_depto($periodo,$departamento,$numero_preguntas);
-        $encabezado=array("Aspectos a evaluar","Porcentaje","Descripción");
-        $this->FancyTable($pdf,$encabezado,$data);
+        $data=$this->resultados($periodo,$docente);
+        $header=array("Aspectos a evaluar","Porcentaje","Descripción");
+        $this->FancyTable($pdf,$header,$data);
         $valores=[];
         $i=0;
         $suma=0;
@@ -87,8 +90,8 @@ class EvalDocDeptoPDFController extends Controller
             case ($promedio>=3.75&&$promedio<=4.24): $cal="BUENO"; break;
             case ($promedio>=4.25&&$promedio<=4.74): $cal="NOTABLE"; break;
             case ($promedio>=4.75&&$promedio<=5): $cal="EXCELENTE"; break;
+
         }
-        //$x = 41;
         $pdf->SetX($x);
         $pdf->SetFont('MM','B',9);
         $pdf->Cell(80,4,"Promedio General","LR",0,"R");
@@ -96,7 +99,7 @@ class EvalDocDeptoPDFController extends Controller
         $pdf->Cell(35,4,$cal,"LR",1,"C");
         //Ahora, el gráfico
         $pdf->Ln(5);
-        $nombre=$_ENV["UBICACION_CREAR_IMAGENES"].$departamento.$periodo.".png";
+        $nombre=$_ENV["UBICACION_CREAR_IMAGENES"].$docente.$periodo.".png";
         $this->grafica($pdf,$valores,$nombre,$promedio);
         //Pie de página
         $this->footer($pdf);
@@ -120,52 +123,111 @@ class EvalDocDeptoPDFController extends Controller
         $pdf->Cell(50, 4, $departamento, 0, 1, 'L');
         return $pdf;
     }
-    public function tabla_materias($pdf,$periodo,$depto,$numero_preguntas){
+    public function tabla_materias($pdf,$periodo,$docente,$maximo)
+    {
         $x = 25;
         $y = 65;
         $w = 100;
         $h = 4;
-        $cp=45;
-        $cs=25.7;
         $seccion = 20;
         $pdf->SetXY($x, $y);
         $pdf->SetFont('MM','B',9);
-        $pdf->Cell($cp-14,$h,"","T",0,"C");
-        $pdf->Cell($cp,$h,"MATERIA","T",0,"C");
-        $pdf->Cell($cp+8,$h,"GRUPO","T",0,"C");
-        $pdf->Cell($cp+4,$h,"INSCRITOS","T",1,"C");
-        $pdf->SetX($x);
-        $pdf->Cell($cs,$h,"","B",0,"C");
-        $pdf->Cell($cs,$h,"ACTIVAS","B",0,"C");
-        $pdf->Cell($cs,$h,"EVALUADAS","B",0,"C");
-        $pdf->Cell($cs,$h,"ACTIVOS","B",0,"C");
-        $pdf->Cell($cs,$h,"EVALUADOS","B",0,"C");
-        $pdf->Cell($cs,$h,"INSCRITOS","B",0,"C");
-        $pdf->Cell($cs-2,$h,"EVALUARON","B",1,"C");
-        $info_deptos=(new EvalDocenteController)
-            ->concentrado2_resultado_por_departamento($periodo,$depto,$numero_preguntas);
-        $mat_existentes=0; $mat_eval=0;
-        $doc_asignados=0; $doc_evaluados=0;
-        $mat_existentes+=$info_deptos[0]->mat_existen;
-        $mat_eval+=$info_deptos[0]->mat_eval;
-        $doc_asignados+=$info_deptos[0]->docentes;
-        $doc_evaluados+=$info_deptos[0]->doc_eval;
-        $pdf->SetX($x);
+        $pdf->Cell($w,$h,"MATERIA","B",0,"L");
+        $pdf->Cell($seccion,$h,"GRUPO","B",0,"C");
+        $pdf->Cell($seccion+4,$h,"INSCRITOS","B",0,"C");
+        $pdf->Cell($seccion+4,$h,"EVALUARON","B",1,"C");
+        $info_evaluado=(new AccionesController)->evaluacion_al_docente_datos($periodo,$docente,$maximo);
+        $inscritos=0; $evaluados=0;
         $pdf->SetFont('MM','',9);
-        $pdf->Cell($seccion+6,$h,"TOTAL","B",0,"R");
-        $pdf->Cell($seccion+4,$h,$mat_existentes,"B",0,"C");
-        $pdf->Cell($seccion+8,$h,$mat_eval,"B",0,"C");
-        $pdf->Cell($seccion+4,$h,$doc_asignados,"B",0,"C");
-        $pdf->Cell($seccion+4,$h,$doc_evaluados,"B",0,"C");
-        $estudiantes=(new EvalDocenteController)->alumnos_evaluaron_depto($periodo,$depto,$numero_preguntas);
-        $pdf->Cell($seccion+6,$h,$estudiantes[0]->inscritos,"B",0,"C");
-        $pdf->Cell($seccion+6,$h,$estudiantes[0]->evaluaron,"B",1,"C");
+        foreach($info_evaluado as $info){
+            $pdf->SetX($x);
+            $pdf->Cell($w,$h, mb_convert_encoding($info->nombre_completo_materia, 'ISO-8859-1', 'UTF-8') ."/".$info->materia,"B",0,"L");
+            $pdf->Cell($seccion,$h,$info->grupo,"B",0,"C");
+            $pdf->Cell($seccion+4,$h,$info->alumnos_inscritos,"B",0,"C");
+            $pdf->Cell($seccion+4,$h,$info->evaluaron,"B",1,"C");
+            $inscritos+=$info->alumnos_inscritos;
+            $evaluados+=$info->evaluaron;
+        }
         $pdf->SetX($x);
-        $pdf->Cell($seccion+6,$h,"PORCENTAJE","B",0,"C");
-        $pdf->Cell($cp+4,$h,round(($mat_eval/$mat_existentes)*100,2)."%","B",0,"C");
-        $pdf->Cell($cp+10,$h,round(($doc_evaluados/$doc_asignados)*100,2)."%","B",0,"C");
-        $pdf->Cell($cp+3,$h,round(($estudiantes[0]->evaluaron/$estudiantes[0]->inscritos)*100,2)."%","B",1,"C");
+        $pdf->SetFont('MM','B',9);
+        $pdf->Cell($w+$seccion,$h,"TOTAL","B",0,"R");
+        $pdf->Cell($seccion+4,$h,$inscritos,"B",0,"C");
+        $pdf->Cell($seccion+4,$h,$evaluados,"B",1,"C");
+        $pdf->SetX($x);
+        $pdf->Cell($w+$seccion+$seccion+2,$h,"PORCENTAJE","B",0,"C");
+        $pdf->Cell($seccion+6,$h,round(($evaluados/$inscritos)*100,2)."%","B",1,"C");
         return $pdf;
+    }
+    public function resultados($periodo,$docente){
+        $resultados=array();
+        $i=0; //Este es el contador inicial para el registro de información
+        $consecutivo=EvaluacionAlumno::where('encuesta','A')
+            ->max('consecutivo');
+        $maximo=Pregunta::where('consecutivo',$consecutivo)
+            ->where('encuesta','A')
+            ->count();
+        $info_evaluado=(new AccionesController)->evaluacion_al_docente_datos($periodo,$docente,$maximo);
+        $aspectos=EvaluacionAspecto::where('encuesta','A')
+            ->where('consecutivo',$consecutivo)
+            ->orderBy('aspecto')
+            ->get();
+        $valor_resp=[];
+        foreach ($aspectos as $aspecto){
+            $valor_resp[0]=0;
+            $valor_resp[1]=0;
+            $valor_resp[2]=0;
+            $valor_resp[3]=0;
+            $valor_resp[4]=0;
+            $valor_resp[5]=0;
+            $suma=0;
+            $num_res=0;
+            $preguntas=Pregunta::where('encuesta','A')
+                ->where('consecutivo',$consecutivo)
+                ->where('aspecto',$aspecto->aspecto)
+                ->select('no_pregunta')
+                ->get();
+            foreach ($info_evaluado as $value){
+                $materia=$value->materia;
+                $gpo=$value->grupo;
+                foreach ($preguntas as $pregunta){
+                    $obtenido=(new AccionesController)
+                        ->resultados_evaluacion_al_docente($periodo,$pregunta->no_pregunta,$materia,$gpo);
+                    foreach ($obtenido as $obt){
+                        switch ($obt->respuesta){
+                            case '1':
+                            case 'A': $valor_resp[0]+=$obt->cantidad;break;
+                            case '2':
+                            case 'B': $valor_resp[1]+=$obt->cantidad;break;
+                            case '3':
+                            case 'C': $valor_resp[2]+=$obt->cantidad;break;
+                            case '4':
+                            case 'D': $valor_resp[3]+=$obt->cantidad;break;
+                            case '5':
+                            case 'E': $valor_resp[4]+=$obt->cantidad;break;
+                            default: $valor_resp[5]+=$obt->cantidad; break;
+                        }
+                    }
+                }
+            }
+            for($a=0;$a<5;$a++){
+                $suma+=$valor_resp[$a]*($a+1);
+                $num_res+=$valor_resp[$a];
+            }
+            $porcentaje = round($suma/$num_res,2);
+            switch ($porcentaje){
+                case ($porcentaje>=1&&$porcentaje<=3.24): $cal="INSUFICIENTE"; break;
+                case ($porcentaje>=3.25&&$porcentaje<=3.74): $cal="SUFICIENTE"; break;
+                case ($porcentaje>=3.75&&$porcentaje<=4.24): $cal="BUENO"; break;
+                case ($porcentaje>=4.25&&$porcentaje<=4.74): $cal="NOTABLE"; break;
+                case ($porcentaje>=4.75&&$porcentaje<=5): $cal="EXCELENTE"; break;
+            }
+            $resultados[$i]["aspecto"]=$aspecto->aspecto;
+            $resultados[$i]["descripcion"]=$aspecto->descripcion;
+            $resultados[$i]["porcentaje"]=$porcentaje;
+            $resultados[$i]["calificacion"]=$cal;
+            $i++;
+        }
+        return $resultados;
     }
     public function FancyTable($pdf,$header, $data)
     {
@@ -191,8 +253,7 @@ class EvalDocDeptoPDFController extends Controller
         foreach($data as $key=>$value)
         {
             $pdf->SetX($x);
-            $pdf->Cell($w[0],4,$value["aspecto"].' '. mb_convert_encoding($value["descripcion"], 'ISO-8859-1', 'UTF-8'),
-                'LR',0,'L',$fill);
+            $pdf->Cell($w[0],4,$value["aspecto"].' '. mb_convert_encoding($value["descripcion"], 'ISO-8859-1', 'UTF-8'),'LR',0,'L',$fill);
             $pdf->Cell($w[1],4,$value["porcentaje"],'LR',0,'C',$fill);
             $pdf->Cell($w[2],4,$value["calificacion"],'LR',0,'C',$fill);
             $pdf->Ln();

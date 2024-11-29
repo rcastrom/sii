@@ -6,6 +6,7 @@ use App\Http\Controllers\Desarrollo\AulasController;
 use App\Http\Controllers\Desarrollo\FechasEvaluacionController;
 use App\Http\Controllers\PDF\EvalDocCarreraPDFController;
 use App\Http\Controllers\PDF\EvalDocDeptoPDFController;
+use App\Http\Controllers\PDF\EvalDocDocentePDFController;
 
 
 Route::group(['prefix' => 'desarrollo', 'middleware' => ['auth','role:desacad']], function (){
@@ -33,6 +34,8 @@ Route::group(['prefix' => 'desarrollo', 'middleware' => ['auth','role:desacad']]
             ->name('desarrollo.resultados_carrera');
         Route::post('/consultaxdepto',EvalDocDeptoPDFController::class)
             ->name('desarrollo.resultados_departamento');
+        Route::post('/consultaxdocente',EvalDocDocentePDFController::class)
+            ->name('desarrollo.resultados_docente');
     });
     Route::controller(DesarrolloController::class)->prefix('mantenimiento')->group(function (){
         Route::get('/contrasena','contrasenia');
