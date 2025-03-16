@@ -36,6 +36,8 @@ Route::group(['prefix' => 'desarrollo', 'middleware' => ['auth','role:desacad']]
             ->name('desarrollo.resultados_departamento');
         Route::post('/consultaxdocente',EvalDocDocentePDFController::class)
             ->name('desarrollo.resultados_docente');
+        Route::post('/alumnosfaltaneval','listado_alumnos_sin_evaluar')
+            ->name('desarrollo.listado_alumnos_sin_evaluar');
     });
     Route::controller(DesarrolloController::class)->prefix('mantenimiento')->group(function (){
         Route::get('/contrasena','contrasenia');

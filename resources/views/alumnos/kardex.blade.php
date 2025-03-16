@@ -113,7 +113,7 @@
                                     <th>Promedio General</th>
                                 </tr>
                                 <tr>
-                                    <td align="center"><?php $avance=$suma_total==0?0:round(($suma_total/$nombre_carrera->creditos_totales)*100,2); ?>{{$avance."%"}}</td>
+                                    <td align="center"><?php $avance=$suma_total==0?0:round(($suma_total/$nombre_carrera->creditos_totales)*100,2); ?>{{min($avance,100)."%"}}</td>
                                     <td align="center"><?php $prom_tot=($j-1)==0?0:round($calificaciones_totales/($j-1),2); ?>{{$prom_tot}}</td>
                                 </tr>
                                 </thead>

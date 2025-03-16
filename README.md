@@ -27,7 +27,7 @@ Los módulos que se han migrado son:
 ### Pre-requisitos 📋
 
 #### PHP
-Versión mínima de PHP: 8.2 y se recomienda a PostgreSQL como manejador de base de datos, en
+Versión mínima de PHP: 8.3 y se recomienda a PostgreSQL como manejador de base de datos, en
 cuyo caso, deberá contar con la extensión _pgsql_.
 
 >
@@ -108,6 +108,7 @@ por ejemplo
  RUTA_IMG_GOBFED="/var/www/html/sii/public/img/gobfederal.jpg" #Logo del Gob Federal
  UBICACION_CREAR_IMAGENES="/var/www/html/sii/storage/img/" #Ruta temporal para gráficos
  RUTA_IMG_PIE_PAGINA="/var/www/html/sii/public/img/logo_pie_pagina.jpg" #Ruta para pie de página de documentos
+ FPDF_FONTPATH="/var/www/html/sii/public/fuentes" #Ruta para las fuentes a emplear en la impresión de documentos PDF
  
 ```
 
@@ -192,11 +193,6 @@ De encontrarse algún error, el sistema le indicará el dato; caso contrario, el
 estará listo para ser empleado. Posteriormente y por seguridad, se le recomienda
 borrar la información de los usuarios creados.
 
-## Posterior a la instalación
-Dentro de la carpeta public, encontrará una sub - carpeta llamada fuentes, que son necesarias
-para la generación de las constancias de estudios.
-Copie por favor dichos archivos hacia la ruta vendor/codedge/laravel-fpdf/src/Fpdf/font para
-que el sistema emplee las fuentes oficiales (hasta el momento)
 
 ## Construido con 🛠️
 

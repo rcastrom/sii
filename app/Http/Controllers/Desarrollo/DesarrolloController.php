@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Desarrollo;
 
 
+use App\Http\Controllers\Acciones\EvalDocenteController;
 use App\Models\Aula;
 use App\Models\Carrera;
 use App\Models\EvaluacionAlumno;
@@ -249,7 +250,7 @@ class DesarrolloController extends Controller
                    'DE'=>$this->resultados_por_departamento($periodo),
                    'DO'=>$this->resultados_por_docentes($periodo),
                    'LA'=>$this->resultados_alumnos_sin_evaluar($periodo,$encuesta),
-                   'LM'=>$this->resultados_docentes_sin_evaluacion($periodo,$encuesta),
+                   'LM'=>$this->resultados_docentes_sin_evaluacion($periodo),
                    default => throw new Exception('Unsupported'),
                };
             }else{
@@ -302,11 +303,38 @@ class DesarrolloController extends Controller
     }
     public function resultados_alumnos_sin_evaluar($periodo,$encuesta)
     {
-        //
+        $encabezado="Evaluación al docente,alumnos que no han evaluado";
+        $nivel=$encuesta=='A'?'L':'P';
+        $carreras = Carrera::select(['carrera', 'nombre_reducido'])
+            ->where('nivel_escolar',$nivel)
+            ->orderBy('carrera')
+            ->distinct()
+            ->get();
+        $nombre_periodo=(new AccionesController)->nombre_periodo($periodo);
+        return view('desarrollo.resultado_evaluacion_docente_alumnos_no_evaluado')
+            ->with(compact('carreras','periodo','encabezado','nombre_periodo'));
     }
-    public function resultados_docentes_sin_evaluacion($periodo,$encuesta)
+    public function listado_alumnos_sin_evaluar(Request $request)
     {
-        //
+        $periodo=$request->periodo;
+        $carrera=$request->carrera;
+        $nombre_periodo=(new AccionesController)->nombre_periodo($periodo);
+        $datos=(new EvalDocenteController)->alumnos_no_han_evaluado($periodo,$carrera);
+        $pdf=PDF::setPaper('letter')->loadView('desarrollo.alumnos_sin_evaluar_pdf',[
+            'datos'=>$datos,
+            'nombre_periodo'=>$nombre_periodo,
+        ]);
+        return $pdf->stream('alumnos_sin_evaluar.pdf');
+    }
+    public function resultados_docentes_sin_evaluacion($periodo)
+    {
+        $nombre_periodo=(new AccionesController)->nombre_periodo($periodo);
+        $datos=(new EvalDocenteController)->docentes_no_evaluados($periodo);
+        $pdf=PDF::setPaper('letter')->loadView('desarrollo.docentes_sin_evaluacion_pdf',[
+            'datos'=>$datos,
+            'nombre_periodo'=>$nombre_periodo,
+        ]);
+        return $pdf->stream('docentes_sin_evaluacion.pdf');
     }
 
     public function contrasenia(){

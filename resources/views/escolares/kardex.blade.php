@@ -115,8 +115,8 @@
             <tr>
                 <td>
                     @php
-                        $avance1=$suma_total==0?0:round(($suma_total/$ncarrera->creditos_totales)*100,2);
-                        $avance = ($avance1>=100)?100:$avance1;
+                        $avance=$suma_total==0?0:round(($suma_total/$ncarrera->creditos_totales)*100,2);
+                        $avance = min($avance, 100);
                     @endphp
                         {{$avance."%"}}
                 </td>

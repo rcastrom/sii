@@ -94,8 +94,13 @@
             font-weight: 400;
             font-size: 9pt;
             /*width: 100%;*/
-
         }
+        .card-text{
+            font-family: "Montserrat", serif;
+            font-weight: 600;
+            font-size: 7pt;
+        }
+
         .salto{
             page-break-after: always;
         }
@@ -118,72 +123,38 @@
         <img src="{{public_path('img/logo_pie_pagina.jpg')}}" alt="Pie de página" class="imgFooter">
     </div>
     <div class="container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Período</th>
-                    <th>Carrera</th>
-                    <th>Retícula</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{$nombre_periodo->identificacion_corta}}</td>
-                    <td>{{$nombre_carrera->nombre_reducido}}</td>
-                    <td>{{$reticula}}</td>
-                </tr>
-            </tbody>
-        </table>
-        <table>
-            <thead>
-                <tr>
-                    <th colspan="2">Materias de la carrera</th>
-                    <th colspan="2">Docentes que imparten a la carrera</th>
-                    <th colspan="2">No. de alumnos</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Activas</td>
-                    <td>Evaluadas</td>
-                    <td>Activos</td>
-                    <td>Evaluados</td>
-                    <td>Inscritos</td>
-                    <td>Evaluaron</td>
-                </tr>
-                <tr>
-                    <td>{{$materias_activas}}</td>
-                    <td>{{$materias_evaluadas}}</td>
-                    <td>{{$docentes_activos}}</td>
-                    <td>{{$docentes_evaluados}}</td>
-                    <td>{{$alumnos_activos}}</td>
-                    <td>{{$alumnos_evaluados}}</td>
-                </tr>
-            </tbody>
-        </table>
-
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Aspectos a evaluar</th>
-                    <th>Puntaje</th>
-                    <th>Calificación</th>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach($resultados_carrera as $key=>$value)
-                <tr>
-                    <td>{{$value["aspecto"].") ".$value["descripcion"]}}</td>
-                    <td>{{$value["porcentaje"]}}</td>
-                    <td>{{$value["calificacion"]}}</td>
-                </tr>
-            @endforeach
-            </tbody>
-        </table>
-        <p>
-            Promedio General: <strong>{{$promedio}}</strong> Descripción  <strong>{{$calificacion}}</strong>
-        </p>
-
+        <div class="card">
+            <div class="card-body">
+                <h4 class="card-title">Resultados evaluación docente {{$nombre_periodo->identificacion_corta}}</h4>
+                <p class="card-text">Listado de alumnos que no han evaluado</p>
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Carrera</th>
+                        <th>No de control</th>
+                        <th>Nombre</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @php
+                        $i=1;
+                    @endphp
+                    @foreach($datos as $dato)
+                        <tr>
+                            <td>{{$i}}</td>
+                            <td>{{$dato->nombre_reducido}}</td>
+                            <td>{{$dato->no_de_control}}</td>
+                            <td>{{trim($dato->apellido_paterno.' '.$dato->apellido_materno.' '.$dato->nombre_alumno)}}</td>
+                            @php
+                                $i++;
+                            @endphp
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </body>
 </html>

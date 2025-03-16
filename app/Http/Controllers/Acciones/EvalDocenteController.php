@@ -69,30 +69,49 @@ class EvalDocenteController extends Controller
      * Devuelve el resultado de la evaluación docente por carrera - retícula/pregunta
      */
     public function resultado_evaluacion_docente_x_carrera_x_pregunta($periodo,$pregunta,$carrera,$reticula){
-        $data=DB::select("SELECT * FROM pac_eval_carr_ret(:periodo,:pregunta,:carrera,:reticula)",
+        return DB::select("SELECT * FROM pac_eval_carr_ret(:periodo,:pregunta,:carrera,:reticula)",
         [
             'periodo' => $periodo,
             'pregunta' => $pregunta,
             'carrera' => $carrera,
             'reticula' => $reticula
         ]);
-        return $data;
     }
 
     /*
      * Devuelve el resultado de la evaluación docente por departamento/pregunta
      */
     public function resultado_evaluacion_docente_x_departamento($periodo,$pregunta,$departamento,$longitud){
-        $data=DB::select("SELECT * FROM pac_eval_depto(:periodo,:pregunta,:departamento,:longitud)",
+        return DB::select("SELECT * FROM pac_eval_depto(:periodo,:pregunta,:departamento,:longitud)",
             [
                 'periodo' => $periodo,
                 'pregunta' => $pregunta,
                 'departamento' => $departamento,
                 'longitud' => $longitud
             ]);
-        return $data;
     }
 
+    /*
+     * Devuelve el listado de aquellos alumnos que aún no han realizado la evaluación al docente
+     */
+    public function alumnos_no_han_evaluado($periodo,$carrera){
+        return DB::select("SELECT * FROM pac_alumnos_faltan_ev(:periodo,:carrera)",
+            [
+                'periodo' => $periodo,
+                'carrera' => $carrera
+            ]);
+    }
+
+    /*
+     * Devuelve el listado de docentes que no han sido evaluados
+     */
+    public function docentes_no_evaluados($periodo)
+    {
+        return DB::select("SELECT * FROM pac_docentes_faltan_ev(:periodo)",
+            [
+                'periodo' => $periodo,
+            ]);
+    }
     /*
      * Devuelve el resultado de la evaluación docente por carrera - retícula
      */
