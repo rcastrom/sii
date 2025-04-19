@@ -9,47 +9,58 @@ class MenuDesarrolloController extends Controller
 {
     public function __construct(Dispatcher $events)
     {
-        $events->listen(BuildingMenu::class, function (BuildingMenu $event){
+        $events->listen(BuildingMenu::class, function (BuildingMenu $event) {
             $event->menu->add([
-                'text'=>'Inicio',
-                'icon'=>'fa fa-home',
-                'url'=>'desarrollo'
+                'text' => 'Inicio',
+                'icon' => 'fa fa-home',
+                'url' => 'desarrollo',
             ]);
             $event->menu->add([
-                'text'=>'Fichas',
-                'icon'=>'fa fa-calendar',
-                'submenu'=>[
+                'text' => 'Fichas',
+                'icon' => 'fa fa-calendar',
+                'submenu' => [
                     [
                         'text' => 'Apertura',
-                        'url'  => 'desarrollo/fichas/inicio',
+                        'url' => 'desarrollo/fichas/inicio',
                         'icon' => 'far fa-circle',
                     ],
                     [
                         'text' => 'Carreras',
-                        'url'  => 'desarrollo/fichas/carreras',
+                        'url' => 'desarrollo/fichas/carreras',
                         'icon' => 'far fa-circle',
                     ],
                     [
                         'text' => 'Aulas para examen',
-                        'url'  => 'desarrollo/fichas/aulas',
+                        'url' => 'desarrollo/fichas/aulas',
                         'icon' => 'far fa-circle',
                     ],
-                ]
+                ],
             ]);
             $event->menu->add([
-                'text'=>'Evaluación al Docente',
-                'icon'=>'fa fa-comments',
-                'submenu'=>[
+                'text' => 'Aspirantes',
+                'icon' => 'fa fa-users',
+                'submenu' => [
                     [
-                        'text'=>'Apertura',
-                        'url'  => 'desarrollo/eval/inicio',
+                        'text' => 'Listado',
+                        'url' => 'desarrollo/asp/listado',
+                        'icon' => 'far fa-circle',
+                    ],
+                ],
+            ]);
+            $event->menu->add([
+                'text' => 'Evaluación al Docente',
+                'icon' => 'fa fa-comments',
+                'submenu' => [
+                    [
+                        'text' => 'Apertura',
+                        'url' => 'desarrollo/eval/inicio',
                         'icon' => 'far fa-circle',
                     ],
                     [
-                        'text'=>'Resultados',
+                        'text' => 'Resultados',
                         'url' => 'desarrollo/eval/consulta',
                         'icon' => 'far fa-circle',
-                    ]
+                    ],
                 ],
             ]);
             $event->menu->add([
@@ -58,10 +69,10 @@ class MenuDesarrolloController extends Controller
                 'submenu' => [
                     [
                         'text' => 'Contraseña',
-                        'url'  => 'desarrollo/mantenimiento/contrasena',
+                        'url' => 'desarrollo/mantenimiento/contrasena',
                         'icon' => 'far fa-circle',
-                    ]
-                ]
+                    ],
+                ],
             ]);
         });
     }
