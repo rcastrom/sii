@@ -23,10 +23,15 @@ Route::group(['prefix' => 'desarrollo', 'middleware' => ['auth', 'role:desacad']
         Route::resource('/admin/aulas', AulasController::class);
     });
     Route::controller(AspirantesController::class)->prefix('asp')->group(function () {
+        Route::get('/estadistica', 'estadistica');
+        Route::post('/estadistica', 'fichas_concentrado_estadistico')
+            ->name('desarrollo.fichas_concentrado_estadistico');
         Route::get('/listado', 'listado');
         Route::post('/listado', 'mostrar')->name('desarrollo.mostrar');
         Route::get('/informacion/{periodo}/{aspirante}','datos_aspirante')
             ->name('desarrollo.datos_aspirante');
+        Route::get('/excel/{periodo}','fichas_concentrado_excel')
+            ->name('desarrollo.fichas_concentrado_excel');
         Route::post('/carrera','actualizar_datos_aspirante')
             ->name('desarrollo.actualizar_datos_aspirante');
         Route::post('/contra','contra_aspirante')

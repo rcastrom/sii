@@ -579,4 +579,21 @@ class AccionesController extends Controller
     {
         return DB::connection('nuevo_ingreso')->select("SELECT * FROM datos_aspirante('$ficha')");
     }
+
+    /*
+     * Devuelve el concentrado de fichas por período por carrera
+     */
+    public function concentrado_fichas($periodo,$carrera,$nombre_carreras)
+    {
+        return DB::connection('nuevo_ingreso')
+            ->select("SELECT * FROM concentrado_fichas('$periodo','$carrera','$nombre_carreras')");
+    }
+
+    /*
+     * Devuelve el concentrado de información de las fichas para Excel
+     */
+    public function concentrado_fichas_excel($periodo,$carrera,$nombre_carreras){
+        return DB::connection('nuevo_ingreso')
+            ->select("SELECT * FROM listado_excel('$periodo','$carrera','$nombre_carreras')");
+    }
 }

@@ -31,11 +31,11 @@
                 </tr>
                 </thead>
                 <tbody>
+                @php
+                    $i=1;
+                @endphp
                 @foreach($listados as $listado)
                     <tr>
-                        @php
-                            $i=1;
-                        @endphp
                         <td>{{$i}}</td>
                         <td>{{$listado->apellido_paterno_aspirante}}</td>
                         <td>{{$listado->apellido_materno_aspirante}}</td>

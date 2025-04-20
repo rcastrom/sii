@@ -41,6 +41,11 @@ class MenuDesarrolloController extends Controller
                 'icon' => 'fa fa-users',
                 'submenu' => [
                     [
+                        'text' => 'Estadística',
+                        'url' => 'desarrollo/asp/estadistica',
+                        'icon' => 'far fa-circle',
+                    ],
+                    [
                         'text' => 'Listado',
                         'url' => 'desarrollo/asp/listado',
                         'icon' => 'far fa-circle',
