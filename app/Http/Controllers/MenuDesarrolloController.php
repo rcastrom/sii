@@ -37,6 +37,17 @@ class MenuDesarrolloController extends Controller
                 ],
             ]);
             $event->menu->add([
+                'text' => 'Propedéutico',
+                'icon' => 'fa fa-book',
+                'submenu' => [
+                    [
+                        'text' => 'Grupos',
+                        'url' => 'desarrollo/prop/grupos',
+                        'icon' => 'far fa-circle',
+                    ],
+                ]
+            ]);
+            $event->menu->add([
                 'text' => 'Aspirantes',
                 'icon' => 'fa fa-users',
                 'submenu' => [

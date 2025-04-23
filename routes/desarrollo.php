@@ -3,6 +3,7 @@
 use App\Http\Controllers\Desarrollo\AulasController;
 use App\Http\Controllers\Desarrollo\DesarrolloController;
 use App\Http\Controllers\Desarrollo\FechasEvaluacionController;
+use App\Http\Controllers\Desarrollo\PropedeuticoController;
 use App\Http\Controllers\Desarrollo\AspirantesController;
 use App\Http\Controllers\PDF\EvalDocCarreraPDFController;
 use App\Http\Controllers\PDF\EvalDocDeptoPDFController;
@@ -21,6 +22,28 @@ Route::group(['prefix' => 'desarrollo', 'middleware' => ['auth', 'role:desacad']
         Route::get('/aulas', 'aulas_para_examen');
         Route::post('/aulas', 'alta_aula_examen')->name('desarrollo.alta_salon');
         Route::resource('/admin/aulas', AulasController::class);
+    });
+    Route::controller(PropedeuticoController::class)->prefix('prop')->group(function () {
+        Route::get('/grupos', 'grupos');
+        Route::post('/grupos', 'alta_grupo')
+            ->name('desarrollo.alta_grupo');
+        Route::get('/grupos/informe/{id}/{periodo}', 'informe_grupo')
+            ->name('desarrollo.informe_grupo');
+        Route::get('/grupos/eliminar/{id}/{periodo}', 'grupo_eliminar')
+            ->name('desarrollo.grupo_eliminar');
+        Route::post('/grupo/eliminar','eliminar_grupo')
+            ->name('desarrollo.eliminar_grupo');
+        Route::get('/grupos/aulas/{id}/{periodo}', 'aula_grupo')
+            ->name('desarrollo.aula_grupo');
+        Route::post('/grupos/aulas', 'asignar_aula_propedeutico')
+            ->name('desarrollo.asignar_aula_propedeutico');
+        Route::get('/grupos/editar/{id}/{periodo}', 'grupos_editar');
+        Route::get('/grupos/maestro/{id}/{periodo}', 'docente_grupo')
+            ->name('desarrollo.docente_grupo');
+        Route::post('/grupos/maestro','asignar_maestro_propedeutico')
+            ->name('desarrollo.asignar_maestro_propedeutico');
+        Route::post('/grupos/editar', 'grupos_editar')
+            ->name('desarrollo.grupos_editar');
     });
     Route::controller(AspirantesController::class)->prefix('asp')->group(function () {
         Route::get('/estadistica', 'estadistica');
