@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Escolares\EscolaresController;
 use App\Http\Controllers\Escolares\EscolaresAlumnosController;
 use App\Http\Controllers\Escolares\ActualizarAlumnoController;
+use App\Http\Controllers\Escolares\AspiranteController;
 use App\Http\Controllers\Escolares\KardexController;
 use App\Http\Controllers\Escolares\PeriodoEscolarController;
 use App\Http\Controllers\Escolares\ReinscripcionController;
@@ -65,6 +66,11 @@ Route::group(['prefix'=>'escolares','middleware'=>['auth','role:escolares']],fun
         Route::post('/alta_fechas', [ReinscripcionController::class,'altaf_re'])
             ->name('escolares.fechas-reinscripcion');
         Route::get('/cierre', [CierrePeriodoController::class,'cierre']);
+    });
+    Route::controller(EscolaresController::class)->prefix('aspirantes')->group(function (){
+        Route::resource('/ficha',AspiranteController::class);
+        Route::post('/listado',[AspiranteController::class,'listado'])
+            ->name('escolares_aspirantes.listado');
     });
     Route::controller(ActasController::class)->prefix('actas')->group(function (){
         Route::get('/inicio','periodoactas_m1');

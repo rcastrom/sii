@@ -33,6 +33,17 @@ class MenuEscolaresController extends Controller
                 ]
             ]);
             $event->menu->add([
+                'text' => 'Aspirantes',
+                'icon' => 'fa fa-upload',
+                'submenu' => [
+                    [
+                        'text' => 'Generar ficha',
+                        'url'  => 'escolares/aspirantes/ficha',
+                        'icon' => 'far fa-circle',
+                    ]
+                ]
+            ]);
+            $event->menu->add([
                 'text' => 'Períodos',
                 'icon' => 'far fa-calendar-alt',
                 'submenu' => [

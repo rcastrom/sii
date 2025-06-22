@@ -596,4 +596,13 @@ class AccionesController extends Controller
         return DB::connection('nuevo_ingreso')
             ->select("SELECT * FROM listado_excel('$periodo','$carrera','$nombre_carreras')");
     }
+
+    /*
+     * Devuelve la información que el aspirante haya subido al sistema
+     */
+    public function documentos_aspirante($ficha)
+    {
+        return DB::connection('nuevo_ingreso')
+            ->select("SELECT * FROM documentos_aspirante('$ficha')");
+    }
 }
