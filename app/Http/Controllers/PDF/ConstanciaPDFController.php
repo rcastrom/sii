@@ -207,11 +207,11 @@ class ConstanciaPDFController extends Controller
     }
 
     public function encabezado($pdf,$depto,$folio,$dia,$mes,$anio){
-        $pdf->Image("/var/www/html/escolares/public/img/aguila.jpg",0,0,20,15,'JPG');
-        // Logo SEP
-        $pdf->Image("/var/www/html/escolares/public/img/educacion.jpg",25,10,77,22,'JPG');
+        //$pdf->Image("/var/www/html/escolares/public/img/aguila.jpg",0,0,20,15,'JPG');
         // Logo TecNM
-        $pdf->Image("/var/www/html/escolares/public/img/tecnm.jpg",150,12,34,18,'JPG');
+        $pdf->Image($_ENV['RUTA_IMG_TECNM'], 20, 7, 36, 20, 'JPG');
+        // Logo GobFed
+        $pdf->Image($_ENV['RUTA_IMG_GOBFED'], 170, 1, 27, 28, 'JPG');
         //Leyenda
         $pdf->AddFont('MM','','Montserrat-Medium.php');
         $pdf->AddFont('MM','B','Montserrat-Bold.php');
@@ -219,7 +219,11 @@ class ConstanciaPDFController extends Controller
         $pdf->SetXY(140,30);
 
         $ndepto=Organigrama::where('clave_area',$depto)->first();
-        $pdf->Cell(50,6,utf8_decode("Instituto Tecnológico de Ensenada"),0,1,'L');
+        $nombre_tec = mb_convert_encoding($_ENV['NOMBRE_TEC'], 'ISO-8859-1', 'UTF-8');
+        $pdf->SetXY(154, 29);
+        $pdf->SetFont('Montserrat2', 'B', 8);
+        $pdf->Cell(50, 6, $nombre_tec, 0, 1, 'L');
+        $pdf->SetXY(146, 33);
         $pdf->SetFont('MM','',8);
         $pdf->SetXY(140,34);
         $pdf->Cell(50,6,$ndepto->descripcion_area,0,1,'L');
@@ -237,7 +241,7 @@ class ConstanciaPDFController extends Controller
         $xd = $xt + $wt;
         $pdf->SetXY($xt, $y);
         //1ra linea
-        $pdf->Cell($wt,$h,"Ensenada, BC.,",0,0,"L");
+        $pdf->Cell($wt,$h,$_ENV["CIUDAD_OFICIOS"],0,0,"L");
         $pdf->SetXY($xd,$y);
         $pdf->SetTextColor(255,255,255);
         $fecha=$dia."/".$this->mes($mes)."/".$anio;
@@ -255,7 +259,7 @@ class ConstanciaPDFController extends Controller
         $pdf->Cell($wt,$h,"Clave",0,0,"L");
         $pdf->SetXY($xd,$y+2*$b);
         $pdf->SetTextColor(255,255,255);
-        $pdf->Cell($wd,$h,"02DIT0023K",0,1,"L",true);
+        $pdf->Cell($wd,$h,$_ENV["CCT"],0,1,"L",true);
         $pdf->SetTextColor(0,0,0);
         //4ta linea
         $pdf->SetXY($xt,$y+3*$b);
@@ -287,13 +291,17 @@ class ConstanciaPDFController extends Controller
     }
     public function fecha_completa($fecha = NULL)
     {
-        return "Ensenada, B.C., a ".$this->fecha_espanol($fecha);
+        return $_ENV["CIUDAD_OFICIOS"]." a ".$this->fecha_espanol($fecha);
     }
     public function nperiodo($periodo, $largo=false)
     {
-        if(substr($periodo,4,1) == '1') { return (($largo)?"ENERO-JUNIO/":"ENE-JUN/").substr($periodo,0,4);}
-        if(substr($periodo,4,1) == '2') { return "VERANO/".substr($periodo,0,4);}
-        if(substr($periodo,4,1) == '3') { return (($largo)?"AGOSTO-DICIEMBRE/":"AGO-DIC/").substr($periodo,0,4);}
+        if(substr($periodo,4,1) == '1') {
+            return (($largo)?"ENERO-JUNIO/":"ENE-JUN/").substr($periodo,0,4);
+        }elseif(substr($periodo,4,1) == '2') {
+            return "VERANO/".substr($periodo,0,4);
+        }else{
+            return (($largo)?"AGOSTO-DICIEMBRE/":"AGO-DIC/").substr($periodo,0,4);
+        }
     }
 
     public function num_a_letra($num, $fem = true, $dec = true) {
@@ -1056,12 +1064,11 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
             //Lema TecNM
             $fpdf->SetX($x);
             $lema2=strtoupper("Excelencia en Educación Tecnológica");
-            $fpdf->Cell($w,$h,utf8_decode($lema2),0,1,'L');
+            $fpdf->Cell($w,$h, mb_convert_encoding($lema2, 'ISO-8859-1', 'UTF-8'),0,1,'L');
             //Lema Tec
             $fpdf->SetFont("Montserrat2",'I',7);
             $fpdf->SetX($x);
-            $lema=strtoupper("Por la tecnología de hoy y del futuro");
-            $fpdf->Cell($w,$h,utf8_decode($lema),0,1,'L');
+            $fpdf->Cell($w,$h, mb_convert_encoding($_ENV["LEMA_TEC"], 'ISO-8859-1', 'UTF-8'),0,1,'L');
             //$pdf->AddFont("SoberanaSans_Bold",'','soberanasans_bold.php');
             $fpdf->SetFont("MM",'B',9);
 
@@ -1103,7 +1110,7 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
         $fpdf->SetDrawColor(128,0,0);
         $fpdf->Line($xpie+10,$ypie-6,190,$ypie-6);
 
-        $fpdf->Image("/var/www/html/escolares/public/img/escudo.jpg", 20, $ypie, 15);
+        //$fpdf->Image("/var/www/html/escolares/public/img/escudo.jpg", 20, $ypie, 15);
         $w = 120;
         $h = 6;
         $xpie+=40+5;
@@ -1112,11 +1119,12 @@ CRO - Curso Repetición Ordinario  CRR - Curso Repetición Regularización  EE -
         $fpdf->AddFont("Montserrat2",'B','Montserrat-Light.php');
         $fpdf->SetFont("Montserrat2","",6);
         $fpdf->Cell($w, $h/3, "", 0, 2, 'C');
-        $fpdf->Cell($w-15, $h/2, utf8_decode("Blvd Tecnológico # 150, Col. Ex Ejido Chapultepec, C.P. 22780, Ensenada B.C"), 0, 2, 'C');
-        $fpdf->Cell($w-15, $h/2, "Tel(s). (646)177-5680 y 82 ", 0, 2, 'C');
+        $domicilio=mb_convert_encoding($_ENV["DOMICILIO_TEC"],'ISO-8859-1','UTF-8');
+        $fpdf->Cell($w-15, $h/2, $domicilio, 0, 2, 'C');
+        $fpdf->Cell($w-15, $h/2, "Tel(s). ".$_ENV["TELEFONO_TEC"], 0, 2, 'C');
         $fpdf->SetFont("Montserrat2",'B',6);
-        $fpdf->Cell($w-15, $h/2, "E-mail: escolares@ite.edu.mx, Sitio Web https://www.ensenada.tecnm.mx", 0, 2, 'C');
-        $fpdf->Image("/var/www/html/escolares/public/img/calidad.jpg", 168, 263, 17,15);
+        $fpdf->Cell($w-15, $h/2, "E-mail: ".$_ENV["CORREO_ESCOLARES"]." Sitio Web ".$_ENV["SITIO_WEB"], 0, 2, 'C');
+        $fpdf->Image($_ENV['RUTA_IMG_PIE_PAGINA'], 168, 263, 17,15);
         $fpdf->SetLineWidth(0.1);
         $fpdf->SetDrawColor(0);
         $fpdf->Output();

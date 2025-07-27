@@ -40,26 +40,23 @@ class IdiomasPDFController extends Controller
     }
 
     public function encabezado($pdf,$depto,$folio,$dia,$mes,$anio){
-        //$pdf->Image("/var/www/html/escolares/public/img/aguila.jpg",0,0,'','','JPG');
-        // Logo SEP
-        //$pdf->Image("/var/www/html/escolares/public/img/educacion.jpg",25,10,77,22,'JPG');
-        $pdf->Image("escudo_2021.jpg",25,10,110,18,'JPG');
+        $nombre_tec = mb_convert_encoding($_ENV['NOMBRE_TEC'], 'ISO-8859-1', 'UTF-8');
         // Logo TecNM
-        //$pdf->Image("/var/www/html/escolares/public/img/tecnm.jpg",150,12,34,18,'JPG');
-        //Leyenda
-        $pdf->AddFont('MM','','Montserrat-Medium.php');
-        $pdf->AddFont('MM','B','Montserrat-Bold.php');
-        $pdf->SetFont('MM','B',9);
-        $pdf->SetXY(140,30);
-
+        $pdf->Image($_ENV['RUTA_IMG_TECNM'], 20, 7, 36, 20, 'JPG');
+        // Logo GobFed
+        $pdf->Image($_ENV['RUTA_IMG_GOBFED'], 170, 1, 27, 28, 'JPG');
+        $pdf->SetXY(154, 29);
+        $pdf->SetFont('Montserrat2', 'B', 8);
+        $pdf->Cell(50, 6, $nombre_tec, 0, 1, 'L');
+        $pdf->SetXY(146, 33);
         $ndepto=Jefe::where('clave_area',$depto)->first();
-        $pdf->Cell(50,6,utf8_decode("Instituto Tecnológico de Ensenada"),0,1,'L');
+        //$pdf->Cell(50,6,$nombre_tec,0,1,'L');
         $pdf->SetFont('MM','',8);
         $pdf->SetXY(140,34);
         $pdf->Cell(50,6,$ndepto->descripcion_area,0,1,'L');
         $pdf->SetFont('MM','B',8);
         // $pdf->Cell(200,5,utf8_decode("\"2020, Año de Leona Vicario, Benemérita Madre de la Patria \""),0,1,"C");
-        $asunto=utf8_decode("LIBERACIÓN IDIOMA EXTRANJERO");
+        $asunto= mb_convert_encoding("LIBERACIÓN IDIOMA EXTRANJERO", 'ISO-8859-1', 'UTF-8');
         $h 	= 4;
         $wt = 27;
         $wd = 36;
@@ -69,7 +66,8 @@ class IdiomasPDFController extends Controller
         $xd = $xt + $wt;
         $pdf->SetXY($xt, $y);
         //1ra linea
-        $pdf->Cell($wt,$h,"Ensenada, BC.,",0,0,"L");
+        $ciudad=mb_convert_encoding($_ENV["CIUDAD_OFICIOS"],'ISO-8859-1', 'UTF-8');
+        $pdf->Cell($wt,$h,$ciudad,0,0,"L");
         $pdf->SetXY($xd,$y);
         $pdf->SetTextColor(255,255,255);
         $fecha=$dia."/".$this->mes($mes)."/".$anio;
@@ -77,9 +75,6 @@ class IdiomasPDFController extends Controller
         $pdf->SetTextColor(0,0,0);
         //2da linea
         $pdf->SetXY($xt,$y+$b);
-        //$pdf->Cell($wt,$h,"Oficio",0,0,"L");
-        //$pdf->SetXY($xd,$y+$b);
-        //$pdf->SetTextColor(255,255,255);
         $pdf->Cell($wd,$h,$folio,0,0,"L");
         $pdf->SetTextColor(0,0,0);
         //4ta linea
@@ -93,9 +88,13 @@ class IdiomasPDFController extends Controller
     }
     public function nperiodo($periodo, $largo=false)
     {
-        if(substr($periodo,4,1) == '1') { return (($largo)?"ENERO-JUNIO/":"ENE-JUN/").substr($periodo,0,4);}
-        if(substr($periodo,4,1) == '2') { return "VERANO/".substr($periodo,0,4);}
-        if(substr($periodo,4,1) == '3') { return (($largo)?"AGOSTO-DICIEMBRE/":"AGO-DIC/").substr($periodo,0,4);}
+        if(substr($periodo,4,1) == '1') {
+            return (($largo)?"ENERO-JUNIO/":"ENE-JUN/").substr($periodo,0,4);
+        }elseif(substr($periodo,4,1) == '2') {
+            return "VERANO/".substr($periodo,0,4);
+        }else{
+            return (($largo)?"AGOSTO-DICIEMBRE/":"AGO-DIC/").substr($periodo,0,4);
+        }
     }
 
     #[NoReturn] public function crearPDF(Request $request){

@@ -5,6 +5,7 @@ use App\Http\Controllers\Desarrollo\DesarrolloController;
 use App\Http\Controllers\Desarrollo\FechasEvaluacionController;
 use App\Http\Controllers\Desarrollo\PropedeuticoController;
 use App\Http\Controllers\Desarrollo\AspirantesController;
+use App\Http\Controllers\Desarrollo\FechasExamenController;
 use App\Http\Controllers\PDF\EvalDocCarreraPDFController;
 use App\Http\Controllers\PDF\EvalDocDeptoPDFController;
 use App\Http\Controllers\PDF\EvalDocDocentePDFController;
@@ -22,6 +23,7 @@ Route::group(['prefix' => 'desarrollo', 'middleware' => ['auth', 'role:desacad']
         Route::get('/aulas', 'aulas_para_examen');
         Route::post('/aulas', 'alta_aula_examen')->name('desarrollo.alta_salon');
         Route::resource('/admin/aulas', AulasController::class);
+        Route::resource('/fechas',FechasExamenController::class);
     });
     Route::controller(PropedeuticoController::class)->prefix('prop')->group(function () {
         Route::get('/grupos', 'grupos');

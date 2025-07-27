@@ -31,7 +31,7 @@ class AspirantesController extends Controller
     {
         $periodos = PeriodoEscolar::select(['periodo', 'identificacion_corta'])
             ->orderBy('periodo', 'DESC')->get();
-        $periodo_actual = (new AccionesController)->periodo();
+        $periodo_actual = (new AccionesController)->periodo_entrega_fichas();
         $encabezado = 'Periodo de búsqueda';
 
         return view('desarrollo.fichas_estadistica_periodo', compact('periodos',
@@ -59,7 +59,7 @@ class AspirantesController extends Controller
     {
         $periodos = PeriodoEscolar::select(['periodo', 'identificacion_corta'])
             ->orderBy('periodo', 'DESC')->get();
-        $periodo_actual = (new AccionesController)->periodo();
+        $periodo_actual = (new AccionesController)->periodo_entrega_fichas();
         $carreras = Carrera::select(['carrera', 'reticula', 'nombre_reducido'])
             ->where('nivel_escolar', '=', 'L')
             ->orderBy('carrera')

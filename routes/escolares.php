@@ -15,6 +15,7 @@ use App\Http\Controllers\PDF\ConstanciaPDFController;
 use App\Http\Controllers\PDF\IdiomasPDFController;
 use App\Http\Controllers\PDF\CertificadoPDFController;
 use App\Http\Controllers\PDF\KardexPDFController;
+use App\Http\Controllers\PDF\ImpresionFichaPDFController;
 
 Route::group(['prefix'=>'escolares','middleware'=>['auth','role:escolares']],function () {
     Route::get('/', [EscolaresController::class, 'index'])->name('inicio_escolares');
@@ -71,6 +72,8 @@ Route::group(['prefix'=>'escolares','middleware'=>['auth','role:escolares']],fun
         Route::resource('/ficha',AspiranteController::class);
         Route::post('/listado',[AspiranteController::class,'listado'])
             ->name('escolares_aspirantes.listado');
+        Route::get('/imprimir_ficha/{identificador}',[ImpresionFichaPDFController::class,'crearPDF'])
+            ->name('escolares.imprimir_ficha');
     });
     Route::controller(ActasController::class)->prefix('actas')->group(function (){
         Route::get('/inicio','periodoactas_m1');

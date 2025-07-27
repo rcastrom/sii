@@ -14,7 +14,7 @@
             <label class="sr-only" for="periodo">Periodo</label>
             <select name="periodo" id="periodo" class="form-control mb-2 mr-sm-2">
                 @foreach($periodos as $per)
-                    <option value="{{$per->periodo}}"{{$per->periodo==$periodo_actual[0]->periodo?' selected':''}}>{{$per->identificacion_corta}}</option>
+                    <option value="{{$per->periodo}}"{{$per->periodo==$periodo_actual->periodo?' selected':''}}>{{$per->identificacion_corta}}</option>
                 @endforeach
             </select>
             <button type="submit" class="btn btn-primary mb-2">Continuar</button>

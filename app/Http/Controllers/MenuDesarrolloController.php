@@ -34,6 +34,11 @@ class MenuDesarrolloController extends Controller
                         'url' => 'desarrollo/fichas/aulas',
                         'icon' => 'far fa-circle',
                     ],
+                    [
+                        'text' => 'Fechas de examen',
+                        'url' => 'desarrollo/fichas/fechas',
+                        'icon' => 'far fa-circle',
+                    ],
                 ],
             ]);
             $event->menu->add([

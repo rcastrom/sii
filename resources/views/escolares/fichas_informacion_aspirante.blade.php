@@ -61,7 +61,7 @@
                                                     </ul>
                                                 </div>
                                             @endif
-                                            <form action="{{route('ficha.update',['ficha'=>$aspirante->ficha])}}" method="post">
+                                            <form action="{{route('ficha.update',['ficha'=>$ficha])}}" method="post">
                                                 @csrf
                                                 @method('PUT')
                                                 <div class="form-group">
@@ -215,7 +215,7 @@
                                             </div>
                                             <div class="form-group">
                                                 @if(is_null($documentos->constancia))
-                                                    No tiene o no cuenta o no ha entregado su constancia de estudios
+                                                    No require o no ha entregado su constancia de estudios
                                                     donde indique que esté en último semestre
                                                 @else
                                                     <i class="fa fa-file-pdf"></i>
@@ -270,8 +270,15 @@
                             <h3>Validación de documentos</h3>
                         </div>
                         <div class="card-body">
-                            Indique si alguno de los documentos que el aspirante subió a la
-                            plataforma deba ser eliminado
+                            <div class="card card-success">
+                                <div class="card-header">
+                                    <h3 class="card-title">Importante</h3>
+                                </div>
+                                <div class="card-body">
+                                    Si no marca como documento entregado el pago de la ficha, no
+                                    se enlistará como ficha y continuará en el estatus de aspirante
+                                </div>
+                            </div>
                             @if ($errors->any())
                                 <div class="alert alert-danger">
                                     <ul>
@@ -281,62 +288,103 @@
                                     </ul>
                                 </div>
                             @endif
-                                <form action="" method="post" role="form">
-                                    <div class="form-check">
-                                        @if(!is_null($documentos->prepa))
-                                            <input type="checkbox" name="documentos" id="doc_prepa"
-                                                   class="form-check-input" value="prepa">
-                                            <label for="doc_prepa" class="form-check-label">
-                                                Certificado de preparatoria
+                                <form action="{{route('ficha.store')}}" method="post" role="form">
+                                    @csrf
+                                    <legend>
+                                        Indique de los documentos que el aspirante haya subido a la
+                                        plataforma, que considere como documentación entregada.
+                                    </legend>
+                                    @if(!is_null($documentos->prepa))
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input type="checkbox" name="documentos[]" id="cert_prepa"
+                                                       class="form-check-input" value="1">
+                                                <label for="cert_prepa" class="form-check-label">
+                                                    Certificado de preparatoria
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @if(!is_null($documentos->constancia))
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input type="checkbox" name="documentos[]" id="const_terminacion"
+                                                       class="form-check-input" value="1">
+                                                <label for="const_terminacion" class="form-check-label">
+                                                    Constancia de estudios vigente que señale que cursa el 6to semestre
+                                                    de preparatoria; o bien, constancia de certificado en trámite
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @if(!is_null($documentos->acta))
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input type="checkbox" name="documentos[]" id="acta_nacimiento"
+                                                       class="form-check-input" value="1">
+                                                <label for="acta_nacimiento" class="form-check-label">
+                                                    Acta de nacimiento
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @if(!is_null($documentos->clave_curp))
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input type="checkbox" name="documentos[]" id="curp"
+                                                       class="form-check-input" value="1">
+                                                <label for="curp" class="form-check-label">
+                                                    CURP
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    @if(!is_null($documentos->imss))
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input type="checkbox" name="documentos[]" id="nss"
+                                                       class="form-check-input" value="nss">
+                                                <label for="nss" class="form-check-label">
+                                                    NSS
+                                                </label>
+                                            </div>
+                                        </div>
+                                    @endif
+                                    <div class="form-group">
+                                        <div class="form-check form-check-inline">
+                                            <input type="radio" name="migratorio" id="extranjero1"
+                                                   class="form-check-input" value="1">
+                                            <label for="extranjero1" class="form-check-label">
+                                                Entregó forma migratoria
                                             </label>
-                                        @endif
-                                    </div>
-                                    <div class="form-check">
-                                        @if(!is_null($documentos->constancia))
-                                            <input type="checkbox" name="documentos" id="doc_constancia"
-                                                   class="form-check-input" value="constancia">
-                                            <label for="doc_constancia" class="form-check-label">
-                                                Constancia de preparatoria
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input type="radio" name="migratorio" id="extranjero2"
+                                                   class="form-check-input" value="2">
+                                            <label for="extranjero2" class="form-check-label">
+                                                Adeuda forma migratoria
                                             </label>
-                                        @endif
-                                    </div>
-                                    <div class="form-check">
-                                        @if(!is_null($documentos->acta))
-                                            <input type="checkbox" name="documentos" id="doc_acta"
-                                                   class="form-check-input" value="acta_nacimiento">
-                                            <label for="doc_acta" class="form-check-label">
-                                                Acta de nacimiento
+                                        </div>
+                                        <div class="form-check form-check-inline">
+                                            <input type="radio" name="migratorio" id="nacional"
+                                                   class="form-check-input" value="3" checked>
+                                            <label for="nacional" class="form-check-label">
+                                                No requiere forma migratoria
                                             </label>
-                                        @endif
+                                        </div>
                                     </div>
-                                    <div class="form-check">
-                                        @if(!is_null($documentos->clave_curp))
-                                            <input type="checkbox" name="documentos" id="doc_curp"
-                                                   class="form-check-input" value="curp">
-                                            <label for="doc_curp" class="form-check-label">
-                                                CURP
-                                            </label>
-                                        @endif
+                                    <div class="form-group">
+                                        <div class="custom-control custom-switch">
+                                            <input type="checkbox" checked class="custom-control-input"
+                                                   name="pago_ficha" value="1" id="pago_ficha">
+                                            <label class="custom-control-label" for="pago_ficha">
+                                                Entrega pago de ficha</label>
+                                        </div>
                                     </div>
-                                    <div class="form-check">
-                                        @if(!is_null($documentos->imss))
-                                            <input type="checkbox" name="documentos" id="doc_imss"
-                                                   class="form-check-input" value="imss">
-                                            <label for="doc_imss" class="form-check-label">
-                                                NSS
-                                            </label>
-                                        @endif
+                                    <div class="form-group">
+                                        <input type="hidden" name="identificador" value="{{$ficha}}">
+                                        <button type="submit" class="btn btn-primary">Continuar</button>
                                     </div>
-                                    <div class="form-check">
-                                        @if(!is_null($documentos->migracion))
-                                            <input type="checkbox" name="documentos" id="doc_migratorio"
-                                                   class="form-check-input" value="migratorio">
-                                            <label for="doc_migratorio" class="form-check-label">
-                                                Forma migratoria
-                                            </label>
-                                        @endif
-                                    </div>
-                                    <button type="submit" class="btn btn-primary">Continuar</button>
                                 </form>
                         </div>
                     </div>

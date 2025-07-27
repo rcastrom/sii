@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\PeriodoEscolar;
 use App\Models\PeriodoFicha;
 use App\Models\Aspirante;
+use App\Models\Preficha;
 
 class AspiranteController extends Controller
 {
@@ -45,7 +46,45 @@ class AspiranteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $identificador=$request->get("identificador");
+        $datos_aspirante=(new AccionesController)->ficha_datos($identificador)[0];
+        if(Aspirante::where([
+            'periodo'=>$datos_aspirante->periodo,
+            'ficha'=>$datos_aspirante->ficha,
+        ])->count()>0){
+            $mensaje="Ya existe un registro previo del aspirante.";
+            $encabezado="Nueva ficha";
+            return view('escolares.no')->with(compact('mensaje','encabezado'));
+        }
+        if($request->pago_ficha){
+            $aspirante = new Aspirante();
+            $aspirante->periodo=$datos_aspirante->periodo;
+            $aspirante->ficha=$datos_aspirante->ficha;
+            $aspirante->apellido_paterno=$datos_aspirante->apellido_paterno_aspirante;
+            $aspirante->apellido_materno=$datos_aspirante->apellido_materno_aspirante;
+            $aspirante->nombre_aspirante=$datos_aspirante->nombre_aspirante;
+            $aspirante->fecha_nacimiento=$datos_aspirante->fecha_nacimiento;
+            $aspirante->sexo=$datos_aspirante->sexo;
+            $aspirante->pais=$datos_aspirante->pais;
+            $aspirante->carrera=$datos_aspirante->carrera;
+            $aspirante->cert_prepa=$request->get('cert_prepa');
+            $aspirante->const_terminacion=$request->get('const_terminacion');
+            $aspirante->acta_nacimiento=$request->get('acta_nacimiento');
+            $aspirante->curp=$request->get('curp');
+            $aspirante->nss=$request->get('nss');
+            $aspirante->migratorio=$request->get('migratorio');
+            $aspirante->pago_ficha=$request->get('pago_ficha');
+            $aspirante->save();
+            (new AccionesController)->pago_ficha($identificador);
+            $encabezado="Ficha generada";
+            $mensaje="Se generó la ficha correspondiente";
+            return view('escolares.ficha_generada')
+                ->with(compact('encabezado','mensaje','identificador'));
+        }else{
+            $mensaje="No se dió de alta la ficha al no contar con el pago correspondiente";
+            $encabezado="Nueva ficha";
+            return view('escolares.no')->with(compact('mensaje','encabezado'));
+        }
     }
 
     /**
@@ -61,7 +100,7 @@ class AspiranteController extends Controller
         $documentos=(new AccionesController)->documentos_aspirante($ficha)[0];
         $encabezado="Datos del aspirante a ingresar";
         return view('escolares.fichas_informacion_aspirante')
-            ->with(compact('aspirante','carreras','encabezado','documentos'));
+            ->with(compact('aspirante','carreras','encabezado','documentos','ficha'));
     }
 
     /**
@@ -77,7 +116,7 @@ class AspiranteController extends Controller
      */
     public function update(Request $request, int $ficha)
     {
-        Aspirante::where('aspirante_id',$ficha)
+        Preficha::where('aspirante_id',$ficha)
             ->update(
                 [
                     'nombre'=>$request->nombre_aspirante,
@@ -101,9 +140,9 @@ class AspiranteController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(int $ficha)
     {
-        //
+
     }
 
     /**
@@ -116,6 +155,6 @@ class AspiranteController extends Controller
         $datos=(new AccionesController)->listado_aspirantes($periodo_ficha,'T');
         $encabezado="Listado de Aspirantes para el período ".$datos_periodo->identificacion_corta;
         return view('escolares.fichas_listado_completo')
-            ->with(compact('datos','encabezado'));
+            ->with(compact('datos','encabezado','datos_periodo'));
     }
 }

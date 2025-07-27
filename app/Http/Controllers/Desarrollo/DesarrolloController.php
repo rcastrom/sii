@@ -16,6 +16,7 @@ use App\Models\Organigrama;
 use App\Models\PeriodoEscolar;
 use App\Models\PeriodoFicha;
 use App\Models\User;
+use App\Models\ParametroExamenAdmision;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Carbon\Carbon;
 use Exception;
@@ -205,8 +206,7 @@ class DesarrolloController extends Controller
 
     public function evaluacion_inicio()
     {
-        $datos_periodo = (new AccionesController)->periodo_entrega_fichas();
-        $periodo_actual = $datos_periodo->periodo;
+        $periodo_actual = (new AccionesController)->periodo()[0]->periodo;
         $periodos = PeriodoEscolar::orderBy('periodo', 'ASC')->get();
         $encabezado = 'Evaluación al Docente';
 

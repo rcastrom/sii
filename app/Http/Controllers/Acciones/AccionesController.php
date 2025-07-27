@@ -605,4 +605,13 @@ class AccionesController extends Controller
         return DB::connection('nuevo_ingreso')
             ->select("SELECT * FROM documentos_aspirante('$ficha')");
     }
+
+    /*
+     * Actualiza el pago de la ficha en el portal de aspirantes
+     */
+    public function pago_ficha($ficha)
+    {
+        return DB::connection('nuevo_ingreso')
+            ->select("SELECT * FROM pago_ficha('$ficha')");
+    }
 }

@@ -7,14 +7,27 @@ use Illuminate\Database\Eloquent\Model;
 
 class Aspirante extends Model
 {
-    protected $connection='nuevo_ingreso';
-    protected $table = 'datos_personales';
-    protected $primaryKey = 'aspirante_id';
+
+    protected $primaryKey = 'id';
     protected $casts=[
-        'nombre'=>'string',
+        'ficha'=>'integer',
+        'periodo'=>'string',
         'apellido_paterno'=>'string',
         'apellido_materno'=>'string',
-        'curp'=>'string',
+        'nombre_aspirante'=>'string',
         'carrera'=>'string',
+        'fecha_nacimiento'=>'date',
+        'sexo'=>'string',
+        'pais'=>'string',
+        'carrera_opcion_1'=>'string',
+        'cert_prepa'=>'boolean',
+        'const_terminacion'=>'boolean',
+        'acta_nacimiento'=>'boolean',
+        'curp'=>'boolean',
+        'nss'=>'boolean',
+        'migratorio'=>'integer',
+        'pago_ficha'=>'boolean',
     ];
+    protected $fillable=['periodo','ficha','apellido_materno','nombre_aspirante',
+        'fecha_nacimiento','sexo','carrera','pago_ficha'];
 }

@@ -14,7 +14,7 @@
 
 @section('content')
     <x-information :encabezado="$encabezado">
-        <table id="population" class="display responsive nowrap">
+        <table id="population" class="display responsive nowrap mb-3">
             <thead>
                 <tr>
                     <th>Ficha</th>
@@ -36,13 +36,17 @@
                             <a href="{{route('ficha.show',['ficha'=>$dato->aspirante_id])}}">Editar</a>
                             <i class="fa fa-trash" aria-hidden="true"></i>
                             <a href="{{route('ficha.destroy',['ficha'=>$dato->aspirante_id])}}">Eliminar</a>
+                            <i class="fa fa-print"></i>
+                            <a href="{{route('escolares.imprimir_ficha',['identificador'=>$dato->aspirante_id])}}"
+                               target="_blank">Imprimir</a>
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         <tfoot>
             <tr>
-                <td colspan="4">En la sección de editar, es donde podrá validar la ficha</td>
+                <td colspan="4">En la sección de editar, es donde podrá validar la ficha.<br> Si elimina una ficha,
+                no se le requerirá de confirmación y se eliminará inmediatamente</td>
             </tr>
         </tfoot>
         </table>
