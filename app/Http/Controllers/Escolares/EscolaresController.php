@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Escolares;
 
 use App\Http\Controllers\Acciones\AccionesController;
+use App\Http\Controllers\Acciones\AspirantesNuevoIngresoController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\MenuEscolaresController;
+use App\Models\Aspirante;
 use App\Models\Carrera;
 use App\Models\Especialidad;
 use App\Models\Materia;
@@ -17,9 +19,11 @@ use Carbon\Carbon;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
+use App\Exports\DocumentoFaltanteExport;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EscolaresController extends Controller
 {
@@ -535,6 +539,33 @@ class EscolaresController extends Controller
             'hombres', 'mujeres', 'ncarrera', 'reticula', 'nperiodo', 'encabezado'));
     }
 
+    public function estadistica_fichas(Request $request)
+    {
+        $periodo = $request->get('periodo');
+        list($carreras_ofertar, $nombre_carreras) = (new AspirantesNuevoIngresoController)->carreras_por_ofertar();
+        if($request->get('busqueda')==1){
+            $listados=(new AccionesController)->concentrado_fichas($periodo,$carreras_ofertar,$nombre_carreras);
+            return $this->extracted($periodo, $listados,1);
+        }elseif ($request->get('busqueda')==2){
+            $listados=(new AccionesController)->concentrado_fichas_genero($periodo,$carreras_ofertar,$nombre_carreras);
+            return $this->extracted($periodo, $listados,2);
+        }else{
+            $datos=Aspirante::where(
+                [
+                    'periodo'=>$periodo,
+                    'pago_ficha'=>true
+                ]
+            )->leftJoin('carreras', function ($join) {
+                $join->on('aspirantes.carrera','=','carreras.carrera')
+                    ->where('carreras.ofertar','=',true);
+            })->select('aspirantes.apellido_paterno','aspirantes.apellido_materno',
+                'aspirantes.nombre_aspirante','carreras.nombre_carrera',
+            'aspirantes.cert_prepa','aspirantes.acta_nacimiento',
+            'aspirantes.curp','aspirantes.nss','aspirantes.migratorio')->get();
+            return Excel::download(new DocumentoFaltanteExport($datos),'docs_faltantes_fichas_'.$periodo.'.xlsx');
+        }
+    }
+
     public function mantenimiento_inicial()
     {
         $encabezado = 'Mantenimiento en la población escolar';
@@ -589,5 +620,36 @@ class EscolaresController extends Controller
         ]);
 
         return redirect('inicio_escolares');
+    }
+
+    /**
+     * @param mixed $periodo
+     * @param $listados
+     * @param $bandera
+     * @return \Illuminate\View\View|View|\Illuminate\Foundation\Application|Factory
+     */
+    public function extracted(mixed $periodo, $listados,$bandera): \Illuminate\View\View|View|\Illuminate\Foundation\Application|Factory
+    {
+        $nombre_periodo = PeriodoEscolar::where('periodo', $periodo)
+            ->select('identificacion_corta')
+            ->first();
+        $encabezado = "Aspirantes del periodo ".$nombre_periodo->identificacion_corta;
+        if (empty($listados)) {
+            $mensaje = 'No hay fichas de aspirantes para el periodo seleccionado';
+            return view('escolares.no')
+                ->with(compact('encabezado', 'mensaje'));
+        } else {
+            if($bandera==1){ //Este caso no va a existir para SE
+                $encabezado = "Concentrado de aspirantes";
+                return view('escolares.fichas_concentrado')
+                    ->with(compact('listados', 'encabezado', 'nombre_periodo',
+                        'periodo'));
+            }else{
+                $encabezado = "Concentrado de aspirantes por género";
+                return view('escolares.fichas_concentrado_genero')
+                    ->with(compact('listados', 'encabezado', 'nombre_periodo',
+                        'periodo'));
+            }
+        }
     }
 }

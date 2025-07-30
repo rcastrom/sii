@@ -40,7 +40,12 @@ class MenuEscolaresController extends Controller
                         'text' => 'Generar ficha',
                         'url'  => 'escolares/aspirantes/ficha',
                         'icon' => 'far fa-circle',
-                    ]
+                    ],
+                    [
+                        'text' => 'Estadística',
+                        'url'  => 'escolares/aspirantes/estadistica',
+                        'icon' => 'far fa-circle',
+                    ],
                 ]
             ]);
             $event->menu->add([

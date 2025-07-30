@@ -16,7 +16,6 @@ use App\Models\Organigrama;
 use App\Models\PeriodoEscolar;
 use App\Models\PeriodoFicha;
 use App\Models\User;
-use App\Models\ParametroExamenAdmision;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Carbon\Carbon;
 use Exception;

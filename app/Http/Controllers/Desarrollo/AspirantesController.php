@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Desarrollo;
 
 use App\Http\Controllers\Acciones\AccionesController;
+use App\Http\Controllers\Acciones\AspirantesNuevoIngresoController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\MenuDesarrolloController;
 use App\Models\Carrera;
@@ -10,9 +11,7 @@ use App\Models\PeriodoEscolar;
 use App\Models\CarreraAspirante;
 use App\Models\UsuarioAspirante;
 use App\Models\FichaAspirante;
-use App\Exports\FichasExport;
 use Carbon\Carbon;
-use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -41,18 +40,9 @@ class AspirantesController extends Controller
     public function fichas_concentrado_estadistico(Request $request)
     {
         $periodo = $request->get('periodo');
-        list($carreras_ofertar, $nombre_carreras) = $this->carreras_por_ofertar();
+        list($carreras_ofertar, $nombre_carreras) = (new AspirantesNuevoIngresoController)->carreras_por_ofertar();
         $listados=(new AccionesController)->concentrado_fichas($periodo,$carreras_ofertar,$nombre_carreras);
         return $this->extracted($periodo, $listados,2);
-    }
-
-    public function fichas_concentrado_excel($periodo)
-    {
-        list($carreras_ofertar, $nombre_carreras) = $this->carreras_por_ofertar();
-        $concentrado_total=(new AccionesController)->concentrado_fichas_excel($periodo,
-            $carreras_ofertar,$nombre_carreras);
-        $datos=collect($concentrado_total);
-        return Excel::download(new FichasExport($datos), 'fichas_concentrados_'.$periodo.'.xlsx');
     }
 
     public function listado(): Factory|View|Application
@@ -173,24 +163,5 @@ class AspirantesController extends Controller
         }
     }
 
-    /**
-     * @return string[]
-     */
-    public function carreras_por_ofertar(): array
-    {
-        $carreras = Carrera::select(['carrera', 'nombre_carrera'])
-            ->where('nivel_escolar', '=', 'L')
-            ->where('ofertar', '=', 1)
-            ->orderBy('carrera')
-            ->get();
-        $carreras_por_ofertar = array();
-        $nombre_de_carreras = array();
-        foreach ($carreras as $carrera) {
-            $carreras_por_ofertar[] = '"' . trim($carrera->carrera) . '"';
-            $nombre_de_carreras[] = '"' . trim($carrera->nombre_carrera) . '"';
-        }
-        $carreras_ofertar = "{" . implode(",", $carreras_por_ofertar) . "}";
-        $nombre_carreras = "{" . implode(",", $nombre_de_carreras) . "}";
-        return array($carreras_ofertar, $nombre_carreras);
-    }
+
 }

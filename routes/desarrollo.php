@@ -6,6 +6,7 @@ use App\Http\Controllers\Desarrollo\FechasEvaluacionController;
 use App\Http\Controllers\Desarrollo\PropedeuticoController;
 use App\Http\Controllers\Desarrollo\AspirantesController;
 use App\Http\Controllers\Desarrollo\FechasExamenController;
+use App\Http\Controllers\Acciones\AspirantesNuevoIngresoController;
 use App\Http\Controllers\PDF\EvalDocCarreraPDFController;
 use App\Http\Controllers\PDF\EvalDocDeptoPDFController;
 use App\Http\Controllers\PDF\EvalDocDocentePDFController;
@@ -55,7 +56,7 @@ Route::group(['prefix' => 'desarrollo', 'middleware' => ['auth', 'role:desacad']
         Route::post('/listado', 'mostrar')->name('desarrollo.mostrar');
         Route::get('/informacion/{periodo}/{aspirante}','datos_aspirante')
             ->name('desarrollo.datos_aspirante');
-        Route::get('/excel/{periodo}','fichas_concentrado_excel')
+        Route::get('/excel/{periodo}',[AspirantesNuevoIngresoController::class,'fichas_concentrado_excel'])
             ->name('desarrollo.fichas_concentrado_excel');
         Route::post('/carrera','actualizar_datos_aspirante')
             ->name('desarrollo.actualizar_datos_aspirante');

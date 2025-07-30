@@ -67,11 +67,9 @@ class AspiranteController extends Controller
             $aspirante->sexo=$datos_aspirante->sexo;
             $aspirante->pais=$datos_aspirante->pais;
             $aspirante->carrera=$datos_aspirante->carrera;
-            $aspirante->cert_prepa=$request->get('cert_prepa');
-            $aspirante->const_terminacion=$request->get('const_terminacion');
-            $aspirante->acta_nacimiento=$request->get('acta_nacimiento');
-            $aspirante->curp=$request->get('curp');
-            $aspirante->nss=$request->get('nss');
+            foreach ($request->get('documentos') as $key => $value) {
+                $aspirante[addslashes($value)]=1;
+            }
             $aspirante->migratorio=$request->get('migratorio');
             $aspirante->pago_ficha=$request->get('pago_ficha');
             $aspirante->save();
@@ -106,9 +104,28 @@ class AspiranteController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(int $ficha)
     {
-        //
+        $aspirante=(new AccionesController)->ficha_datos($ficha)[0];
+        $documentos=(new AccionesController)->documentos_aspirante($ficha)[0];
+        $documentos_capturados=Aspirante::where(
+            [
+                'ficha'=>$aspirante->ficha,
+                'periodo'=>$aspirante->periodo
+            ]
+        )->select(['cert_prepa','const_terminacion','acta_nacimiento','curp','nss','migratorio'])
+            ->first();
+        $carrera_aspirante=Carrera::where(
+            [
+                'ofertar'=>true,
+                'carrera'=>$aspirante->carrera,
+            ]
+        )->select('nombre_carrera')->first();
+        $periodo_aspirante=PeriodoEscolar::where('periodo',$aspirante->periodo)->first();
+        $encabezado="Datos del aspirante a ingresar en el período ".$periodo_aspirante->identificacion_corta;
+        return view('escolares.fichas_documentos_aspirante')
+            ->with(compact('encabezado','aspirante','documentos',
+                'carrera_aspirante','documentos_capturados','ficha'));
     }
 
     /**
@@ -157,4 +174,45 @@ class AspiranteController extends Controller
         return view('escolares.fichas_listado_completo')
             ->with(compact('datos','encabezado','datos_periodo'));
     }
+
+    public function estadistica()
+    {
+        $parametros=PeriodoFicha::where('activo',true)->first();
+        $periodo_ficha=$parametros->fichas;
+        $periodos = PeriodoEscolar::orderBy('periodo', 'DESC')->get();
+        $encabezado="Aspirantes nuevo ingreso";
+        return view('escolares.fichas_periodo_estadistica')->with(compact('encabezado',
+            'periodos','periodo_ficha'));
+    }
+
+    public function actualizar_documentos(Request $request, int $ficha)
+    {
+        $aspirante=(new AccionesController)->ficha_datos($ficha)[0];
+        Aspirante::where([
+            'ficha'=>$aspirante->ficha,
+            'periodo'=>$aspirante->periodo
+        ])->update(
+            [
+                'cert_prepa'=>false,
+                'const_terminacion'=>false,
+                'acta_nacimiento'=>false,
+                'curp'=>false,
+                'nss'=>false,
+            ]
+        );
+        $registro=Aspirante::where(
+            [
+                'ficha'=>$aspirante->ficha,
+                'periodo'=>$aspirante->periodo
+            ]
+        )->first();
+        foreach ($request->get('documentos') as $key => $value) {
+            $registro[addslashes($value)]=1;
+        }
+        $registro->update();
+        $encabezado="Documentos del aspirante actualizados";
+        $mensaje="Se actualizó la información de los documentos que el aspirante ha entregado a Servicios Escolares";
+        return view('escolares.si')->with(compact('encabezado','mensaje'));
+    }
+
 }

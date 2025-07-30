@@ -583,11 +583,20 @@ class AccionesController extends Controller
     /*
      * Devuelve el concentrado de fichas por período por carrera
      */
+    public function concentrado_fichas_genero($periodo,$carrera,$nombre_carreras)
+    {
+        return DB::select("SELECT * FROM pac_concentrado_fichas_genero('$periodo','$carrera','$nombre_carreras')");
+    }
+
+    /*
+     * Devuelve el concentrado de fichas por período por carrera por género
+     */
     public function concentrado_fichas($periodo,$carrera,$nombre_carreras)
     {
         return DB::connection('nuevo_ingreso')
             ->select("SELECT * FROM concentrado_fichas('$periodo','$carrera','$nombre_carreras')");
     }
+
 
     /*
      * Devuelve el concentrado de información de las fichas para Excel

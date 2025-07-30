@@ -11,6 +11,7 @@ use App\Http\Controllers\Escolares\ReinscripcionController;
 use App\Http\Controllers\Escolares\CierrePeriodoController;
 use App\Http\Controllers\Escolares\ActasController;
 use App\Http\Controllers\Escolares\IdiomasController;
+use App\Http\Controllers\Acciones\AspirantesNuevoIngresoController;
 use App\Http\Controllers\PDF\ConstanciaPDFController;
 use App\Http\Controllers\PDF\IdiomasPDFController;
 use App\Http\Controllers\PDF\CertificadoPDFController;
@@ -74,6 +75,13 @@ Route::group(['prefix'=>'escolares','middleware'=>['auth','role:escolares']],fun
             ->name('escolares_aspirantes.listado');
         Route::get('/imprimir_ficha/{identificador}',[ImpresionFichaPDFController::class,'crearPDF'])
             ->name('escolares.imprimir_ficha');
+        Route::post('/documentos/{ficha}',[AspiranteController::class,'actualizar_documentos'])
+            ->name('escolares.actualizar_documentos');
+        Route::get('/estadistica',[AspiranteController::class,'estadistica']);
+        Route::post('/estadistica_fichas',[EscolaresController::class,'estadistica_fichas'])
+            ->name('escolares.estadistica_fichas');
+        Route::get('/excel/{periodo}',[AspirantesNuevoIngresoController::class,'fichas_concentrado_excel'])
+            ->name('escolares.fichas_concentrado_excel');
     });
     Route::controller(ActasController::class)->prefix('actas')->group(function (){
         Route::get('/inicio','periodoactas_m1');

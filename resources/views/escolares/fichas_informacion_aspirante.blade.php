@@ -61,7 +61,7 @@
                                                     </ul>
                                                 </div>
                                             @endif
-                                            <form action="{{route('ficha.update',['ficha'=>$ficha])}}" method="post">
+                                            <form action="{{route('ficha.update',['ficha'=>$aspirante->ficha])}}" method="post">
                                                 @csrf
                                                 @method('PUT')
                                                 <div class="form-group">
@@ -298,7 +298,7 @@
                                         <div class="form-group">
                                             <div class="form-check">
                                                 <input type="checkbox" name="documentos[]" id="cert_prepa"
-                                                       class="form-check-input" value="1">
+                                                       class="form-check-input" value="cert_prepa">
                                                 <label for="cert_prepa" class="form-check-label">
                                                     Certificado de preparatoria
                                                 </label>
@@ -309,7 +309,7 @@
                                         <div class="form-group">
                                             <div class="form-check">
                                                 <input type="checkbox" name="documentos[]" id="const_terminacion"
-                                                       class="form-check-input" value="1">
+                                                       class="form-check-input" value="const_terminacion">
                                                 <label for="const_terminacion" class="form-check-label">
                                                     Constancia de estudios vigente que señale que cursa el 6to semestre
                                                     de preparatoria; o bien, constancia de certificado en trámite
@@ -321,7 +321,7 @@
                                         <div class="form-group">
                                             <div class="form-check">
                                                 <input type="checkbox" name="documentos[]" id="acta_nacimiento"
-                                                       class="form-check-input" value="1">
+                                                       class="form-check-input" value="acta_nacimiento">
                                                 <label for="acta_nacimiento" class="form-check-label">
                                                     Acta de nacimiento
                                                 </label>
@@ -332,7 +332,7 @@
                                         <div class="form-group">
                                             <div class="form-check">
                                                 <input type="checkbox" name="documentos[]" id="curp"
-                                                       class="form-check-input" value="1">
+                                                       class="form-check-input" value="curp">
                                                 <label for="curp" class="form-check-label">
                                                     CURP
                                                 </label>
@@ -382,7 +382,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
-                                        <input type="hidden" name="identificador" value="{{$ficha}}">
+                                        <input type="hidden" name="identificador" value="{{$aspirante->ficha}}">
                                         <button type="submit" class="btn btn-primary">Continuar</button>
                                     </div>
                                 </form>

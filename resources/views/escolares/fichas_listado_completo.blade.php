@@ -32,21 +32,19 @@
                         <td>{{$dato->apellido_materno_aspirante}}</td>
                         <td>{{$dato->nombre_aspirante}}</td>
                         <td>
-                            <i class="fa fa-pencil-alt"></i>
-                            <a href="{{route('ficha.show',['ficha'=>$dato->aspirante_id])}}">Editar</a>
-                            <i class="fa fa-trash" aria-hidden="true"></i>
-                            <a href="{{route('ficha.destroy',['ficha'=>$dato->aspirante_id])}}">Eliminar</a>
-                            <i class="fa fa-print"></i>
+                            <a href="{{route('ficha.show',['ficha'=>$dato->aspirante_id])}}"><i class="fa fa-pencil-alt"></i>Editar</a>
                             <a href="{{route('escolares.imprimir_ficha',['identificador'=>$dato->aspirante_id])}}"
-                               target="_blank">Imprimir</a>
+                               target="_blank"><i class="fa fa-print"></i>Imprimir</a>
+                            <a href="{{route('ficha.edit',['ficha'=>$dato->aspirante_id])}}"><i class="fa fa-file"></i>Documentos</a>
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         <tfoot>
             <tr>
-                <td colspan="4">En la sección de editar, es donde podrá validar la ficha.<br> Si elimina una ficha,
-                no se le requerirá de confirmación y se eliminará inmediatamente</td>
+                <td colspan="5">En la sección de editar, es donde podrá validar la ficha.<br>
+                    En la sección de documentos, es donde podrá consultar o modificar, los
+                documentos que el aspirante ha entregado o falta por entregar</td>
             </tr>
         </tfoot>
         </table>
