@@ -3,13 +3,22 @@
 namespace App\Http\Controllers\Humanos;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\MenuHumanosController;
 use App\Models\Jefe;
 use App\Models\Organigrama;
 use App\Models\Personal;
+use Illuminate\Contracts\Events\Dispatcher;
+use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Contracts\View\Factory;
 use Illuminate\Http\Request;
 
 class JefesController extends Controller
 {
+
+    public function __construct(Dispatcher $events){
+        new MenuHumanosController($events);
+    }
+
     /**
      * Display a listing of the resource.
      */

@@ -29,8 +29,8 @@ Route::group(['prefix'=>'estudiante','middleware'=>['auth','role:alumno']],funct
             ->name('alumnos.seleccion');
     });
     Route::controller(AlumnosController::class)->prefix('mantenimiento')->group(function (){
-        Route::get('/contrasena','contrasenia');
-        Route::post('/ccontrasena','ccontrasenia')
+        Route::get('/contrasena',[AlumnosController::class,'contrasenia']);
+        Route::post('/ccontrasena',[AlumnosController::class,'ccontrasenia'])
             ->name('alumnos.contra');
     });
 });

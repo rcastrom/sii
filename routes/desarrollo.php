@@ -15,63 +15,63 @@ use Illuminate\Support\Facades\Route;
 Route::group(['prefix' => 'desarrollo', 'middleware' => ['auth', 'role:desacad']], function () {
     Route::get('/', [DesarrolloController::class, 'index'])->name('inicio_desarrollo');
     Route::controller(DesarrolloController::class)->prefix('fichas')->group(function () {
-        Route::get('/inicio', 'fichas_inicio');
-        Route::post('/periodos', 'fichas_inicio_parametros')
+        Route::get('/inicio', [DesarrolloController::class,'fichas_inicio']);
+        Route::post('/periodos', [DesarrolloController::class,'fichas_inicio_parametros'])
             ->name('desarrollo.fichas_inicio');
-        Route::get('/carreras', 'carreras_x_ofertar');
-        Route::post('/carreras', 'actualizar_carreras_x_ofertar')
+        Route::get('/carreras', [DesarrolloController::class,'carreras_x_ofertar']);
+        Route::post('/carreras', [DesarrolloController::class,'actualizar_carreras_x_ofertar'])
             ->name('desarrollo.actualizar_carreras');
-        Route::get('/aulas', 'aulas_para_examen');
-        Route::post('/aulas', 'alta_aula_examen')->name('desarrollo.alta_salon');
+        Route::get('/aulas', [DesarrolloController::class,'aulas_para_examen']);
+        Route::post('/aulas', [DesarrolloController::class,'alta_aula_examen'])->name('desarrollo.alta_salon');
         Route::resource('/admin/aulas', AulasController::class);
         Route::resource('/fechas',FechasExamenController::class);
     });
     Route::controller(PropedeuticoController::class)->prefix('prop')->group(function () {
-        Route::get('/grupos', 'grupos');
-        Route::post('/grupos', 'alta_grupo')
+        Route::get('/grupos', [PropedeuticoController::class,'grupos']);
+        Route::post('/grupos', [PropedeuticoController::class,'alta_grupo'])
             ->name('desarrollo.alta_grupo');
-        Route::get('/grupos/informe/{id}/{periodo}', 'informe_grupo')
+        Route::get('/grupos/informe/{id}/{periodo}', [PropedeuticoController::class,'informe_grupo'])
             ->name('desarrollo.informe_grupo');
-        Route::get('/grupos/eliminar/{id}/{periodo}', 'grupo_eliminar')
+        Route::get('/grupos/eliminar/{id}/{periodo}', [PropedeuticoController::class,'grupo_eliminar'])
             ->name('desarrollo.grupo_eliminar');
-        Route::post('/grupo/eliminar','eliminar_grupo')
+        Route::post('/grupo/eliminar',[PropedeuticoController::class,'eliminar_grupo'])
             ->name('desarrollo.eliminar_grupo');
-        Route::get('/grupos/aulas/{id}/{periodo}', 'aula_grupo')
+        Route::get('/grupos/aulas/{id}/{periodo}', [PropedeuticoController::class,'aula_grupo'])
             ->name('desarrollo.aula_grupo');
-        Route::post('/grupos/aulas', 'asignar_aula_propedeutico')
+        Route::post('/grupos/aulas', [PropedeuticoController::class,'asignar_aula_propedeutico'])
             ->name('desarrollo.asignar_aula_propedeutico');
-        Route::get('/grupos/editar/{id}/{periodo}', 'grupos_editar');
-        Route::get('/grupos/maestro/{id}/{periodo}', 'docente_grupo')
+        Route::get('/grupos/editar/{id}/{periodo}', [PropedeuticoController::class,'grupos_editar']);
+        Route::get('/grupos/maestro/{id}/{periodo}', [PropedeuticoController::class,'docente_grupo'])
             ->name('desarrollo.docente_grupo');
-        Route::post('/grupos/maestro','asignar_maestro_propedeutico')
+        Route::post('/grupos/maestro',[PropedeuticoController::class,'asignar_maestro_propedeutico'])
             ->name('desarrollo.asignar_maestro_propedeutico');
-        Route::post('/grupos/editar', 'grupos_editar')
+        Route::post('/grupos/editar', [PropedeuticoController::class,'grupos_editar'])
             ->name('desarrollo.grupos_editar');
     });
     Route::controller(AspirantesController::class)->prefix('asp')->group(function () {
-        Route::get('/estadistica', 'estadistica');
-        Route::post('/estadistica', 'fichas_concentrado_estadistico')
+        Route::get('/estadistica', [AspirantesController::class,'estadistica']);
+        Route::post('/estadistica', [AspirantesController::class,'fichas_concentrado_estadistico'])
             ->name('desarrollo.fichas_concentrado_estadistico');
-        Route::get('/listado', 'listado');
-        Route::post('/listado', 'mostrar')->name('desarrollo.mostrar');
-        Route::get('/informacion/{periodo}/{aspirante}','datos_aspirante')
+        Route::get('/listado', [AspirantesController::class,'listado']);
+        Route::post('/listado', [AspirantesController::class,'mostrar'])->name('desarrollo.mostrar');
+        Route::get('/informacion/{periodo}/{aspirante}',[AspirantesController::class,'datos_aspirante'])
             ->name('desarrollo.datos_aspirante');
         Route::get('/excel/{periodo}',[AspirantesNuevoIngresoController::class,'fichas_concentrado_excel'])
             ->name('desarrollo.fichas_concentrado_excel');
-        Route::post('/carrera','actualizar_datos_aspirante')
+        Route::post('/carrera',[AspirantesController::class,'actualizar_datos_aspirante'])
             ->name('desarrollo.actualizar_datos_aspirante');
-        Route::post('/contra','contra_aspirante')
+        Route::post('/contra',[AspirantesController::class,'contra_aspirante'])
             ->name('desarrollo.contra_aspirante');
-        Route::post('/pago','pago_aspirante')
+        Route::post('/pago',[AspirantesController::class,'pago_aspirante'])
             ->name('desarrollo.pago_aspirante');
     });
     Route::controller(DesarrolloController::class)->prefix('eval')->group(function () {
-        Route::get('/inicio', 'evaluacion_inicio');
-        Route::post('/inicio', 'evaluacion_periodo')
+        Route::get('/inicio', [DesarrolloController::class,'evaluacion_inicio']);
+        Route::post('/inicio', [DesarrolloController::class,'evaluacion_periodo'])
             ->name('desarrollo.periodo_evaluacion');
         Route::resource('/periodos', FechasEvaluacionController::class);
-        Route::get('/consulta', 'resultados_evaluacion1');
-        Route::post('/consulta', 'resultados_evaluacion2')
+        Route::get('/consulta', [DesarrolloController::class,'resultados_evaluacion1']);
+        Route::post('/consulta', [DesarrolloController::class,'resultados_evaluacion2'])
             ->name('desarrollo.resultados_evaluacion');
         Route::post('/resultadosxcarrera', EvalDocCarreraPDFController::class)
             ->name('desarrollo.resultados_carrera');
@@ -79,11 +79,11 @@ Route::group(['prefix' => 'desarrollo', 'middleware' => ['auth', 'role:desacad']
             ->name('desarrollo.resultados_departamento');
         Route::post('/consultaxdocente', EvalDocDocentePDFController::class)
             ->name('desarrollo.resultados_docente');
-        Route::post('/alumnosfaltaneval', 'listado_alumnos_sin_evaluar')
+        Route::post('/alumnosfaltaneval', [DesarrolloController::class,'listado_alumnos_sin_evaluar'])
             ->name('desarrollo.listado_alumnos_sin_evaluar');
     });
     Route::controller(DesarrolloController::class)->prefix('mantenimiento')->group(function () {
-        Route::get('/contrasena', 'contrasenia');
-        Route::post('/ccontrasena', 'ccontrasenia')->name('desarrollo.contra');
+        Route::get('/contrasena', [DesarrolloController::class,'contrasenia']);
+        Route::post('/ccontrasena', [DesarrolloController::class,'ccontrasenia'])->name('desarrollo.contra');
     });
 });

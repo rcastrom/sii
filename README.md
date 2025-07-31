@@ -24,6 +24,18 @@ Los módulos que se han migrado son:
 * Personal docente (100%).
 * Recursos Humanos (99%)
 
+#### Pendientes
+En Servicios Escolares:
+* Inscripción
+* Cierre de semestre
+
+En Desarrollo Académico
+* Aceptar aspirantes
+
+En Recursos Humanos
+* Migrar histórico de plazas, así como su consulta
+* Cambio de contraseña
+
 ### Pre-requisitos 📋
 
 #### PHP

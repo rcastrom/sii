@@ -75,8 +75,8 @@ Route::group(['prefix' => 'academicos','middleware' => ['auth','role:academico']
             ->name('nodocente.alta');
     });
     Route::controller(AcademicosController::class)->prefix('mantenimiento')->group(function (){
-        Route::get('/contrasena','contrasenia');
-        Route::post('/ccontrasena','ccontrasenia')
+        Route::get('/contrasena',[AcademicosController::class,'contrasenia']);
+        Route::post('/ccontrasena',[AcademicosController::class,'ccontrasenia'])
             ->name('academicos.contra');
     });
 });
