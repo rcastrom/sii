@@ -1,7 +1,7 @@
 # SII vr 3.0
 
-*Versión del Sistema Integral de Información (SII) de los Institutos Tecnológicos 
-desarrollado totalmente en [Laravel](https://laravel.com/)*.
+*Versión del Sistema Integral de Información (SII) para los Institutos Tecnológicos,
+realizado totalmente en [Laravel](https://laravel.com/)*.
 
 ## Comenzando 🚀
 
@@ -20,7 +20,7 @@ Los módulos que se han migrado son:
 * Jefaturas Académicas (100%).
 * Planeación (40%).
 * Coordinación de Verano (90%).
-* Desarrollo Académico (40%).
+* Desarrollo Académico (98%).
 * Personal docente (100%).
 * Recursos Humanos (99%)
 
@@ -32,7 +32,7 @@ cuyo caso, deberá contar con la extensión _pgsql_.
 
 >
 > En caso de emplear Ningx (*RECOMENDADO*), favor de seguir las indicaciones del
-> siguiente enlace: [Nginx](https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu-20-04-es)
+> siguiente enlace: [Nginx](https://www.digitalocean.com/community/tutorials/how-to-install-linux-nginx-mysql-php-lemp-stack-on-ubuntu)
 >
 >Posteriormente, deberá habilitar la extensión de pgsql en fpm.
 >
@@ -41,9 +41,8 @@ cuyo caso, deberá contar con la extensión _pgsql_.
 Deberá contar con [composer](https://getcomposer.org/download/) instalado
 
 #### Node
-El enlace mostrado [NPM](https://www.freecodecamp.org/espanol/news/como-instalar-nodejs-en-ubuntu-y-actualizar-npm-a-la-ultima-version/),
-es especialmente si su sistema operativo es en Ubuntu; de no ser así, favor de consultar de 
-acuerdo a su distro.
+El enlace mostrado [NPM](https://www.freecodecamp.org/espanol/news/como-instalar-nodejs-en-ubuntu-y-actualizar-npm-a-la-ultima-version/) es especialmente si su sistema operativo es en Ubuntu; de no ser así, 
+favor de consultar de acuerdo a su distro.
 
 #### Curl
 La versión mínima requerida es la 7.34.0. Verifique su instalación de acuerdo con la 
@@ -82,7 +81,7 @@ Posteriormente, algunas dependencias necesarias de node
 npm install
 ```
 
-Una vez terminadas éstas acciones, debe copiarse al archivo _".env.example"_ como _".env"_
+Una vez terminadas estas acciones, debe copiar al archivo".env.example" como".env".
 
 ```
 cp .env.example .env
@@ -109,16 +108,26 @@ por ejemplo
  UBICACION_CREAR_IMAGENES="/var/www/html/sii/storage/img/" #Ruta temporal para gráficos
  RUTA_IMG_PIE_PAGINA="/var/www/html/sii/public/img/logo_pie_pagina.jpg" #Ruta para pie de página de documentos
  FPDF_FONTPATH="/var/www/html/sii/public/fuentes" #Ruta para las fuentes a emplear en la impresión de documentos PDF
- 
+ CIUDAD_OFICIOS="Ensenada, B.C.," #Ciudad y Estado. Ésta información se utiliza para generar los oficios
+ CCT="02DIT0023K"        #Clave Centro de Trabajo. Se utiliza para oficios
+ LEMA_TEC="POR LA TECNOLOGÍA DE HOY Y DEL FUTURO"  #Lema del Tecnológico 
+ DOMICILIO_TEC="Blvd. Tecnológico No. 150 Col. Ex Ejido Chapultepec"    #Domicilio del Tecnológico
+ TELEFONO_TEC="(646)177-56-80"    #Teléfono o teléfonos. Se utiliza para el pie de página de los oficios
+ CORREO_ESCOLARES="escolares@ite.edu.mx"   #Correo institucional de Escolares. Se utiliza para los oficios
+ SITIO_WEB="https://www.ensenada.tecnm.mx"  #Sitio web. Se utiliza para el pie de página de los oficios
 ```
+Es importante hacer notar que la declaración de las variables de entorno siempre son en mayúsculas, y
+que no existe espacio en blanco en el signo de igual; es decir, deben definirse como se muestra en los
+ejemplos.
 
 #### Con respecto a la base de datos
 Debido a que el proyecto fue elaborado en el Instituto Tecnológico de Ensenada (ITE),
-el schema empleado no es el habitual (_public_); sino que se llama ITE.
-** En caso de que quiera cambiar el schema a otro nombre, deberá cambiar los procedimientos
+el schema empleado no es el habitual (_public_); sino que se llama ITE. 
+
+En caso de que quiera cambiar el schema a otro nombre, deberá cambiar los procedimientos
 almacenados, ya que estos buscan a algunas tablas localizadas precisamente en el schema 
 llamado ITE.
-**
+
 
 Verifique entonces que en el archivo _database.php_ ubicado dentro de la carpeta _config_, 
 se encuentre presente la línea
@@ -202,10 +211,9 @@ Herramientas empleadas:
 * [PostgreSQL](https://www.postgresql.org/) - Manejador de base de datos
 * [AdminLTE](https://github.com/ColorlibHQ/AdminLTE) - Template administrativo
 
-## Autores ✒️
+## Autor ✒️
 
 * **Ricardo Castro Méndez** - *Trabajo Inicial* - [rcastrom](https://github.com/rcastrom)
-* **Julia Chávez Remigio** - *Colaboradora y revisora* - [jchavez](mailto:jchavez@ite.edu.mx)
 
 ## Licencia 📄
 

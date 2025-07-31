@@ -126,6 +126,11 @@ class MenuEscolaresController extends Controller
                 'icon' => 'fas fa-language',
                 'submenu' => [
                     [
+                        'text' => 'Alta idioma',
+                        'url'  => 'escolares/idiomas/alta',
+                        'icon' => 'far fa-circle',
+                    ],
+                    [
                         'text' => 'Liberación',
                         'url'  => 'escolares/idiomas/liberacion',
                         'icon' => 'far fa-circle',

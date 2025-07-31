@@ -14,4 +14,11 @@ use Illuminate\Database\Eloquent\Builder;
 class Idioma extends Model
 {
     use HasFactory;
+
+    protected $casts=[
+      'idioma'=>'string',
+      'abrev'=>'string'
+    ];
+
+    protected $fillable=['idioma','abrev'];
 }

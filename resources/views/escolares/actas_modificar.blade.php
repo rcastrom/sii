@@ -17,11 +17,11 @@
             @csrf
             @foreach($alumnos as $alumno)
                 <div class="form-group row">
-                    <label for="{{$materia.'_'.$grupo.'_'.$alumno->no_de_control}}" class="col-sm-6 col-form-label">
+                    <label for="{{$alumno->no_de_control}}" class="col-sm-6 col-form-label">
                         {{$alumno->no_de_control}} {{$alumno->apellido_paterno}} {{$alumno->apellido_materno}} {{$alumno->nombre_alumno}}
                     </label >
                     <div class="col-sm-3">
-                        <input type="number" class="form-control" name="{{$materia.'_'.$grupo.'_'.$alumno->no_de_control}}" value="{{$alumno->calificacion}}">
+                        <input type="number" class="form-control" name="{{$alumno->no_de_control}}" value="{{$alumno->calificacion}}">
                     </div>
                     <div class="col-sm-3">
                         <select name="{{'op_'.$alumno->no_de_control}}" id="{{'op_'.$alumno->no_de_control}}" class="form-control">

@@ -25,6 +25,27 @@ class ActasController extends Controller
     {
         new MenuEscolaresController($events);
     }
+
+    public function docentes($periodo)
+    {
+        return Grupo::where('periodo', $periodo)
+            ->join('personal', 'personal.id', '=', 'grupos.docente')
+            ->select(['grupos.docente', 'personal.apellidos_empleado', 'personal.nombre_empleado'])
+            ->distinct()
+            ->orderBy('apellidos_empleado', 'ASC')
+            ->orderBy('nombre_empleado', 'ASC')
+            ->get();
+    }
+
+    public function grupos($periodo,$docente)
+    {
+        return Grupo::where('periodo', $periodo)
+            ->where('docente', $docente)
+            ->join('materias', 'materias.materia', '=', 'grupos.materia')
+            ->select(['grupos.materia', 'grupo', 'nombre_abreviado_materia','entrego'])
+            ->orderBy('nombre_abreviado_materia', 'ASC')
+            ->get();
+    }
     public function periodoactas1()
     {
         $encabezado="Entrega de actas del período por el docente a Escolares";
@@ -36,13 +57,7 @@ class ActasController extends Controller
     public function periodoactas2(Request $request)
     {
         $periodo = $request->get('periodo');
-        $docentes = Grupo::where('periodo', $periodo)
-            ->join('personal', 'personal.rfc', '=', 'grupos.rfc')
-            ->select('grupos.rfc', 'apellidos_empleado', 'nombre_empleado')
-            ->distinct()
-            ->orderBy('apellidos_empleado', 'ASC')
-            ->orderBy('nombre_empleado', 'ASC')
-            ->get();
+        $docentes = $this->docentes($periodo);
         $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
         $encabezado="Entrega de actas del período por el docente a Escolares";
         return view('escolares.periodo_actas2')->with(compact('periodo', 'docentes',
@@ -52,13 +67,8 @@ class ActasController extends Controller
     {
         $periodo = $request->get('periodo');
         $docente = $request->get('docente');
-        $grupos = Grupo::where('periodo', $periodo)
-            ->where('rfc', $docente)
-            ->join('materias', 'materias.materia', '=', 'grupos.materia')
-            ->select('grupos.materia', 'grupo', 'nombre_abreviado_materia','entrego')
-            ->orderBy('nombre_abreviado_materia', 'ASC')
-            ->get();
-        $ndocente = Personal::where('rfc', $docente)->first();
+        $grupos = $this->grupos($periodo,$docente);
+        $ndocente = Personal::where('id', $docente)->first();
         $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
         $encabezado="Entrega de actas del período por el docente a Escolares";
         return view('escolares.periodo_actas3')->with(compact('periodo',
@@ -75,13 +85,7 @@ class ActasController extends Controller
     public function periodoactas_m2(Request $request)
     {
         $periodo = $request->get('periodo');
-        $docentes = Grupo::where('periodo', $periodo)
-            ->join('personal', 'personal.rfc', '=', 'grupos.rfc')
-            ->select('grupos.rfc', 'apellidos_empleado', 'nombre_empleado')
-            ->distinct()
-            ->orderBy('apellidos_empleado', 'ASC')
-            ->orderBy('nombre_empleado', 'ASC')
-            ->get();
+        $docentes = $this->docentes($periodo);
         $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
         $encabezado="Actas del período";
         return view('escolares.periodo_actas_2')
@@ -92,13 +96,8 @@ class ActasController extends Controller
     {
         $periodo = $request->get('periodo');
         $docente = $request->get('docente');
-        $grupos = Grupo::where('periodo', $periodo)
-            ->where('rfc', $docente)
-            ->join('materias', 'materias.materia', '=', 'grupos.materia')
-            ->select('grupos.materia', 'grupo', 'nombre_abreviado_materia')
-            ->orderBy('nombre_abreviado_materia', 'ASC')
-            ->get();
-        $ndocente = Personal::where('rfc', $docente)->first();
+        $grupos = $this->grupos($periodo,$docente);
+        $ndocente = Personal::where('id', $docente)->first();
         $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
         $encabezado="Actas del período";
         return view('escolares.periodo_actas_3')->with(compact('periodo',
@@ -116,7 +115,7 @@ class ActasController extends Controller
                 $asignar= $value==1;
                 Grupo::where([
                     'periodo'=>$periodo,
-                    'rfc'=>$docente,
+                    'docente'=>$docente,
                     'materia'=>$materia,
                     'grupo'=>$gpo
                 ])->update([
@@ -128,21 +127,22 @@ class ActasController extends Controller
         $mensaje="Se registró en el sistemas las actas que fueron entregas al Departamento de Escolares";
         return view('escolares.si')->with(compact('encabezado','mensaje'));
     }
-    public function modificar_acta($per, $rfc, $mat, $gpo)
+    public function modificar_acta($per, $docente, $mat, $gpo)
     {
-        $periodo=base64_decode($per); $docente=base64_decode($rfc);
+        $periodo=base64_decode($per); $docente=base64_decode($docente);
         $materia=base64_decode($mat); $grupo=base64_decode($gpo);
         $alumnos = SeleccionMateria::where('periodo', $periodo)
             ->where('materia', $materia)
             ->where('grupo', $grupo)
             ->join('alumnos', 'alumnos.no_de_control', '=', 'seleccion_materias.no_de_control')
             ->distinct()
-            ->select('seleccion_materias.no_de_control', 'apellido_paterno', 'apellido_materno', 'nombre_alumno', 'calificacion', 'tipo_evaluacion', 'plan_de_estudios')
+            ->select(['seleccion_materias.no_de_control', 'apellido_paterno', 'apellido_materno',
+                'nombre_alumno', 'calificacion', 'tipo_evaluacion', 'plan_de_estudios'])
             ->orderBy('apellido_paterno', 'ASC')
             ->orderBy('apellido_materno', 'ASC')
             ->orderBy('nombre_alumno', 'ASC')
             ->get();
-        $ndocente = Personal::where('rfc', $docente)->first();
+        $ndocente = Personal::where('id', $docente)->first();
         $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
         $nmateria = Materia::where('materia', $materia)->first();
         $tipo_3 = TipoEvaluacion::where('plan_de_estudios', '3')
@@ -168,9 +168,8 @@ class ActasController extends Controller
         ])->select('no_de_control')->get();
         foreach ($inscritos as $alumnos) {
             $control = $alumnos->no_de_control;
-            $obtener = $materia . "_" . $grupo . "_" . $control;
             $op = "op_" . $control;
-            $cal = $request->get($obtener);
+            $cal = $request->get($control);
             $oport = $request->get($op);
             SeleccionMateria::where([
                 'periodo'=>$periodo,
@@ -205,7 +204,7 @@ class ActasController extends Controller
         $mensaje="Se actualizó la información de la materia ".$materia." del grupo ".$grupo;
         return view('escolares.si')->with(compact('encabezado','mensaje'));
     }
-    public function imprimir_acta($periodo, $doc, $materia, $grupo)
+    public function imprimir_acta($periodo, $docente, $materia, $grupo)
     {
         if (SeleccionMateria::where('periodo', $periodo)
                 ->where('materia', $materia)
@@ -228,7 +227,7 @@ class ActasController extends Controller
                     ->orderBy('apellido_materno', 'ASC')
                     ->orderBy('nombre_alumno', 'ASC')
                     ->get();
-                $data = $this->getGrupo($periodo, $materia, $grupo, $doc, $inscritos);
+                $data = $this->getGrupo($periodo, $materia, $grupo, $docente, $inscritos);
                 $pdf = PDF::loadView('escolares.pdf_acta', $data);
             } else {
                 $inscritos = SeleccionMateria::where('periodo', $periodo)
@@ -239,7 +238,7 @@ class ActasController extends Controller
                     ->orderBy('apellido_materno', 'ASC')
                     ->orderBy('nombre_alumno', 'ASC')
                     ->get();
-                $data = $this->getGrupo($periodo, $materia, $grupo, $doc, $inscritos);
+                $data = $this->getGrupo($periodo, $materia, $grupo, $docente, $inscritos);
                 $pdf = PDF::loadView('escolares.pdf_acta2', $data)
                     ->setPaper('Letter');
             }
@@ -289,14 +288,23 @@ class ActasController extends Controller
      */
     public function getGrupo($periodo, $materia, $grupo, $doc, Collection|array|_IH_SeleccionMateria_C $inscritos): array
     {
+        $tec=$_ENV["NOMBRE_TEC"];
+        $ciudad=$_ENV["CIUDAD_OFICIOS"];
+        $logo_tecnm=$_ENV["RUTA_IMG_TECNM"];
+        $logo_tec=$_ENV["RUTA_IMG_TECNOLOGICO"];
         $datos_grupo = Grupo::where('periodo', $periodo)
             ->where('materia', $materia)
             ->where('grupo', $grupo)
             ->first();
         $nombre_mat = Materia::where('materia', $materia)->first();
-        $ndocente = Personal::where('rfc', $doc)->select('apellidos_empleado', 'nombre_empleado')->first();
+        $ndocente = Personal::where('id', $doc)
+            ->select(['apellidos_empleado', 'nombre_empleado'])->first();
         $nperiodo = PeriodoEscolar::where('periodo', $periodo)->first();
         return [
+            'tec' => $tec,
+            'ciudad' => $ciudad,
+            'logo_tecnm' => $logo_tecnm,
+            'logo_tec' => $logo_tec,
             'alumnos' => $inscritos,
             'docente' => $ndocente,
             'nombre_periodo' => $nperiodo,

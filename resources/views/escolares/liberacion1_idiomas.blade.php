@@ -30,7 +30,7 @@
                 <select name="idioma" id="idioma" class="form-control" required>
                     <option value="" selected>--Seleccione--</option>
                     @foreach($idiomas as $idioma)
-                        <option value="{{$idioma->id}}">{{$idioma->idiomas}}</option>
+                        <option value="{{$idioma->id}}">{{$idioma->idioma}}</option>
                     @endforeach
                 </select>
             </div>

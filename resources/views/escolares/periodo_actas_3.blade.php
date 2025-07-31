@@ -27,7 +27,7 @@
                 </div>
                 <div class="col-sm-3 col-md-3">
                     <i class="fas fa-print"></i>
-                    <a href="/escolares/actas/imprimir/{{$periodo}}/{{$docente}}/{{$grupo->materia}}/{{$grupo->grupo}}" title="Modificar">
+                    <a href="/escolares/actas/imprimir/{{$periodo}}/{{$docente}}/{{$grupo->materia}}/{{$grupo->grupo}}" title="Imprimir acta">
                         Imprimir</a>
                 </div>
             </div>

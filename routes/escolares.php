@@ -84,71 +84,78 @@ Route::group(['prefix'=>'escolares','middleware'=>['auth','role:escolares']],fun
             ->name('escolares.fichas_concentrado_excel');
     });
     Route::controller(ActasController::class)->prefix('actas')->group(function (){
-        Route::get('/inicio','periodoactas_m1');
-        Route::post('/por_docente','periodoactas_m2')
+        Route::get('/inicio',[ActasController::class,'periodoactas_m1']);
+        Route::post('/por_docente',[ActasController::class,'periodoactas_m2'])
             ->name('escolares.registro2');
-        Route::post('/por_gpodoc','periodoactas_m3')
+        Route::post('/por_gpodoc',[ActasController::class,'periodoactas_m3'])
             ->name('escolares.registro3');
-        Route::post('/entrega','periodoactas_m4')
+        Route::post('/entrega',[ActasController::class,'periodoactas_m4'])
             ->name('escolares.registro4');
-        Route::get('/registro','periodoactas1');
-        Route::post('/actas2','periodoactas2')
+        Route::get('/registro',[ActasController::class,'periodoactas1']);
+        Route::post('/actas2',[ActasController::class,'periodoactas2'])
             ->name('escolares.actas2');
-        Route::post('/actas3','periodoactas3')
+        Route::post('/actas3',[ActasController::class,'periodoactas3'])
             ->name('escolares.actas3');
-        Route::get('/modificar/{per}/{rfc}/{mat}/{gpo}','modificar_acta');
-        Route::get('/imprimir/{periodo}/{rfc}/{materia}/{grupo}','imprimir_acta');
-        Route::post('/actualizar/calificacion','actualizar_acta')
+        Route::get('/modificar/{per}/{docente}/{mat}/{gpo}',[ActasController::class,'modificar_acta']);
+        Route::get('/imprimir/{periodo}/{docente}/{materia}/{grupo}',[ActasController::class,'imprimir_acta']);
+        Route::post('/actualizar/calificacion',[ActasController::class,'actualizar_acta'])
             ->name('escolares.actas_upd');
-        Route::get('/mantenimiento','actas_mantenimiento');
-        Route::post('/consulta_estatus','actas_estatus')
+        Route::get('/mantenimiento',[ActasController::class,'actas_mantenimiento']);
+        Route::post('/consulta_estatus',[ActasController::class,'actas_estatus'])
             ->name('escolares.actas_estatus');
     });
     Route::controller(EscolaresController::class)->prefix('carreras')->group(function (){
-        Route::get('/alta','carreraAlta');
-        Route::post('/alta_procesa', 'carreraNueva')
+        Route::get('/alta',[EscolaresController::class,'carreraAlta']);
+        Route::post('/alta_procesa', [EscolaresController::class,'carreraNueva'])
             ->name('escolares.carrera_alta');
-        Route::get('/especialidades', 'especialidadAlta');
-        Route::post('/especialidad_alta', 'especialidadNueva')
+        Route::get('/especialidades', [EscolaresController::class,'especialidadAlta']);
+        Route::post('/especialidad_alta', [EscolaresController::class,'especialidadNueva'])
             ->name('escolares.especialidad_alta');
-        Route::get('/materias', 'materiaNueva');
-        Route::post('/materia_accion', 'materiasAcciones')
+        Route::get('/materias', [EscolaresController::class,'materiaNueva']);
+        Route::post('/materia_accion', [EscolaresController::class,'materiasAcciones'])
             ->name('escolares.materias_acciones');
-        Route::post('/materias_nueva', 'materiaAlta')
+        Route::post('/materias_nueva', [EscolaresController::class,'materiaAlta'])
             ->name('escolares.materia_nueva');
-        Route::post('/materias_editar','materiaEditar')
+        Route::post('/materias_editar',[EscolaresController::class,'materiaEditar'])
             ->name('escolares.materia_editar');
-        Route::post('/materias_actualizar','materiaActualizar')
+        Route::post('/materias_actualizar',[EscolaresController::class,'materiaActualizar'])
             ->name('escolares.materia_actualizar');
-        Route::post('/reticula_vista', 'vistaReticula')
+        Route::post('/reticula_vista', [EscolaresController::class,'vistaReticula'])
             ->name('escolares.vista_reticula');
     });
     Route::controller(IdiomasController::class)->prefix('idiomas')->group(function (){
-        Route::get('/liberacion','idiomas_lib1');
-        Route::post('/liberar', 'idiomas_lib2')
+        Route::get('/alta',[IdiomasController::class,'idioma_alta_formulario']);
+        Route::post('/alta', [IdiomasController::class,'idioma_alta'])
+            ->name('escolares.idioma_alta');
+        Route::get('/editar/{idioma}',[IdiomasController::class,'idioma_modifica'])
+            ->name('escolares.idioma_modifica');
+        Route::post('/editar/{idioma}', [IdiomasController::class,'idioma_editar'])
+            ->name('escolares.idioma_editar');
+        Route::get('/liberacion',[IdiomasController::class,'idiomas_lib1']);
+        Route::post('/liberar', [IdiomasController::class,'idiomas_lib2'])
             ->name('escolares.liberar_idioma');
-        Route::post('/liberar2', 'idiomas_lib3')
+        Route::post('/liberar2', [IdiomasController::class,'idiomas_lib3'])
             ->name('escolares.liberar_idioma2');
-        Route::get('/imprimir', 'idiomas_impre');
-        Route::post('/imprimir2', 'idiomas_impre2')
+        Route::get('/imprimir', [IdiomasController::class,'idiomas_impre']);
+        Route::post('/imprimir2', [IdiomasController::class,'idiomas_impre2'])
             ->name('escolares.imprimir_idioma');
-        Route::get('/consulta', 'idiomas_consulta');
-        Route::post('/consultar', 'idiomas_consulta2')
+        Route::get('/consulta', [IdiomasController::class,'idiomas_consulta']);
+        Route::post('/consultar', [IdiomasController::class,'idiomas_consulta2'])
             ->name('escolares.cursos_idiomas');
     });
     Route::controller(EscolaresController::class)->prefix('estadistica')->group(function (){
-        Route::get('/consulta','prepoblacion');
-        Route::post('/poblacion','poblacion')
+        Route::get('/consulta',[EscolaresController::class,'prepoblacion']);
+        Route::post('/poblacion',[EscolaresController::class,'poblacion'])
             ->name('escolares.poblacion');
-        Route::get('/detalle/{periodo}/{carrera}/{reticula}','pobxcarrera')
+        Route::get('/detalle/{periodo}/{carrera}/{reticula}',[EscolaresController::class,'pobxcarrera'])
             ->name('escolares.est_carrera');
     });
     Route::controller(EscolaresController::class)->prefix('mantenimiento')->group(function (){
-        Route::get('/base','mantenimiento_inicial');
-        Route::post('/mantenimiento_accion','mantenimiento_acciones')
+        Route::get('/base',[EscolaresController::class,'mantenimiento_inicial']);
+        Route::post('/mantenimiento_accion',[EscolaresController::class,'mantenimiento_acciones'])
             ->name('escolares.mantenimiento');
-        Route::get('/contrasena','contrasenia');
-        Route::post('/ccontrasena','ccontrasenia')
+        Route::get('/contrasena',[EscolaresController::class,'contrasenia']);
+        Route::post('/ccontrasena',[EscolaresController::class,'ccontrasenia'])
             ->name('escolares.contra');
     });
 });

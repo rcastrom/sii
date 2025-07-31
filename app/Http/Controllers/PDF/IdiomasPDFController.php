@@ -46,15 +46,15 @@ class IdiomasPDFController extends Controller
         // Logo GobFed
         $pdf->Image($_ENV['RUTA_IMG_GOBFED'], 170, 1, 27, 28, 'JPG');
         $pdf->SetXY(154, 29);
-        $pdf->SetFont('Montserrat2', 'B', 8);
+        $pdf->SetFont('Montserrat', 'B', 8);
         $pdf->Cell(50, 6, $nombre_tec, 0, 1, 'L');
         $pdf->SetXY(146, 33);
         $ndepto=Jefe::where('clave_area',$depto)->first();
         //$pdf->Cell(50,6,$nombre_tec,0,1,'L');
-        $pdf->SetFont('MM','',8);
+        $pdf->SetFont('Montserrat','',8);
         $pdf->SetXY(140,34);
-        $pdf->Cell(50,6,$ndepto->descripcion_area,0,1,'L');
-        $pdf->SetFont('MM','B',8);
+        $pdf->Cell(50,6,"DEPARTAMENTO DE SERVICIOS ESCOLARES",0,1,'L');
+        $pdf->SetFont('Montserrat','B',8);
         // $pdf->Cell(200,5,utf8_decode("\"2020, Año de Leona Vicario, Benemérita Madre de la Patria \""),0,1,"C");
         $asunto= mb_convert_encoding("LIBERACIÓN IDIOMA EXTRANJERO", 'ISO-8859-1', 'UTF-8');
         $h 	= 4;
@@ -117,7 +117,7 @@ class IdiomasPDFController extends Controller
             $prop_a		=	"el";
         }
         $rfc_jefe=Jefe::where('clave_area',$depto)->first();
-        $jefatura=Personal::where('rfc',$rfc_jefe->rfc)->first();
+        $jefatura=Personal::where('id',$rfc_jefe->id_jefe)->first();
         if($jefatura->sexo_empleado == 'F')
         {
             $genero_j = "JEFA";
@@ -144,15 +144,15 @@ class IdiomasPDFController extends Controller
             "que ".$prop_a." alumn".$genero_a." $nombre_alumno con número de control ".
             $control." de la carrera de ".$ncarrera->nombre_carrera." con plan de estudios ".trim($ncarrera->clave_oficial).", ".
             "ACREDITÓ la lengua extranjera ".trim($idioma->idiomas)." por la opción ".$descrip_opcion."\n\n".
-            "Se extiende la presente CONSTANCIA en la Ciudad y Puerto de Ensenada, a los $dia días del mes de ".$this->mes($mes)." del ".
+            "Se extiende la presente CONSTANCIA en la ciudad de ".$_ENV["CIUDAD_OFICIOS"].", a los $dia días del mes de ".$this->mes($mes)." del ".
             "año $anio, para los fines que al interesado convengan.";
         $fpdf =new Fpdf('P','mm','Letter');
         $fpdf->AddPage();
         $fpdf->SetAutoPageBreak(0);
-        $fpdf->AddFont("Montserrat2",'','Montserrat-ExtraLight.php');
-        $fpdf->AddFont("Montserrat2",'I','Montserrat-ExtraLightItalic.php');
-        $fpdf->AddFont("Montserrat2",'B','Montserrat-Light.php');
-        $fpdf->AddFont("Montserrat2",'BI','Montserrat-SemiBoldItalic.php');
+        $fpdf->AddFont("Montserrat",'','Montserrat-Regular.php');
+        $fpdf->AddFont("Montserrat",'I','Montserrat-ExtraLightItalic.php');
+        $fpdf->AddFont("Montserrat",'B','Montserrat-Bold.php');
+        $fpdf->AddFont("Montserrat",'BI','Montserrat-BoldItalic.php');
         $x = 15;
         $y = 80; //Original 120
         $w = 180;
@@ -164,29 +164,29 @@ class IdiomasPDFController extends Controller
         $titulo_persona="A QUIEN CORRESPONDA:";
         $ancho = $h*4;
         $centra='L';
-        $fpdf->SetFont('MM','B',10);
+        $fpdf->SetFont('Montserrat','B',10);
         $fpdf->Cell($w, $ancho, $titulo_persona, 0, 2, $centra);
-        $fpdf->SetFont("MM",'',9);
-        $fpdf->SetFont("MM",'',9);
-        $fpdf->MultiCell($w, $h, utf8_decode($cuerpo));
+        $fpdf->SetFont("Montserrat",'',9);
+        $fpdf->SetFont("Montserrat",'',9);
+        $fpdf->MultiCell($w, $h, mb_convert_encoding($cuerpo, 'ISO-8859-1', 'UTF-8'));
         $fpdf->SetX($x);
         $fpdf->Ln(3);
         $fpdf->SetX($x);
-        $fpdf->SetFont("MM",'B',9);
+        $fpdf->SetFont("Montserrat",'B',9);
         $fpdf->Cell($w,$h,"A T E N T A M E N T E",0,1,'L');
-        $fpdf->SetFont("MM",'B',8);
+        $fpdf->SetFont("Montserrat",'BI',8);
         //Lema TecNM
         $fpdf->SetX($x);
         $lema2=strtoupper("Excelencia en Educación Tecnológica");
-        $fpdf->Cell($w,$h,utf8_decode($lema2),0,1,'L');
+        $fpdf->Cell($w,$h, mb_convert_encoding($lema2, 'ISO-8859-1', 'UTF-8'),0,1,'L');
         //Lema Tec
         //$this->fpdf->SetFont("Montserrat2",'I',7);
         $fpdf->SetX($x);
-        $lema=strtoupper("Por la Tecnología de Hoy y del Futuro");
-        $fpdf->Cell($w,$h,utf8_decode($lema),0,1,'L');
+        $lema=$_ENV["LEMA_TEC"];
+        $fpdf->Cell($w,$h, mb_convert_encoding($lema, 'ISO-8859-1', 'UTF-8'),0,1,'L');
         //$pdf->AddFont("SoberanaSans_Bold",'','soberanasans_bold.php');
-        $fpdf->SetFont("MM",'B',9);
-        $jefe2 = $rfc_jefe->jefe_area;
+        $fpdf->SetFont("Montserrat",'B',9);
+        $jefe2 = trim($jefatura->nombre_empleado).' '.trim($jefatura->apellidos_empleado);
         $jefe2g=$genero_j." DEL DEPARTAMENTO DE SERVICIOS ESCOLARES";
         $fpdf->SetX($x);
         $fpdf->Cell(80,9," ",0,1,'L');
@@ -215,8 +215,8 @@ class IdiomasPDFController extends Controller
         $fpdf->AddFont("Montserrat2",'B','Montserrat-Light.php');
         $fpdf->SetFont("Montserrat2","",6);
         $fpdf->Cell($w, $h/3, "", 0, 2, 'C');
-        $fpdf->Cell($w-15, $h/2, utf8_decode("Blvd Tecnológico # 150, Col. Ex Ejido Chapultepec, C.P. 22780, Ensenada B.C"), 0, 2, 'C');
-        $fpdf->Cell($w-15, $h/2, "Tel(s). (646)177-5680 y 82 ", 0, 2, 'C');
+        $fpdf->Cell($w-15, $h/2, mb_convert_encoding($_ENV["DOMICILIO_TEC"], 'ISO-8859-1', 'UTF-8'), 0, 2, 'C');
+        $fpdf->Cell($w-15, $h/2, "Tel(s). ".$_ENV["TELEFONO_TEC"], 0, 2, 'C');
         $fpdf->SetFont("Montserrat2",'B',6);
         $fpdf->Cell($w-15, $h/2, "E-mail: escolares@ite.edu.mx, Sitio Web https://www.ensenada.tecnm.mx", 0, 2, 'C');
         //$this->fpdf->Image("/var/www/html/escolares/public/img/calidad.jpg", 168, 263, 17,15);

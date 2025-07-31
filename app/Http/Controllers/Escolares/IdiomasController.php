@@ -19,6 +19,66 @@ class IdiomasController extends Controller
     {
         new MenuEscolaresController($events);
     }
+
+    public function idioma_alta_formulario()
+    {
+        $bandera= Idioma::all()->count()>0;
+        $encabezado="Alta de idioma lengua extranjera";
+        if($bandera)
+        {
+            $idiomas=Idioma::all();
+        }else{
+            $idiomas='';
+        }
+        return view('escolares.idiomas_alta')
+            ->with(compact('bandera','encabezado','idiomas'));
+    }
+    public function idioma_alta(Request $request)
+    {
+        $request->validate([
+            'idioma'=>'required',
+            'siglas'=>'required',
+        ],
+        [
+            'idioma.required'=>'Ingrese el idioma',
+            'siglas.required'=>'Ingrese la sigla para ese idioma',
+        ]);
+        $idioma = new Idioma();
+        $idioma->idioma=$request->get('idioma');
+        $idioma->abrev=$request->get('siglas');
+        $idioma->save();
+        $encabezado="Alta de idioma extranjero";
+        $mensaje="Se dio de alta al idioma indicado";
+        return view('escolares.si')->with(compact('mensaje','encabezado'));
+    }
+
+    public function idioma_modifica(Idioma $idioma)
+    {
+        $encabezado="Modificar idioma";
+        return view('escolares.idiomas_modifica')
+            ->with(compact('idioma','encabezado'));
+    }
+
+    public function idioma_editar(Request $request, int $idioma)
+    {
+        $request->validate([
+            'idioma'=>'required',
+            'siglas'=>'required',
+        ],
+            [
+                'idioma.required'=>'Ingrese el idioma',
+                'siglas.required'=>'Ingrese la sigla para ese idioma',
+            ]);
+        Idioma::where('id',$idioma)->update(
+            [
+                'idioma'=>$request->get('idioma'),
+                'abrev'=>$request->get('siglas'),
+            ]
+        );
+        $encabezado="Edición de idioma extranjero";
+        $mensaje="Se dio actualizó la información del idioma indicado";
+        return view('escolares.si')->with(compact('mensaje','encabezado'));
+    }
     public function idiomas_lib1(){
         $idiomas=Idioma::all();
         $encabezado="Idiomas";

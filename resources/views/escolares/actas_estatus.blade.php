@@ -10,9 +10,6 @@
     <x-information :encabezado="$encabezado">
         <h4 class="card-title">Estatus de materias del período {{$nperiodo->identificacion_corta}}</h4>
         <br>
-        <p>El módulo se emplea para conocer situaciones de actas (docentes que ya
-            evaluaron, que no han evaluado, entregadas)</p>
-        <br>
         <table class="table table-responsive">
             <thead>
             <tr>
