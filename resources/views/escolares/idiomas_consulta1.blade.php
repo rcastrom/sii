@@ -25,8 +25,8 @@
             <div class="form-group">
                 <label for="idioma"> Seleccione la lengua extranjera de consulta </label>
                 <select name="idioma" id="idioma" class="form-control" required>
-                    @foreach($idiomas as $leng_ext)
-                        <option value="{{$leng_ext->id}}">{{$leng_ext->idiomas}}</option>
+                    @foreach($idiomas as $idioma)
+                        <option value="{{$idioma->id}}">{{$idioma->idioma}}</option>
                     @endforeach
                 </select>
             </div>
