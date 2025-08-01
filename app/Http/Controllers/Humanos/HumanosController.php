@@ -16,6 +16,7 @@ use App\Models\PersonalInstitEstudio;
 use App\Models\PersonalNivelEstudio;
 use App\Models\PersonalNombramiento;
 use App\Models\PersonalPlaza;
+use Carbon\Carbon;
 use Illuminate\Contracts\Events\Dispatcher;
 use App\Http\Controllers\MenuHumanosController;
 use App\Http\Controllers\Acciones\AccionesController;
@@ -25,6 +26,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\PersonalExport;
 
@@ -618,7 +620,6 @@ class HumanosController extends Controller
             return $this->buscar_plazas_personal(1,$estatus);
         }
     }
-
     public function exportar()
     {
         $personal=Personal::select([
@@ -632,4 +633,33 @@ class HumanosController extends Controller
             ->get();
         return Excel::download(new PersonalExport($personal), 'personal.xlsx');
     }
+
+    public function contrasenia()
+    {
+        $encabezado = 'Cambio de contraseña';
+
+        return view('escolares.contrasenia')->with(compact('encabezado'));
+    }
+
+    public function ccontrasenia(Request $request)
+    {
+        request()->validate([
+            'contra' => 'required|required_with:verifica|same:verifica',
+            'verifica' => 'required',
+        ], [
+            'contra.required' => 'Debe escribir la nueva contraseña',
+            'contra.required_with' => 'Debe confirmar la contraseña',
+            'contra.same' => 'No concuerda con la verificación',
+            'verifica.required' => 'Debe confirmar la nueva contraseña',
+        ]);
+        $ncontra = bcrypt($request->get('contra'));
+        $data = Auth::user()->email;
+        User::where('email', $data)->update([
+            'password' => $ncontra,
+            'updated_at' => Carbon::now(),
+        ]);
+
+        return redirect('inicio_rechumanos');
+    }
+
 }

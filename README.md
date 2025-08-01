@@ -34,7 +34,6 @@ En Desarrollo Académico
 
 En Recursos Humanos
 * Migrar histórico de plazas, así como su consulta
-* Cambio de contraseña
 
 ### Pre-requisitos 📋
 

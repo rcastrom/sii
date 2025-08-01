@@ -57,6 +57,17 @@ class MenuHumanosController extends Controller
                     ]
                 ]
             ]);
+            $event->menu->add([
+                'text'=>'Utilería',
+                'icon'=>'fas fa-chalkboard-teacher',
+                'submenu'=>[
+                    [
+                        'text'=>'Cambio de contraseña',
+                        'url'=>'rechumanos/mantenimiento/contrasena',
+                        'icon'=>'far fa-circle'
+                    ]
+                ]
+            ]);
         });
     }
 }

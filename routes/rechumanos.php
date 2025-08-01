@@ -44,4 +44,8 @@ Route::group(['prefix'=>'rechumanos','middleware'=>['auth','role:rechumanos']],f
     Route::controller(HumanosController::class)->prefix('jefaturas')->group(function (){
         Route::resource('/listado',JefesController::class);
     });
+    Route::controller(HumanosController::class)->prefix('mantenimiento')->group(function (){
+        Route::get('/contrasena',[HumanosController::class,'contrasenia']);
+        Route::post('/ccontrasena',[HumanosController::class,'ccontrasenia'])->name('rechumanos.contra');
+    });
 });
