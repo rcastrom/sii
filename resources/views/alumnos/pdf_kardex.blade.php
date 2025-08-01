@@ -38,9 +38,9 @@
 <div class="header">
     <table width="100%" align="center">
         <tr>
-            <td width="20%"><img src="{{asset('img/tecnm.jpg')}}" width="65px" height="55px" ></td>
-            <td width="65%" align="center"><strong>Tecnológico Nacional de México<br>Instituto Tecnológico de Ensenada</strong></td>
-            <td width="15%"><img src="{{asset('img/escudo.jpg')}}" width="55px" height="50px" ></td>
+            <td width="20%"><img src="{{$logo_tecnm}}" width="125px" height="60px" alt="Logo TecNM" ></td>
+            <td width="60%" align="center"><h4>Tecnológico Nacional de México<br>{{$tec}}</h4></td>
+            <td width="20%"><img src="{{$logo_tec}}" width="55px" height="50px" alt="Logo Tec" ></td>
         </tr>
     </table>
     <div class="container">
@@ -65,97 +65,93 @@
             </div>
         </div>
     </div>
-</div>
-<div class="footer">
-    Pag <span class="pagenum"></span>
-</div>
-
-<?php $suma_total=0; $calificaciones_totales=0; $j=1; $tipos_mat=array("O2","R1","R2","RO","RP"); $tipos_aprob=array('AC','RC','RU','PG'); ?>
-@foreach($calificaciones as $key=>$value)
-    @if(!empty($value))
-        <table class="tabla table-striped">
+    <div class="row">
+        <?php $suma_total=0; $calificaciones_totales=0; $j=1; $tipos_mat=array("O2","R1","R2","RO","RP"); $tipos_aprob=array('AC','RC','RU','PG'); ?>
+        @foreach($calificaciones as $key=>$value)
+            @if(!empty($value))
+                <table class="tabla table-striped">
+                    <thead>
+                    <tr>
+                        <th colspan="6">{{$nperiodos[$key]->identificacion_larga}}</th>
+                    </tr>
+                    <tr>
+                        <th>No</th>
+                        <th>Clave oficial</th>
+                        <th>Materia</th>
+                        <th>Calificación</th>
+                        <th>Tipo evaluación</th>
+                        <th>Observaciones</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        $i=1;
+                        $suma_creditos=0;
+                        $promedio_semestre=0;
+                        $suma_semestre=0;
+                        $cal_sem=0;
+                        $materias=1;
+                        ?>
+                    @foreach($value as $data)
+                        <tr>
+                            <td>{{$i}}</td>
+                            <td>{{$data->clave}}</td>
+                            <td>{{$data->nombre_completo_materia}}</td>
+                            <td>{{$data->calificacion <= 70 && in_array($data->tipo_evaluacion,$tipos_aprob)?'AC':($data->calificacion < 70?"NA":$data->calificacion)}}</td>
+                            <td>{{$data->descripcion_corta_evaluacion}}</td>
+                            @if(($data->calificacion < 70 && in_array($data->tipo_evaluacion,$tipos_mat)) || ($data->calificacion < 70 && $data->tipo_evaluacion == 'EA')){
+                            @if($alumno->plan_de_estudios==3||$alumno->plan_de_estudios==4){
+                            <td>A curso especial</td>
+                            }
+                            @else{
+                            <td></td>
+                            }
+                            @endif
+                            @endif
+                        </tr>
+                            <?php
+                            if($data->calificacion>=70||in_array($data->tipo_evaluacion,$tipos_aprob)){
+                                $suma_creditos+=$data->creditos_materia;
+                                if(!in_array($data->tipo_evaluacion,$tipos_aprob)){
+                                    $cal_sem+=$data->calificacion;
+                                    $calificaciones_totales+=$data->calificacion;
+                                    $materias+=1;
+                                    $j++;
+                                }
+                                $suma_total+=$data->creditos_materia;
+                            }elseif($data->calificacion<70&&!in_array($data->tipo_evaluacion,$tipos_aprob)){
+                                $materias+=1;
+                            }
+                            $suma_semestre+=$data->creditos_materia;
+                            $i++;
+                            ?>
+                    @endforeach
+                        <?php $promedio=($materias-1)==0?0:round($cal_sem/($materias-1),2); ?>
+                    </tbody>
+                    <tfoot>
+                    <tr>
+                        <td>Créditos Aprobados/Solicitados</td>
+                        <td>{{$suma_creditos}}/{{$suma_semestre}}</td>
+                        <td>Promedio del semestre</td>
+                        <td>{{$promedio}}</td>
+                    </tr>
+                    </tfoot>
+                </table>
+            @endif
+        @endforeach
+        <table class="tabla">
             <thead>
             <tr>
-                <th colspan="6">{{$nperiodos[$key]->identificacion_larga}}</th>
+                <th>Porcentaje de avance</th>
+                <th>Promedio General</th>
             </tr>
             <tr>
-                <th>No</th>
-                <th>Clave oficial</th>
-                <th>Materia</th>
-                <th>Calificación</th>
-                <th>Tipo evaluación</th>
-                <th>Observaciones</th>
+                <td align="center"><?php $avance=$suma_total==0?0:round(($suma_total/$carrera->creditos_totales)*100,2); ?>{{$avance."%"}}</td>
+                <td align="center"><?php $prom_tot=($j-1)==0?0:round($calificaciones_totales/($j-1),2); ?>{{$prom_tot}}</td>
             </tr>
             </thead>
-            <tbody>
-                <?php
-                $i=1;
-                $suma_creditos=0;
-                $promedio_semestre=0;
-                $suma_semestre=0;
-                $cal_sem=0;
-                $materias=1;
-                ?>
-            @foreach($value as $data)
-                <tr>
-                    <td>{{$i}}</td>
-                    <td>{{$data->clave}}</td>
-                    <td>{{$data->nombre_completo_materia}}</td>
-                    <td>{{$data->calificacion <= 70 && in_array($data->tipo_evaluacion,$tipos_aprob)?'AC':($data->calificacion < 70?"NA":$data->calificacion)}}</td>
-                    <td>{{$data->descripcion_corta_evaluacion}}</td>
-                    @if(($data->calificacion < 70 && in_array($data->tipo_evaluacion,$tipos_mat)) || ($data->calificacion < 70 && $data->tipo_evaluacion == 'EA')){
-                    @if($alumno->plan_de_estudios==3||$alumno->plan_de_estudios==4){
-                    <td>A curso especial</td>
-                    }
-                    @else{
-                    <td></td>
-                    }
-                    @endif
-                    @endif
-                </tr>
-                    <?php
-                    if($data->calificacion>=70||in_array($data->tipo_evaluacion,$tipos_aprob)){
-                        $suma_creditos+=$data->creditos_materia;
-                        if(!in_array($data->tipo_evaluacion,$tipos_aprob)){
-                            $cal_sem+=$data->calificacion;
-                            $calificaciones_totales+=$data->calificacion;
-                            $materias+=1;
-                            $j++;
-                        }
-                        $suma_total+=$data->creditos_materia;
-                    }elseif($data->calificacion<70&&!in_array($data->tipo_evaluacion,$tipos_aprob)){
-                        $materias+=1;
-                    }
-                    $suma_semestre+=$data->creditos_materia;
-                    $i++;
-                    ?>
-            @endforeach
-                <?php $promedio=($materias-1)==0?0:round($cal_sem/($materias-1),2); ?>
-            </tbody>
-            <tfoot>
-            <tr>
-                <td>Créditos Aprobados/Solicitados</td>
-                <td>{{$suma_creditos}}/{{$suma_semestre}}</td>
-                <td>Promedio del semestre</td>
-                <td>{{$promedio}}</td>
-            </tr>
-            </tfoot>
         </table>
-    @endif
-@endforeach
-<table class="tabla">
-    <thead>
-    <tr>
-        <th>Porcentaje de avance</th>
-        <th>Promedio General</th>
-    </tr>
-    <tr>
-        <td align="center"><?php $avance=$suma_total==0?0:round(($suma_total/$carrera->creditos_totales)*100,2); ?>{{$avance."%"}}</td>
-        <td align="center"><?php $prom_tot=($j-1)==0?0:round($calificaciones_totales/($j-1),2); ?>{{$prom_tot}}</td>
-    </tr>
-    </thead>
-</table>
-<div class="container">
+    </div>
     <div class="row">
         <div class="col-md-8">
             <div class="card">
@@ -167,6 +163,10 @@
         </div>
     </div>
 </div>
+<div class="footer">
+    Pag <span class="pagenum"></span>
+</div>
+
 <script src="{{ asset('js/app.js') }}" type="text/js"></script>
 </body>
 </html>

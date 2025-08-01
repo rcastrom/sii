@@ -61,7 +61,15 @@ class AlumnosController extends Controller
                 ->with(compact('alumno', 'calificaciones',
                     'estatus', 'nombre_carrera', 'nperiodos', 'control','encabezado'));
         }else{
+            $tec=$_ENV["NOMBRE_TEC"];
+            $ciudad=$_ENV["CIUDAD_OFICIOS"];
+            $logo_tecnm=$_ENV["RUTA_IMG_TECNM"];
+            $logo_tec=$_ENV["RUTA_IMG_TECNOLOGICO"];
             $data = [
+                'tec' => $tec,
+                'ciudad' => $ciudad,
+                'logo_tecnm' => $logo_tecnm,
+                'logo_tec' => $logo_tec,
                 'alumno' => $alumno,
                 'control' => $control,
                 'carrera' => $nombre_carrera,
@@ -144,6 +152,7 @@ class AlumnosController extends Controller
         $periodo_actual=(new AccionesController)->periodo();
         $periodo=$periodo_actual[0]->periodo;
         $nombre_periodo=PeriodoEscolar::where('periodo',$periodo)->first();
+        $encabezado="Evaluación docente";
         if(SeleccionMateria::where('no_de_control',$control)
                 ->where('periodo',$periodo)
                 ->count()>0){
@@ -164,12 +173,11 @@ class AlumnosController extends Controller
                     $i++;
                 }
             }
-            $encabezado="Evaluación docente";
             return view('alumnos.preencuesta')
                 ->with(compact('nombre_periodo','carga','encabezado'));
         }else{
             $mensaje="NO CUENTA CON CARGA ACADÉMICA ASIGNADA";
-            return view('alumnos.no')->with(compact('mensaje'));
+            return view('alumnos.no')->with(compact('mensaje','encabezado'));
         }
     }
     public function evaluar(Request $request){
