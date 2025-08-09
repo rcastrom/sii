@@ -66,6 +66,11 @@ class MenuDesarrolloController extends Controller
                         'url' => 'desarrollo/asp/listado',
                         'icon' => 'far fa-circle',
                     ],
+                    [
+                        'text' => 'Seleccionar aceptados',
+                        'url' => 'desarrollo/asp/seleccionar',
+                        'icon' => 'far fa-circle',
+                    ],
                 ],
             ]);
             $event->menu->add([

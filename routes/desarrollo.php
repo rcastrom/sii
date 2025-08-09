@@ -64,6 +64,9 @@ Route::group(['prefix' => 'desarrollo', 'middleware' => ['auth', 'role:desacad']
             ->name('desarrollo.contra_aspirante');
         Route::post('/pago',[AspirantesController::class,'pago_aspirante'])
             ->name('desarrollo.pago_aspirante');
+        Route::get('/seleccionar',[AspirantesController::class,'seleccionar']);
+        Route::post('/seleccionar',[AspirantesController::class,'seleccionar_listado'])
+            ->name('desarrollo.seleccionar_listado');
     });
     Route::controller(DesarrolloController::class)->prefix('eval')->group(function () {
         Route::get('/inicio', [DesarrolloController::class,'evaluacion_inicio']);

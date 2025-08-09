@@ -499,7 +499,6 @@
                                     <label for="pago" class="col-form-label">Pago a registrar:</label>
                                     <select class="form-select" id="pago" name="pago" required>
                                         <option selected>Seleccione</option>
-                                        <option value="1">Registrar pago de ficha</option>
                                         <option value="2">Registrar pago de propedéutico</option>
                                         <option value="3">Registrar pago de inscripción</option>
                                     </select>

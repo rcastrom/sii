@@ -74,7 +74,7 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class)->withTimestamps();
     }
 
-    public function hasAnyRole($roles)
+    public function hasAnyRole($roles): bool
     {
         if (is_array($roles)) {
             foreach ($roles as $role) {

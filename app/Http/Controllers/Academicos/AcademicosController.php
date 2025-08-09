@@ -30,6 +30,7 @@ use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -40,11 +41,12 @@ class AcademicosController extends Controller
     {
         new MenuAcademicosController($events);
     }
-    public function index(){
+    public function index(): View|Application|Factory
+    {
         return view('academicos.index');
     }
 
-    public function borrado($periodo,$docente,$tipo,$consecutivo)
+    public function borrado($periodo,$docente,$tipo,$consecutivo): void
     {
         Horario::where('periodo',$periodo)
             ->where('docente',$docente)
@@ -1721,7 +1723,8 @@ class AcademicosController extends Controller
             ->with(compact('periodo',
                 'personal','id','obs','docente','encabezado'));
     }
-    public function observacionesupdate(Request $request){
+    public function observacionesupdate(Request $request): View|Application|Factory
+    {
         request()->validate([
             'obs'=>'required'
         ],[
@@ -1736,21 +1739,25 @@ class AcademicosController extends Controller
         $mensaje="Se modificó la leyenda para el horario del docente";
         return view('academicos.si')->with(compact('encabezado','mensaje'));
     }
-    public function eliminaobservaciones($id){
+    public function eliminaobservaciones($id): View|Application|Factory
+    {
         HorarioObservacion::where('id',$id)->delete();
         $encabezado="Observaciones para el horario docente";
         $mensaje="Se eliminó la leyenda para el horario del docente";
         return view('academicos.si')->with(compact('encabezado','mensaje'));
     }
-    public function seleccion_evaluacion(){
+    public function seleccion_evaluacion(): View|Factory|Application
+    {
        return $this->extracted(2);
     }
 
-    public function contrasenia(){
+    public function contrasenia(): View|Application|Factory
+    {
         $encabezado="Cambio de contraseña";
         return view('academicos.contrasenia',['encabezado'=>$encabezado]);
     }
-    public function ccontrasenia(Request $request){
+    public function ccontrasenia(Request $request): RedirectResponse
+    {
         request()->validate([
             'contra'=>'required|required_with:verifica|same:verifica',
             'verifica'=>'required'
@@ -1771,9 +1778,9 @@ class AcademicosController extends Controller
 
     /**
      * @param $accion
-     * @return Factory|View|Application|\Illuminate\View\View
+     * @return Application|Factory|View
      */
-    public function extracted($accion)
+    public function extracted($accion): Application|Factory|View
     {
         $carreras = Carrera::select(['carrera', 'reticula', 'nombre_reducido'])
             ->orderBy('carrera')

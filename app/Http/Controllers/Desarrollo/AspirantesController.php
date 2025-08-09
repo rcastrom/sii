@@ -6,7 +6,11 @@ use App\Http\Controllers\Acciones\AccionesController;
 use App\Http\Controllers\Acciones\AspirantesNuevoIngresoController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\MenuDesarrolloController;
+use App\Models\Aspirante;
 use App\Models\Carrera;
+use App\Models\Grupo;
+use App\Models\Materia;
+use App\Models\MateriaCarrera;
 use App\Models\PeriodoEscolar;
 use App\Models\CarreraAspirante;
 use App\Models\UsuarioAspirante;
@@ -16,6 +20,7 @@ use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 
@@ -37,7 +42,7 @@ class AspirantesController extends Controller
             'periodo_actual', 'encabezado'));
     }
 
-    public function fichas_concentrado_estadistico(Request $request)
+    public function fichas_concentrado_estadistico(Request $request): Factory|View|\Illuminate\Foundation\Application|\Illuminate\View\View
     {
         $periodo = $request->get('periodo');
         list($carreras_ofertar, $nombre_carreras) = (new AspirantesNuevoIngresoController)->carreras_por_ofertar();
@@ -47,15 +52,8 @@ class AspirantesController extends Controller
 
     public function listado(): Factory|View|Application
     {
-        $periodos = PeriodoEscolar::select(['periodo', 'identificacion_corta'])
-            ->orderBy('periodo', 'DESC')->get();
-        $periodo_actual = (new AccionesController)->periodo_entrega_fichas();
-        $carreras = Carrera::select(['carrera', 'reticula', 'nombre_reducido'])
-            ->where('nivel_escolar', '=', 'L')
-            ->orderBy('carrera')
-            ->orderBy('reticula')->get();
+        list($periodos, $periodo_actual, $carreras) = $this->extracted1();
         $encabezado = 'Periodo de búsqueda';
-
         return view('desarrollo.periodo_ficha_busqueda', compact('periodos',
             'periodo_actual', 'carreras', 'encabezado'));
     }
@@ -70,7 +68,7 @@ class AspirantesController extends Controller
         return $this->extracted($periodo, $listados,1);
     }
 
-    public function datos_aspirante($periodo,$aspirante)
+    public function datos_aspirante($periodo,$aspirante): View|\Illuminate\Foundation\Application|Factory
     {
         $datos_aspirante=(new AccionesController)->ficha_datos($aspirante)[0];
         $nombre_periodo=PeriodoEscolar::where('periodo',$periodo)
@@ -86,9 +84,9 @@ class AspirantesController extends Controller
             'encabezado','aspirante', 'nombre_periodo','carreras','periodo'));
     }
 
-    public function actualizar_datos_aspirante(Request $request)
+    public function actualizar_datos_aspirante(Request $request): RedirectResponse
     {
-        $aspirante=$request->get('aspirante');;
+        $aspirante=$request->get('aspirante');
         $carrera=$request->get('carrera');
         $periodo=$request->get('periodo');
         CarreraAspirante::where('aspirante_id',$aspirante)->update([
@@ -97,7 +95,7 @@ class AspirantesController extends Controller
         return redirect()->route('desarrollo.datos_aspirante',["periodo" =>$periodo,"aspirante"=>$aspirante ]);
     }
 
-    public function contra_aspirante(Request $request)
+    public function contra_aspirante(Request $request): RedirectResponse
     {
         request()->validate([
             'contra' => 'required|required_with:verifica|same:verifica',
@@ -108,7 +106,7 @@ class AspirantesController extends Controller
             'contra.same' => 'No concuerda con la verificación',
             'verifica.required' => 'Debe confirmar la nueva contraseña',
         ]);
-        $aspirante=$request->get('aspirante');;
+        $aspirante=$request->get('aspirante');
         $periodo=$request->get('periodo');
         $ncontra = bcrypt($request->get('contra'));
         UsuarioAspirante::where('id',$aspirante)->update([
@@ -119,7 +117,7 @@ class AspirantesController extends Controller
     }
     public function pago_aspirante(Request $request)
     {
-        $aspirante=$request->get('aspirante');;
+        $aspirante=$request->get('aspirante');
         $periodo=$request->get('periodo');
         $pago=$request->get('pago');
         if($pago==1){
@@ -127,9 +125,66 @@ class AspirantesController extends Controller
         }elseif ($pago==2) {
             FichaAspirante::where('aspirante',$aspirante)->update(['pago_propedeutico'=>1]);
         }else{
-            FichaAspirante::where('aspirante',$aspirante)->update(['pago_inscripcion'=>1]);
+            if(FichaAspirante::where(['aspirante'=>$aspirante,'aceptado'=>true])->exists())
+            {
+                FichaAspirante::where('aspirante',$aspirante)->update(['pago_inscripcion'=>1]);
+            }else{
+                $encabezado="Error en modificación de pago";
+                $mensaje="Como el aspirante no ha sido aceptado, no puede marcar su pago como válido";
+                return view('desarrollo.no')->with(compact('encabezado','mensaje'));
+            }
         }
         return redirect()->route('desarrollo.datos_aspirante',["periodo" =>$periodo,"aspirante"=>$aspirante ]);
+    }
+
+    public function seleccionar()
+    {
+        list($periodos, $periodo_actual, $carreras) = $this->extracted1();
+        $encabezado="Seleccionar aspirantes aceptados";
+        return view('desarrollo.fichas_seleccionar', compact('periodos',
+            'periodo_actual', 'carreras', 'encabezado'));
+    }
+
+    public function seleccionar_listado(Request $request): View
+    {
+        $periodo=$request->get('periodo');
+        $carrera=$request->get('carrera');
+        if(Aspirante::where(['periodo'=>$periodo,'carrera'=>$carrera])->count()>0)
+        {
+            $aspirantes=Aspirante::where(['periodo'=>$periodo,'carrera'=>$carrera])
+                ->orderBy('apellido_paterno','ASC')
+                ->orderBy('apellido_materno','ASC')
+                ->orderBy('nombre_aspirante','ASC')
+                ->get();
+            $reticula=Carrera::where(['carrera'=>$carrera,'ofertar'=>true])->first()->reticula;
+            $materias=MateriaCarrera::where(
+                [
+                    'carrera'=>$carrera,
+                    'reticula'=>$reticula,
+                    'semestre_reticula'=>1
+                ]
+            )->select('materia')->get()->toArray();
+            $grupos=Grupo::where(
+                [
+                    'carrera'=>$carrera,
+                    'reticula'=>$reticula,
+                    'periodo'=>$periodo
+                ]
+            )->whereIn('materia',$materias)
+                ->select('grupo')
+                ->distinct()
+                ->get();
+            $bandera= $grupos->count()>0;
+            $nombre_periodo=PeriodoEscolar::where('periodo',$periodo)->first()->identificacion_corta;
+            $nombre_carrera=Carrera::where(['carrera'=>$carrera,'ofertar'=>true])->first()->nombre_carrera;
+            $encabezado="Selección de aspirantes aceptados del período ".$nombre_periodo;
+            return view('desarrollo.fichas_seleccion')
+                ->with(compact('encabezado','aspirantes','bandera','grupos','nombre_carrera'));
+        }else{
+            $encabezado="Error de selección";
+            $mensaje="No hay solicitudes de ingreso para el período y carrera seleccionado";
+            return view('desarrollo.no')->with(compact('encabezado','mensaje'));
+        }
     }
 
     /**
@@ -163,5 +218,19 @@ class AspirantesController extends Controller
         }
     }
 
-
+    /**
+     * @return array
+     */
+    public function extracted1(): array
+    {
+        $periodos = PeriodoEscolar::select(['periodo', 'identificacion_corta'])
+            ->orderBy('periodo', 'DESC')->get();
+        $periodo_actual = (new AccionesController)->periodo_entrega_fichas();
+        $carreras = Carrera::select(['carrera', 'reticula', 'nombre_reducido'])
+            ->where('nivel_escolar', '=', 'L')
+            ->where('ofertar', true)
+            ->orderBy('carrera')
+            ->orderBy('reticula')->get();
+        return array($periodos, $periodo_actual, $carreras);
+    }
 }
