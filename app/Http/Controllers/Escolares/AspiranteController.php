@@ -72,6 +72,8 @@ class AspiranteController extends Controller
             }
             $aspirante->migratorio=$request->get('migratorio');
             $aspirante->pago_ficha=$request->get('pago_ficha');
+            $aspirante->grupo=null;
+            $aspirante->control=null;
             $aspirante->save();
             (new AccionesController)->pago_ficha($identificador);
             $encabezado="Ficha generada";

@@ -27,6 +27,8 @@ class Aspirante extends Model
         'nss'=>'boolean',
         'migratorio'=>'integer',
         'pago_ficha'=>'boolean',
+        'grupo'=>'string',
+        'control'=>'string'
     ];
     protected $fillable=['periodo','ficha','apellido_materno','nombre_aspirante',
         'fecha_nacimiento','sexo','carrera','pago_ficha'];

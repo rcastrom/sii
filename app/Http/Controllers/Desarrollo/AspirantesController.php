@@ -151,32 +151,7 @@ class AspirantesController extends Controller
         $carrera=$request->get('carrera');
         if(Aspirante::where(['periodo'=>$periodo,'carrera'=>$carrera])->count()>0)
         {
-            $aspirantes=Aspirante::where(['periodo'=>$periodo,'carrera'=>$carrera])
-                ->orderBy('apellido_paterno','ASC')
-                ->orderBy('apellido_materno','ASC')
-                ->orderBy('nombre_aspirante','ASC')
-                ->get();
-            $reticula=Carrera::where(['carrera'=>$carrera,'ofertar'=>true])->first()->reticula;
-            $materias=MateriaCarrera::where(
-                [
-                    'carrera'=>$carrera,
-                    'reticula'=>$reticula,
-                    'semestre_reticula'=>1
-                ]
-            )->select('materia')->get()->toArray();
-            $grupos=Grupo::where(
-                [
-                    'carrera'=>$carrera,
-                    'reticula'=>$reticula,
-                    'periodo'=>$periodo
-                ]
-            )->whereIn('materia',$materias)
-                ->select('grupo')
-                ->distinct()
-                ->get();
-            $bandera= $grupos->count()>0;
-            $nombre_periodo=PeriodoEscolar::where('periodo',$periodo)->first()->identificacion_corta;
-            $nombre_carrera=Carrera::where(['carrera'=>$carrera,'ofertar'=>true])->first()->nombre_carrera;
+            list($aspirantes, $grupos, $bandera, $nombre_periodo, $nombre_carrera) = $this->extracted2($periodo, $carrera);
             $encabezado="Selección de aspirantes aceptados del período ".$nombre_periodo;
             return view('desarrollo.fichas_seleccion')
                 ->with(compact('encabezado','aspirantes','bandera','grupos','nombre_carrera'));
@@ -185,6 +160,20 @@ class AspirantesController extends Controller
             $mensaje="No hay solicitudes de ingreso para el período y carrera seleccionado";
             return view('desarrollo.no')->with(compact('encabezado','mensaje'));
         }
+    }
+
+    public function grupo_aspirante(Request $request)
+    {
+        $aspirante=Aspirante::where('id',$request->get('id'))->first();
+        $aspirante->grupo=$request->get('grupo');
+        $aspirante->aceptado=true;
+        $aspirante->save();
+        $periodo=$aspirante->periodo;
+        $carrera=$aspirante->carrera;
+        list($aspirantes, $grupos, $bandera, $nombre_periodo, $nombre_carrera) = $this->extracted2($periodo, $carrera);
+        $encabezado="Selección de aspirantes aceptados del período ".$nombre_periodo;
+        return view('desarrollo.fichas_seleccion')
+            ->with(compact('encabezado','aspirantes','bandera','grupos','nombre_carrera'));
     }
 
     /**
@@ -232,5 +221,41 @@ class AspirantesController extends Controller
             ->orderBy('carrera')
             ->orderBy('reticula')->get();
         return array($periodos, $periodo_actual, $carreras);
+    }
+
+    /**
+     * @param mixed $periodo
+     * @param mixed $carrera
+     * @return array
+     */
+    public function extracted2(mixed $periodo, mixed $carrera): array
+    {
+        $aspirantes = Aspirante::where(['periodo' => $periodo, 'carrera' => $carrera])
+            ->orderBy('apellido_paterno', 'ASC')
+            ->orderBy('apellido_materno', 'ASC')
+            ->orderBy('nombre_aspirante', 'ASC')
+            ->get();
+        $reticula = Carrera::where(['carrera' => $carrera, 'ofertar' => true])->first()->reticula;
+        $materias = MateriaCarrera::where(
+            [
+                'carrera' => $carrera,
+                'reticula' => $reticula,
+                'semestre_reticula' => 1
+            ]
+        )->select('materia')->get()->toArray();
+        $grupos = Grupo::where(
+            [
+                'carrera' => $carrera,
+                'reticula' => $reticula,
+                'periodo' => $periodo
+            ]
+        )->whereIn('materia', $materias)
+            ->select('grupo')
+            ->distinct()
+            ->get();
+        $bandera = $grupos->count() > 0;
+        $nombre_periodo = PeriodoEscolar::where('periodo', $periodo)->first()->identificacion_corta;
+        $nombre_carrera = Carrera::where(['carrera' => $carrera, 'ofertar' => true])->first()->nombre_carrera;
+        return array($aspirantes, $grupos, $bandera, $nombre_periodo, $nombre_carrera);
     }
 }
