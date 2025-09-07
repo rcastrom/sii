@@ -9,7 +9,6 @@ use App\Http\Controllers\MenuDesarrolloController;
 use App\Models\Aspirante;
 use App\Models\Carrera;
 use App\Models\Grupo;
-use App\Models\Materia;
 use App\Models\MateriaCarrera;
 use App\Models\PeriodoEscolar;
 use App\Models\CarreraAspirante;
@@ -115,7 +114,7 @@ class AspirantesController extends Controller
         ]);
         return redirect()->route('desarrollo.datos_aspirante',["periodo" =>$periodo,"aspirante"=>$aspirante ]);
     }
-    public function pago_aspirante(Request $request)
+    public function pago_aspirante(Request $request): View|Factory|RedirectResponse
     {
         $aspirante=$request->get('aspirante');
         $periodo=$request->get('periodo');
@@ -137,7 +136,7 @@ class AspirantesController extends Controller
         return redirect()->route('desarrollo.datos_aspirante',["periodo" =>$periodo,"aspirante"=>$aspirante ]);
     }
 
-    public function seleccionar()
+    public function seleccionar(): Factory|View
     {
         list($periodos, $periodo_actual, $carreras) = $this->extracted1();
         $encabezado="Seleccionar aspirantes aceptados";
@@ -162,7 +161,7 @@ class AspirantesController extends Controller
         }
     }
 
-    public function grupo_aspirante(Request $request)
+    public function grupo_aspirante(Request $request): Factory|View
     {
         $aspirante=Aspirante::where('id',$request->get('id'))->first();
         $aspirante->grupo=$request->get('grupo');

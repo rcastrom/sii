@@ -42,6 +42,11 @@ class MenuEscolaresController extends Controller
                         'icon' => 'far fa-circle',
                     ],
                     [
+                        'text'=>'Aceptados',
+                        'url'  => 'escolares/aspirantes/aceptados',
+                        'icon' => 'far fa-circle',
+                    ],
+                    [
                         'text' => 'Estadística',
                         'url'  => 'escolares/aspirantes/estadistica',
                         'icon' => 'far fa-circle',

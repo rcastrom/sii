@@ -95,6 +95,14 @@ class AccionesController extends Controller
     }
 
     /*
+     * Devuelve el último número de control existente en la tabla de alumnos
+     */
+    public function ultimo_control($periodo)
+    {
+        return DB::select("SELECT * FROM pac_ultimo_control('$periodo')");
+    }
+
+    /*
      * Devuelve la información para la vista retícula
      *
      * @param string $control
