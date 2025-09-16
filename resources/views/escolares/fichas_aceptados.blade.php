@@ -28,6 +28,7 @@
                             @endforeach
                         </ul>
                         <input type="hidden" name="periodo" value="{{$periodo}}">
+                        <input type="hidden" name="reticula" value="{{$datos_carrera->reticula}}">
                         <div class="form-group mt-3">
                             <input type="submit" value="Continuar" class="btn btn-primary">
                         </div>

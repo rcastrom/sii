@@ -6,7 +6,9 @@ use App\Http\Controllers\Acciones\AccionesController;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\MenuEscolaresController;
 use App\Models\Alumno;
+use App\Models\AlumnosGeneral;
 use App\Models\Carrera;
+use App\Models\PlanDeEstudio;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -16,6 +18,7 @@ use App\Models\PeriodoEscolar;
 use App\Models\PeriodoFicha;
 use App\Models\Aspirante;
 use App\Models\Preficha;
+use App\Models\FichaAspirante;
 use LaravelIdea\Helper\App\Models\_IH_Carrera_C;
 
 class AspiranteController extends Controller
@@ -98,10 +101,7 @@ class AspiranteController extends Controller
     public function show(int $ficha): Factory|View
     {
         $aspirante=(new AccionesController)->ficha_datos($ficha)[0];
-        $carreras=Carrera::where('ofertar','=',true)
-            ->select(['nombre_carrera','carrera'])
-            ->orderBy('carrera','ASC')
-            ->get();
+        $carreras = $this->getIH_Carrera_C();
         $documentos=(new AccionesController)->documentos_aspirante($ficha)[0];
         $encabezado="Datos del aspirante a ingresar";
         return view('escolares.fichas_informacion_aspirante')
@@ -224,6 +224,7 @@ class AspiranteController extends Controller
     public function seleccionados(Request $request): Factory|View
     {
         $periodo=$request->get('periodo');
+        $reticula=$request->get('reticula');
         $tec=$_ENV["NUMERO_TEC"];
         $anio=substr($periodo,2,2);
         if(Alumno::where('periodo_ingreso_it',$periodo)->count()==0){
@@ -250,7 +251,7 @@ class AspiranteController extends Controller
         $datos=collect($datos);
         $encabezado="Inscripción a primer semestre";
         return view('escolares.fichas_aceptados_control')
-            ->with(compact('encabezado','datos'));
+            ->with(compact('encabezado','datos','reticula'));
     }
 
     public function estadistica(): Factory|View
@@ -300,6 +301,74 @@ class AspiranteController extends Controller
         return view('escolares.si')->with(compact('encabezado','mensaje'));
     }
 
+    public function inscripcion(Request $request): Factory|View
+    {
+        $reticula=$request->get('reticula');
+        $aspirantes=$request->all();
+        $plan=PlanDeEstudio::max('plan_de_estudio');
+        $controles=array();
+        $i=1;
+        foreach ($aspirantes as $key=>$value) {
+            if($key!="_token" and $key!="reticula"){
+                $id=explode("_",$key)[1];
+                $control=$value;
+                $datos=(new AccionesController)->ficha_datos($id)[0];
+                $aspirante=Aspirante::where(['id'=>$id])->select('grupo')->first();
+                $alumno = new Alumno();
+                $alumno->no_de_control=$control;
+                $alumno->carrera=trim($datos->carrera);
+                $alumno->reticula=$reticula;
+                $alumno->especialidad=null;
+                $alumno->nivel_escolar="L";
+                $alumno->semestre=1;
+                $alumno->estatus_alumno="ACT";
+                $alumno->plan_de_estudios=$plan;
+                $alumno->apellido_paterno=$datos->apellido_paterno_aspirante??null;
+                $alumno->apellido_materno=$datos->apellido_materno_aspirante??null;
+                $alumno->nombre_alumno=$datos->nombre_aspirante??null;
+                $alumno->curp_alumno=$datos->curp??null;
+                $alumno->fecha_nacimiento=$datos->fecha_nacimiento??null;
+                $alumno->sexo=$datos->sexo??null;
+                $alumno->estado_civil=$datos->estado_civil??null;
+                $alumno->tipo_ingreso=1;
+                $alumno->periodo_ingreso_it=$datos->periodo;
+                $alumno->ultimo_periodo_inscrito=$datos->periodo;
+                $alumno->promedio_periodo_anterior=null;
+                $alumno->promedio_aritmetico_acumulado=null;
+                $alumno->creditos_aprobados=null;
+                $alumno->creditos_cursados=null;
+                $alumno->promedio_final_alcanzado=null;
+                $alumno->escuela_procedencia=trim($datos->preparatoria)??null;
+                $alumno->entidad_procedencia=substr($datos->edo_preparatoria,0,2)??null;
+                $alumno->ciudad_procedencia=trim($datos->mun_preparatoria)??null;
+                $alumno->correo_electronico=trim($datos->correo_electronico)??null;
+                $alumno->periodos_revalidacion=null;
+                $alumno->becado_por=null;
+                $alumno->nip=rand(1000,9999);
+                $alumno->fecha_titulacion=null;
+                $alumno->opcion_titulacion=null;
+                $alumno->nss=null;
+                $alumno->save();
+                $generales=new AlumnosGeneral();
+                $generales->no_de_control=$control;
+                $generales->domicilio_calle=trim($datos->calle_numero)??null;
+                $generales->domicilio_colonia=trim($datos->colonia)??null;
+                $generales->codigo_postal=trim($datos->codigo_postal)??null;
+                $generales->telefono=trim($datos->telefono)??null;
+                $generales->facebook=trim($datos->facebook)??null;
+                $generales->save();
+                Aspirante::where(['id'=>$id])->update(['control'=>$control]);
+                FichaAspirante::where('id',$request->get('id'))->update(['control'=>$control]);
+                (new AccionesController)->inscripcion($datos->periodo,$control,trim($datos->carrera),$reticula,$aspirante->grupo);
+                $controles[$i]=$control;
+                $i++;
+            }
+        }
+        $encabezado="Impresión de carga horario nuevo ingreso";
+        return view('escolares.fichas_impresion_horarios')
+            ->with(compact('encabezado','controles'));
+    }
+
     /**
      * @return array
      */
@@ -316,11 +385,10 @@ class AspiranteController extends Controller
      */
     public function getIH_Carrera_C(): array|_IH_Carrera_C|Collection
     {
-        $carreras = Carrera::where('ofertar', '=', true)
+        return Carrera::where('ofertar', '=', true)
             ->select(['nombre_carrera', 'carrera'])
             ->orderBy('carrera', 'ASC')
             ->get();
-        return $carreras;
     }
 
 }

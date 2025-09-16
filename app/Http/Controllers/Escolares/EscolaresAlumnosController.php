@@ -21,6 +21,7 @@ use App\Models\PeriodoEscolar;
 use App\Models\Personal;
 use App\Models\PlanDeEstudio;
 use App\Models\SeleccionMateria;
+use App\Models\TipoEvaluacion;
 use App\Models\TiposIngreso;
 use Carbon\Carbon;
 use Illuminate\Contracts\Events\Dispatcher;
@@ -324,6 +325,13 @@ class EscolaresAlumnosController extends Controller
             "dd/MMMM/YYYY",
         );
         $fecha=$fmt1->format(time());
+        $imagen_tecnm=$_ENV["RUTA_IMG_TECNM"];
+        $nombre_tec=$_ENV["NOMBRE_TEC"];
+        $imagen_escudo=$_ENV["RUTA_IMG_TECNOLOGICO"];
+        $eval_segunda_oportunidad=TipoEvaluacion::where('segunda_oportunidad',TRUE)
+            ->select('tipo_evaluacion')
+            ->get()
+            ->toArray();
         $data = [
             'alumno' => $alumno,
             'cal_periodo' => $cal_periodo,
@@ -332,6 +340,10 @@ class EscolaresAlumnosController extends Controller
             'cargo'=>$cargo,
             'nombre_jefe'=>$nombre_jefe,
             'fecha'=>$fecha,
+            'imagen_tecnm'=>$imagen_tecnm,
+            'nombre_tec'=>$nombre_tec,
+            'imagen_escudo'=>$imagen_escudo,
+            'segunda_oportunidad'=>$eval_segunda_oportunidad
         ];
         $pdf = PDF::loadView('escolares.pdf_boleta', $data)
             ->setPaper('Letter');

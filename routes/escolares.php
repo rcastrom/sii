@@ -78,10 +78,12 @@ Route::group(['prefix'=>'escolares','middleware'=>['auth','role:escolares']],fun
         Route::post('/documentos/{ficha}',[AspiranteController::class,'actualizar_documentos'])
             ->name('escolares.actualizar_documentos');
         Route::get('/aceptados',[AspiranteController::class,'periodo_aceptados']);
-        Route::post('/aceptados',[AspiranteController::class,'listado_aceptados'])
+        Route::post('/listado_aceptados',[AspiranteController::class,'listado_aceptados'])
             ->name('escolares.listado_aceptados');
         Route::post('/seleccionados',[AspiranteController::class,'seleccionados'])
             ->name('escolares.aspirantes_seleccionados');
+        Route::post('/inscripcion',[AspiranteController::class,'inscripcion'])
+            ->name('escolares.inscripcion');
         Route::get('/estadistica',[AspiranteController::class,'estadistica']);
         Route::post('/estadistica_fichas',[EscolaresController::class,'estadistica_fichas'])
             ->name('escolares.estadistica_fichas');

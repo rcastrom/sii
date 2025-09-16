@@ -15,9 +15,16 @@
             font-style: normal;
         }
         body{
-            background-image: url({{asset('img/naguila.jpeg')}});
+            background-image: url({{asset('img/aguila.jpg')}});
             font-family: Montserrat, sans-serif;
             font-size: 9pt;
+        }
+        .boleta{
+            width: auto;
+            height: auto;
+        }
+        .boleta th, .boleta td {
+            text-align: left;
         }
         h3,h4{
             font-family: Nunito, sans-serif;
@@ -34,9 +41,9 @@
     <div class="row">
         <table width="100%" align="center">
             <tr>
-                <td width="20%"><img src="{{asset('img/tecnm.jpg')}}" alt="" width="175px" height="85px" ></td>
-                <td width="75%" align="center"><strong>Tecnológico Nacional de México<br>Instituto Tecnológico de Ensenada</strong></td>
-                <td width="15%"><img src="{{asset('img/escudo.jpg')}}" alt="" width="55px" height="50px" ></td>
+                <td width="20%"><img src="{{$imagen_tecnm}}" alt="" width="175px" height="85px" ></td>
+                <td width="75%" align="center"><strong>Tecnológico Nacional de México<br>{{$nombre_tec}}</strong></td>
+                <td width="15%"><img src="{{$imagen_escudo}}" alt="" width="55px" height="50px" ></td>
             </tr>
         </table>
     </div>
@@ -63,16 +70,17 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <?php
-                    $tipos_mat=array("O2","R1","R2","RO","RP","2");
+                    @php
+                    $segunda_oportunidad = '';
+                    $tipos_mat=$segunda_oportunidad;
                     $i=1;
                     $suma_creditos=0;
                     $promedio_semestre=0;
                     $suma_semestre=0;
                     $cal_sem=0;
-                    ?>
+                    @endphp
                     <font size="6pt" face="Helvetica">
-                        <table class="table table-striped">
+                        <table class="table table-striped boleta">
                             <thead class="thead-dark">
                             <tr>
                                 <th>No</th>

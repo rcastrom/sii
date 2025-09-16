@@ -35,7 +35,7 @@ class AccionesController extends Controller
      * Devolver el período actual
      * @return mixed
      */
-    public function periodo()
+    public function periodo(): array
     {
         return DB::Select('select periodo from pac_periodo_actual()');
     }
@@ -53,7 +53,7 @@ class AccionesController extends Controller
     /*
      * Verifica si el docente tiene cruce de horario
      */
-    public function cruce($periodo, $materia, $grupo, $docente, $dia)
+    public function cruce($periodo, $materia, $grupo, $docente, $dia): array
     {
         return DB::select("select cruce from cruce_horario('$periodo','$materia','$grupo','$docente','$dia')");
     }
@@ -63,7 +63,7 @@ class AccionesController extends Controller
      * @param string $control
      * @return mixed
      */
-    public function kardex($control)
+    public function kardex($control): array
     {
         // Primero, busco los periodos que ha tenido
         $inscrito_en = HistoriaAlumno::select('periodo')
@@ -89,7 +89,7 @@ class AccionesController extends Controller
      * @param string $control
      * @return mixed
      */
-    public function cmaterias($control)
+    public function cmaterias($control): array
     {
         return DB::select("SELECT * FROM cmaterias('$control')");
     }
@@ -97,7 +97,7 @@ class AccionesController extends Controller
     /*
      * Devuelve el último número de control existente en la tabla de alumnos
      */
-    public function ultimo_control($periodo)
+    public function ultimo_control($periodo): array
     {
         return DB::select("SELECT * FROM pac_ultimo_control('$periodo')");
     }
@@ -108,7 +108,7 @@ class AccionesController extends Controller
      * @param string $control
      * @return mixed
      */
-    public function reticula($control)
+    public function reticula($control): array
     {
         return DB::select("select * from pac_reticulaalumno('$control')");
     }
@@ -119,7 +119,7 @@ class AccionesController extends Controller
      * @param string $control
      * @return mixed
      */
-    public function totales($control)
+    public function totales($control): array
     {
         return DB::select("select * from pac_calcula_totales_alumno('$control')");
     }
@@ -299,7 +299,7 @@ class AccionesController extends Controller
      * @param string $periodo
      * @return string $data
      */
-    public function calificar($periodo)
+    public function calificar($periodo): array
     {
         return DB::select('SELECT 1 AS si FROM periodos_escolares WHERE periodo = :periodo
         AND CURRENT_DATE BETWEEN inicio_cal_docentes AND fin_cal_docentes', ['periodo' => $periodo]);
@@ -312,7 +312,7 @@ class AccionesController extends Controller
      * @param string $rfc
      * @return array $data
      */
-    public function residencias($periodo, $docente)
+    public function residencias($periodo, $docente): array
     {
         return DB::select("select * from pac_cresidencias('$periodo','$docente')");
     }
@@ -324,7 +324,7 @@ class AccionesController extends Controller
      * @param string $rfc
      * @return array $data
      */
-    public function inforesidencias($periodo, $docente)
+    public function inforesidencias($periodo, $docente): array
     {
         return DB::select("select * from pac_dataresidencias('$periodo','$docente')");
     }
@@ -335,7 +335,7 @@ class AccionesController extends Controller
      * @param integer $personal
      * @return array $data
      */
-    public function personal_estudios($personal)
+    public function personal_estudios($personal): array
     {
         return DB::select("select * from pap_estudios_personal('$personal')");
     }
@@ -346,9 +346,9 @@ class AccionesController extends Controller
      * @param string $control
      * @return void
      */
-    public function actualizar_egresado($control)
+    public function actualizar_egresado($control): array
     {
-        return DB::select("SELECT * FROM actualizar_egreso_ind('$control')");
+        return DB::select("SELECT * FROM pac_actualizar_egreso_individual('$control')");
     }
 
     /*
@@ -430,9 +430,12 @@ class AccionesController extends Controller
      */
     public function listado_alumnos($periodo, $materia, $grupo)
     {
-        return SeleccionMateria::where('periodo', $periodo)
-            ->where('materia', $materia)
-            ->where('grupo', $grupo)
+        return SeleccionMateria::where(
+            [
+                'periodo'=>$periodo,
+                'materia', $materia,
+                'grupo', $grupo
+            ])
             ->join('alumnos', 'seleccion_materias.no_de_control', '=', 'alumnos.no_de_control')
             ->orderBy('apellido_paterno', 'ASC')
             ->orderBy('apellido_materno', 'ASC')
@@ -462,7 +465,7 @@ class AccionesController extends Controller
      * @param int $docente
      * @return array $data
      */
-    public function nivel_academico_docente($id_docente)
+    public function nivel_academico_docente($id_docente): array
     {
         return DB::select("select * from pac_nivel_academico('$id_docente')");
     }
@@ -473,7 +476,7 @@ class AccionesController extends Controller
      * @param string $control
      * @return array $data
      */
-    public function materias_evaluar($periodo, $control)
+    public function materias_evaluar($periodo, $control): array
     {
         return DB::select("SELECT * FROM evl_omitir_mat_alu('$periodo','$control');");
     }
@@ -481,7 +484,7 @@ class AccionesController extends Controller
     /*
      * Indica si el estudiante está en fecha de reinscripción
      */
-    public function en_fecha($periodo)
+    public function en_fecha($periodo): array
     {
         return DB::select('SELECT 1 AS si FROM periodos_escolares WHERE periodo = :periodo
         AND CURRENT_DATE BETWEEN inicio_sele_alumnos AND fin_sele_alumnos', ['periodo' => $periodo]);
@@ -490,7 +493,7 @@ class AccionesController extends Controller
     /*
      * Indica si el estudiante está en su fecha - hora de selección materias
      */
-    public function en_tiempo_reinscripcion($periodo, $control)
+    public function en_tiempo_reinscripcion($periodo, $control): array
     {
         return DB::select('SELECT 1 AS si FROM avisos_reinscripcion WHERE periodo = :periodo
         AND no_de_control = :control AND CURRENT_TIMESTAMP > fecha_hora_seleccion', ['periodo' => $periodo, 'control' => $control]);
@@ -499,7 +502,7 @@ class AccionesController extends Controller
     /*
      * Determina si la materia está en especial o no, y si fue seleccionada
      */
-    public function verifica_especial($control, $periodo)
+    public function verifica_especial($control, $periodo): array
     {
         return DB::select("select * from pac_verifica_especial('$control','$periodo')");
     }
@@ -507,7 +510,7 @@ class AccionesController extends Controller
     /*
      * Determina si la materia está en repetición o no, y si fue seleccionada
      */
-    public function verifica_repite($control, $periodo)
+    public function verifica_repite($control, $periodo): array
     {
         return DB::select("select * from pac_verifica_repite('$control','$periodo')");
     }
@@ -515,7 +518,7 @@ class AccionesController extends Controller
     /*
      * Grupos que se ofertan para la reinscripción
      */
-    public function grupos_materia($periodo, $control, $materia)
+    public function grupos_materia($periodo, $control, $materia): array
     {
         return DB::select("select * from pac_gruposmateria('$periodo','$control','$materia')");
     }
@@ -523,7 +526,7 @@ class AccionesController extends Controller
     /*
      * Determina si el estudiante tiene otra materia que le impida el cruce
      */
-    public function cruce_horario($periodo, $control, $dia, $hora_inicial, $hora_final)
+    public function cruce_horario($periodo, $control, $dia, $hora_inicial, $hora_final): array
     {
         return DB::select('select 1 as si from seleccion_materias SM, horarios H where SM.periodo = H.periodo
                 and SM.materia = H.materia
@@ -551,7 +554,7 @@ class AccionesController extends Controller
      * Dar los datos de las materias que han sido evaluadas (eval docente), inscritos,
      * y cuántos han evaluado
      */
-    public function evaluacion_al_docente_datos($periodo, $docente, $maximo)
+    public function evaluacion_al_docente_datos($periodo, $docente, $maximo): array
     {
         return DB::select("select * from pac_evl_docente('$periodo','$docente','$maximo')");
     }
@@ -559,7 +562,7 @@ class AccionesController extends Controller
     /*
      * Resultados por preguntas, de la evaluación al docente
      */
-    public function resultados_evaluacion_al_docente($periodo, $pregunta, $materia, $grupo)
+    public function resultados_evaluacion_al_docente($periodo, $pregunta, $materia, $grupo): array
     {
         return DB::select("SELECT * FROM pac_eval_docente('$periodo','$pregunta','$materia','$grupo')");
     }
@@ -567,7 +570,7 @@ class AccionesController extends Controller
     /*
      * Resultados en evaluación al docente por carrera
      */
-    public function resultados_carrera_evaluacion_al_docente($periodo,$pregunta,$carrera,$reticula)
+    public function resultados_carrera_evaluacion_al_docente($periodo,$pregunta,$carrera,$reticula): array
     {
         return DB::select("SELECT * FROM pac_eval_carr_ret('$periodo','$pregunta','$carrera','$reticula')");
     }
@@ -575,7 +578,7 @@ class AccionesController extends Controller
     /*
      * Listado de aspirantes a ingresar
      */
-    public function listado_aspirantes($periodo,$carrera)
+    public function listado_aspirantes($periodo,$carrera): array
     {
         return DB::connection('nuevo_ingreso')->select("SELECT * FROM datos_aspirantes('$periodo','$carrera')");
     }
@@ -583,7 +586,7 @@ class AccionesController extends Controller
     /*
      * Dato de una ficha en particular
      */
-    public function ficha_datos($ficha)
+    public function ficha_datos($ficha): array
     {
         return DB::connection('nuevo_ingreso')->select("SELECT * FROM datos_aspirante('$ficha')");
     }
@@ -591,7 +594,7 @@ class AccionesController extends Controller
     /*
      * Devuelve el concentrado de fichas por período por carrera
      */
-    public function concentrado_fichas_genero($periodo,$carrera,$nombre_carreras)
+    public function concentrado_fichas_genero($periodo,$carrera,$nombre_carreras): array
     {
         return DB::select("SELECT * FROM pac_concentrado_fichas_genero('$periodo','$carrera','$nombre_carreras')");
     }
@@ -599,7 +602,7 @@ class AccionesController extends Controller
     /*
      * Devuelve el concentrado de fichas por período por carrera por género
      */
-    public function concentrado_fichas($periodo,$carrera,$nombre_carreras)
+    public function concentrado_fichas($periodo,$carrera,$nombre_carreras): array
     {
         return DB::connection('nuevo_ingreso')
             ->select("SELECT * FROM concentrado_fichas('$periodo','$carrera','$nombre_carreras')");
@@ -609,7 +612,8 @@ class AccionesController extends Controller
     /*
      * Devuelve el concentrado de información de las fichas para Excel
      */
-    public function concentrado_fichas_excel($periodo,$carrera,$nombre_carreras){
+    public function concentrado_fichas_excel($periodo,$carrera,$nombre_carreras): array
+    {
         return DB::connection('nuevo_ingreso')
             ->select("SELECT * FROM listado_excel('$periodo','$carrera','$nombre_carreras')");
     }
@@ -617,7 +621,7 @@ class AccionesController extends Controller
     /*
      * Devuelve la información que el aspirante haya subido al sistema
      */
-    public function documentos_aspirante($ficha)
+    public function documentos_aspirante($ficha): array
     {
         return DB::connection('nuevo_ingreso')
             ->select("SELECT * FROM documentos_aspirante('$ficha')");
@@ -626,9 +630,18 @@ class AccionesController extends Controller
     /*
      * Actualiza el pago de la ficha en el portal de aspirantes
      */
-    public function pago_ficha($ficha)
+    public function pago_ficha($ficha): array
     {
         return DB::connection('nuevo_ingreso')
             ->select("SELECT * FROM pago_ficha('$ficha')");
     }
+
+    /*
+     * Realiza la selección de materias para nuevo ingreso
+     */
+    public function inscripcion($periodo,$control,$carrera,$reticula,$grupo): array
+    {
+        return DB::select("SELECT * FROM pac_inscripcion('$periodo','$control','$carrera','$reticula','$grupo')");
+    }
+
 }

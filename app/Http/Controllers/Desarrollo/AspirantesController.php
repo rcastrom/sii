@@ -167,6 +167,7 @@ class AspirantesController extends Controller
         $aspirante->grupo=$request->get('grupo');
         $aspirante->aceptado=true;
         $aspirante->save();
+        FichaAspirante::where('id',$request->get('id'))->update(['aceptado'=>true]);
         $periodo=$aspirante->periodo;
         $carrera=$aspirante->carrera;
         list($aspirantes, $grupos, $bandera, $nombre_periodo, $nombre_carrera) = $this->extracted2($periodo, $carrera);
