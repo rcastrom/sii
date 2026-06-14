@@ -36,6 +36,9 @@ class EscolaresAlumnosController extends Controller
     public function __construct(Dispatcher $events)
     {
         new MenuEscolaresController($events);
+        $this->middleware('can:alumno_imprimir_boleta')->only('imprimirboleta');
+        $this->middleware('can:alumno_consulta_certificado')->only('certificado');
+        $this->middleware('can:alumno_alta')->only('alta');
     }
 
     public function buscar(){

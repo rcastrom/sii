@@ -18,6 +18,11 @@ class IdiomasController extends Controller
     public function __construct(Dispatcher $events)
     {
         new MenuEscolaresController($events);
+        $this->middleware('can:idiomas_alta')->only('idioma_alta');
+        $this->middleware('can:idiomas_editar')->only('idioma_modifica');
+        $this->middleware('can:idiomas_liberacion')->only('idiomas_lib1');
+        $this->middleware('can:idiomas_imprimir_liberacion')->only('idiomas_impre');
+        $this->middleware('can:idiomas_consulta')->only('idiomas_consulta');
     }
 
     public function idioma_alta_formulario()

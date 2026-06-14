@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
 
     <style>
         @font-face {
@@ -19,14 +18,31 @@
             font-family: Montserrat, sans-serif;
             font-size: 9pt;
         }
+        .encabezado{
+            width: 100%;
+            align-self: center;
+        }
+        .encabezado .celda-tecnm{
+            width: 15%;
+        }
+        .encabezado .celda-nombre{
+            width: 70%;
+        }
+        .encabezado .celda-escudo{
+            width: 15%;
+        }
+
         .boleta{
             width: auto;
             height: auto;
         }
-        .boleta th, .boleta td {
+        .boleta th .boleta td {
             text-align: left;
         }
-        h3,h4{
+        .boleta .centrar_informacion{
+            text-align: center;
+        }
+        h3,h4 {
             font-family: Nunito, sans-serif;
             font-size: large;
         }
@@ -38,35 +54,26 @@
 ?>
 <body>
 <div class="container">
+    <table class="encabezado">
+        <tr>
+            <td class="celda-tecnm"><img src="{{$imagen_tecnm}}" alt="" width="175px" height="85px" ></td>
+            <td class="celda-nombre"><strong>Tecnológico Nacional de México<br>{{$nombre_tec}}</strong></td>
+            <td class="celda-escudo"><img src="{{$imagen_escudo}}" alt="" width="55px" height="50px" ></td>
+        </tr>
+    </table>
+
     <div class="row">
-        <table width="100%" align="center">
-            <tr>
-                <td width="20%"><img src="{{$imagen_tecnm}}" alt="" width="175px" height="85px" ></td>
-                <td width="75%" align="center"><strong>Tecnológico Nacional de México<br>{{$nombre_tec}}</strong></td>
-                <td width="15%"><img src="{{$imagen_escudo}}" alt="" width="55px" height="50px" ></td>
-            </tr>
-        </table>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Boleta del período {{$nombre_periodo->identificacion_larga}}</h5>
-                </div>
-            </div>
+        <div class="col-md-4">
+            <h5>Boleta del período {{$nombre_periodo->identificacion_larga}}</h5>
+        </div>
+        <div class="col-md-4">
+            <h5>{{ $alumno->apellido_paterno.' '.$alumno->apellido_materno.' '.$alumno->nombre_alumno }}</h5>
+        </div>
+        <div class="col-md-4">
+            <p>Número de control: {{ $alumno->no_de_control }}</p>
         </div>
     </div>
     <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">{{ $alumno->apellido_paterno.' '.$alumno->apellido_materno.' '.$alumno->nombre_alumno }}</h5>
-                    <p class="card-text">Número de control: {{ $alumno->no_de_control }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="row ">
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
@@ -94,9 +101,9 @@
                             <tbody>
                             @foreach($cal_periodo as $data)
                                 <tr>
-                                    <td>{{$i}}</td>
+                                    <td class="centrar_informacion">{{$i}}</td>
                                     <td>{{$data->nombre_completo_materia}}</td>
-                                    <td>{{$data->calificacion<60?"NA":($data->tipo_evaluacion=='AC'?'AC':$data->calificacion)}}</td>
+                                    <td class="centrar_informacion">{{$data->calificacion<60?"NA":($data->tipo_evaluacion=='AC'?'AC':$data->calificacion)}}</td>
                                     <td>{{$data->descripcion_corta_evaluacion}}</td>
                                     <td>{{$data->creditos_materia}}</td>
                                     @if(($data->calificacion < 70 && in_array($data->tipo_evaluacion,$tipos_mat)) || ($data->calificacion < 70 && $data->tipo_evaluacion == 'EA')){
@@ -136,7 +143,7 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <p>Documento no válido sin sello y firma</p>
+            <p>Documento no válido sin sello y sin firma</p>
         </div>
     </div>
     <div class="row">
@@ -165,6 +172,8 @@
     </div>
 </div>
 <script src="{{ asset('js/app.js') }}" type="text/js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
 

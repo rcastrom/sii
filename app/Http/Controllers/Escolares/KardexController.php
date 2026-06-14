@@ -21,6 +21,7 @@ class KardexController extends Controller
     public function __construct(Dispatcher $events)
     {
         new MenuEscolaresController($events);
+        $this->middleware('can:alumno_kardex')->only('index');
     }
 
     /**

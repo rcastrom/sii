@@ -18,11 +18,11 @@ Los módulos que se han migrado son:
 * Estudiantes (100%).
 * División de Estudios Profesionales (100%).
 * Jefaturas Académicas (100%).
-* Planeación (40%).
 * Coordinación de Verano (90%).
 * Desarrollo Académico (98%).
 * Personal docente (100%).
-* Recursos Humanos (99%)
+* Recursos Humanos (99%).
+* Administrativo (50%).
 
 #### Pendientes
 En Servicios Escolares:
@@ -38,7 +38,7 @@ En Recursos Humanos
 ### Pre-requisitos 📋
 
 #### PHP
-Versión mínima de PHP: 8.3 y se recomienda a PostgreSQL como manejador de base de datos, en
+Versión de PHP: 8.4 y se recomienda a PostgreSQL como manejador de base de datos, en
 cuyo caso, deberá contar con la extensión _pgsql_.
 
 >
@@ -109,7 +109,7 @@ por ejemplo
  APP_URL=<indicar la URL que empleará para SII>
  DB_CONNECTION=pgsql #Si emplea PostgreSQL como manejador de la BD
  DB_HOST=127.0.0.1
- DB_PORT=5432        #Si emplea PostgreSQL como manejador de la BD
+ DB_PORT=<puerto>        #Si emplea PostgreSQL como manejador de la BD. Ejem, 5432
  DB_DATABASE=<su base de datos>
  DB_USERNAME=<su usuario>
  DB_PASSWORD=<su contraseña>

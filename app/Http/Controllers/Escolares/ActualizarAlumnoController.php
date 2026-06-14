@@ -19,6 +19,14 @@ class ActualizarAlumnoController extends Controller
     public function __construct(Dispatcher $events)
     {
         new MenuEscolaresController($events);
+        $this->middleware('permission:alumno_modificar_estatus')->only(['estatusupdate']);
+        $this->middleware('can:alumno_modificar_especialidad')->only('especialidadupdate');
+        $this->middleware('can:alumno_modificar_carrera')->only('carreraupdate');
+        $this->middleware('can:alumno_eliminar')->only('alumnodelete');
+        $this->middleware('can:alumno_baja')->only('alumnobajatemp');
+        $this->middleware('can:alumno_actualizar_nss')->only('alumnonss');
+        $this->middleware('can:alumno_modificar_estatus')->only('');
+
     }
     public function estatusupdate(Request $request)
     {

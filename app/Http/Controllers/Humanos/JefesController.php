@@ -76,7 +76,11 @@ class JefesController extends Controller
      */
     public function show(Jefe $listado)
     {
-        //
+        $encabezado="Eliminar cargo";
+        $id=$listado->id;
+        $puesto=Organigrama::where('clave_area',$listado->clave_area)->first();
+        return view('rechumanos.jefatura_eliminar',
+            compact('encabezado','puesto','id'));
     }
 
     /**
@@ -109,9 +113,9 @@ class JefesController extends Controller
         ]);
 
         Jefe::where('id',$listado->id)->update([
-            'descripcion_area'=>$request->get('puesto'),
-            'id_jefe'=>$request->get('persona'),
-            'correo'=>$request->get('correo')
+            'descripcion_area'=>$request->puesto,
+            'id_jefe'=>$request->id_jefe,
+            'correo'=>$request->correo
         ]);
         return redirect()->route('inicio_rechumanos');
     }
@@ -119,8 +123,9 @@ class JefesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Jefe $jefe)
+    public function destroy(Jefe $listado)
     {
-        //
+        $listado->delete();
+        return redirect()->route('inicio_rechumanos');
     }
 }

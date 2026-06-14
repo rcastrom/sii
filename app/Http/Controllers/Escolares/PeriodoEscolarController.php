@@ -14,6 +14,7 @@ class PeriodoEscolarController extends Controller
     public function __construct(Dispatcher $events)
     {
         new MenuEscolaresController($events);
+        $this->middleware('can:periodo_escolar_establecer')->only('index');
     }
 
     /**

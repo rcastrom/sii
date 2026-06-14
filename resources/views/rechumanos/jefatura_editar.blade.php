@@ -43,8 +43,8 @@
                                class="form-control" value="{{$listado->descripcion_area}}">
                     </div>
                     <div class="col-12 mb-3">
-                        <label for="persona" class="form-label">Persona que tomará el puesto</label>
-                        <select name="persona" id="persona" required class="form-control">
+                        <label for="id_jefe" class="form-label">Persona que tomará el puesto</label>
+                        <select name="id_jefe" id="id_jefe" required class="form-control">
                             @foreach($personal as $persona)
                                 <option value="{{$persona->id}}" {{$listado->id_jefe==$persona->id?' selected':''}}>{{$persona->apellidos_empleado.' '.$persona->nombre_empleado}}</option>
                             @endforeach

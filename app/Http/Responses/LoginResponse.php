@@ -21,6 +21,8 @@ class LoginResponse implements LoginResponseContract{
             return redirect('/academicos');
         } elseif (Auth::user()->hasRole('alumno')) {
             return redirect('/alumnos');
+        } elseif (Auth::user()->hasRole('admin')) {
+            return redirect('/admin');
         }else{
             return redirect('/');
         }

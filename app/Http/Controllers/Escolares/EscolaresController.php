@@ -30,6 +30,15 @@ class EscolaresController extends Controller
     public function __construct(Dispatcher $events)
     {
         new MenuEscolaresController($events);
+        $this->middleware('can:fichas_consulta_estadistica_fichas')->only('estadistica_fichas');
+        $this->middleware('can:carreras_nueva')->only('carreraAlta');
+        $this->middleware('can:carreras_especialidades')->only('especialidadAlta');
+        $this->middleware('can:carreras_materias_alta')->only('materiaNueva');
+        $this->middleware('can:carreras_materias_edicion')->only('materiaEditar');
+        $this->middleware('can:estadistica_consulta')->only('prepoblacion');
+        $this->middleware('can:mantenimiento_bd')->only('mantenimiento_inicial');
+        $this->middleware('can:cambio_contrasenia')->only('contrasenia');
+
     }
 
     public function index()

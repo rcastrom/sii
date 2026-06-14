@@ -11,6 +11,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
 use Laravel\Jetstream\HasProfilePhoto;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Builder;
+use Spatie\Permission\Traits\HasRoles;
 
 /**
  * Class User
@@ -25,6 +26,7 @@ class User extends Authenticatable
     use HasProfilePhoto;
     use Notifiable;
     use TwoFactorAuthenticatable;
+    use HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -70,10 +72,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    public function roles(){
+    /*public function roles(){
         return $this->belongsToMany(Role::class)->withTimestamps();
-    }
-
+    }*/
+    /*
     public function hasAnyRole($roles): bool
     {
         if (is_array($roles)) {
@@ -97,4 +99,5 @@ class User extends Authenticatable
         }
         return false;
     }
+    */
 }

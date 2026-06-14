@@ -16,7 +16,7 @@ class KardexPDFController extends Controller
     private $fpdf;
 
     public function __construct(){
-
+        $this->middleware('can:alumno_imprimir_kardex')->only('crearPDF');
     }
 
      function Header($control){

@@ -10,6 +10,10 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class AspirantesNuevoIngresoController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:fichas_exportar_fichas_excel')->only('fichas_concentrado_excel');
+    }
     /**
      * @return string[]
      */

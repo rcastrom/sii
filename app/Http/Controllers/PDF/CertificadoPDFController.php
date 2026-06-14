@@ -17,7 +17,7 @@ use JetBrains\PhpStorm\NoReturn;
 class CertificadoPDFController extends Controller
 {
     public function __construct(){
-
+        $this->middleware('can:alumno_imprimir_certificado')->only('crearPDF');
     }
     public function calcula_periodo_ingreso_octaware($periodo_ingreso,$revalidacion){
         $anio=substr($periodo_ingreso,0,4);

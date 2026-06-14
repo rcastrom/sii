@@ -26,6 +26,8 @@ class ReinscripcionController extends Controller
     public function __construct(Dispatcher $events)
     {
         new MenuEscolaresController($events);
+        $this->middleware('can:alumno_reinscribir')->only('reinscripcion');
+        $this->middleware('can:periodo_escolar_establecer_reinscripcion')->only('altaf_re');
     }
 
     public function reinscripcion(): Factory|View|Application

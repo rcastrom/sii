@@ -26,6 +26,9 @@ class AspiranteController extends Controller
     public function __construct(Dispatcher $events)
     {
         new MenuEscolaresController($events);
+        $this->middleware('can:fichas_listado')->only('listado');
+        $this->middleware('can:fichas_actualizar_documentos_fichas')->only('actualizar_documentos');
+        $this->middleware('can:fichas_aceptar_fichas')->only('seleccionados');
     }
 
     /**

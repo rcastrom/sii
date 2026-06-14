@@ -15,7 +15,7 @@
                         <tr>
                             <th scope="col">Cargo</th>
                             <th scope="col">Asignado a</th>
-                            <th scope="col">Acción</th>
+                            <th colspan="2" scope="col">Acción</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -23,10 +23,21 @@
                         <tr>
                             <td>{{$dato->descripcion_area}}</td>
                             <td>{{$dato->apellidos_empleado.' '.$dato->nombre_empleado}}</td>
-                            <td><a href="{{route('listado.edit',$dato->id)}}"><i class="fas fa-edit"></i>Editar</a></td>
+                            <td>
+                                <a href="{{route('listado.edit',$dato->id)}}"><i class="fas fa-edit"></i>Editar</a>
+                            </td>
+                            <td>
+                                <a href="{{route('listado.show',$dato->id)}}"><i class="fa fa-trash"></i>Borrar</a>
+                            </td>
                         </tr>
                     @endforeach
                     </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="4">La acción de "Borrar" emplearla
+                                cuando una jefatura no tendrá persona asignada</td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
         </div>

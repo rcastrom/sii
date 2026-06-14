@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Humanos;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\MenuHumanosController;
 use App\Models\Personal;
 use App\Models\PersonalPlaza;
 use App\Models\Categoria;
 use App\Models\Motivo;
+use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Http\Request;
 
 class PlazasController extends Controller
@@ -14,9 +16,8 @@ class PlazasController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        //
+    public function __construct(Dispatcher $events){
+        new MenuHumanosController($events);
     }
 
     /**

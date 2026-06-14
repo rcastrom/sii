@@ -12,7 +12,7 @@ Route::group(['prefix'=>'rechumanos','middleware'=>['auth','role:rechumanos']],f
         Route::post('/alta1',[HumanosController::class,'alta_personal1'])->name('rechumanos.alta1');
         Route::post('/alta2',[HumanosController::class,'alta_personal2'])->name('rechumanos.alta2');
         Route::get('/listado',[HumanosController::class,'listado1']);
-        Route::post('/listado',[HumanosController::class,'listado'])->name('rechumanos.listado');
+        Route::post('/listado',[HumanosController::class,'listado'])->name('rechumanos.lista_personal');
         Route::get('/editar/{personal}',[HumanosController::class,'listado2']);
         Route::get('/edicion/{campo}/{personal}',[HumanosController::class,'edicion']);
         Route::put('/actualizar',[HumanosController::class,'actualizar'])->name('rechumanos.datos_personal');

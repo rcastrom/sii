@@ -17,6 +17,7 @@ class CierrePeriodoController extends Controller
     public function __construct(Dispatcher $events)
     {
         new MenuEscolaresController($events);
+        $this->middleware('can:periodo_escolar_cierre_semestre')->only('cierre');
     }
     public function cierre(): Factory|View|Application
     {

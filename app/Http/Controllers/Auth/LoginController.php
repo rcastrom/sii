@@ -52,7 +52,6 @@ class LoginController extends Controller
         if ($user->hasRole('division')) {
             return redirect()->intended('/division');
         }
-        // En proceso
         if ($user->hasRole('rechumanos')) {
             return redirect()->intended('/rechumanos');
         }
@@ -65,6 +64,9 @@ class LoginController extends Controller
         // Faltan por crear
         if ($user->hasRole('verano')) {
             return redirect()->intended('/verano');
+        }
+        if ($user->hasRole('admin')) {
+            return redirect()->intended('/admin');
         }
 
     }

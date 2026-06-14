@@ -24,6 +24,11 @@ class ActasController extends Controller
     public function __construct(Dispatcher $events)
     {
         new MenuEscolaresController($events);
+        $this->middleware('can:actas_consulta')->only('periodoactas_m1');
+        $this->middleware('can:actas_actualizar_entrega')->only('periodoactas_m4');
+        $this->middleware('can:actas_cambio_calificacion')->only('modificar_acta');
+        $this->middleware('can:actas_imprimir')->only('imprimir_acta');
+        $this->middleware('can:actas_mantenimiento_bd')->only('actas_mantenimiento');
     }
 
     public function docentes($periodo)

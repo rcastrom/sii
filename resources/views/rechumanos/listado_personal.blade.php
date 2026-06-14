@@ -9,7 +9,7 @@
 @section('content')
     <x-information :encabezado="$encabezado">
 
-        <form action="{{route('rechumanos.listado')}}" method="post" role="form" class="row">
+        <form action="{{route('rechumanos.lista_personal')}}" method="post" role="form" class="row">
             @csrf
             <div class="col-12 mb-3">
                 <label for="estatus" class="form-label">Tipo de consulta en base al estatus del personal</label>

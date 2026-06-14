@@ -21,7 +21,7 @@ use Illuminate\Http\Request;
 class ConstanciaPDFController extends Controller
 {
     public function __construct(){
-
+        $this->middleware('can:alumno_imprimir_constancia')->only('crearPDF');
     }
     public function mes_espanol($mes)
     {

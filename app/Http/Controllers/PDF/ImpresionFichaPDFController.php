@@ -14,6 +14,10 @@ use JetBrains\PhpStorm\NoReturn;
 
 class ImpresionFichaPDFController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('can:fichas_imprimir_lista')->only('crearPDF');
+    }
     public function encabezado($pdf){
         $nombre_tec = mb_convert_encoding($_ENV['NOMBRE_TEC'], 'ISO-8859-1', 'UTF-8');
         // Logo TecNM

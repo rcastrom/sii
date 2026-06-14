@@ -16,7 +16,7 @@ use JetBrains\PhpStorm\NoReturn;
 class IdiomasPDFController extends Controller
 {
     public function __construct(){
-
+        $this->middleware('can:alumno_imprimir_ingles')->only('crearPDF');
     }
     public function mes($mes)
     {
